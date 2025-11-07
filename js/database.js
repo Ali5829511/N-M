@@ -2,6 +2,17 @@
  * نظام إدارة قاعدة البيانات المحلية
  * Local Database Management System
  * @version 1.0.0
+ * 
+ * ⚠️ تحذير أمني مهم:
+ * هذا النظام مصمم للتطوير والاختبار فقط!
+ * 
+ * في بيئة الإنتاج، يجب:
+ * 1. استخدام قاعدة بيانات حقيقية (PostgreSQL, MySQL, MongoDB)
+ * 2. تشفير كلمات المرور باستخدام bcrypt أو argon2
+ * 3. استخدام API خلفي آمن بدلاً من localStorage
+ * 4. تطبيق SSL/TLS (HTTPS)
+ * 5. إضافة معالجة الأخطاء والتحقق من صحة البيانات
+ * 6. تطبيق rate limiting و CSRF protection
  */
 
 class DatabaseManager {
@@ -28,13 +39,16 @@ class DatabaseManager {
 
     /**
      * إنشاء المستخدمين الافتراضيين
+     * 
+     * ⚠️ ملاحظة: كلمات المرور مخزنة بنص عادي للتطوير فقط
+     * في الإنتاج: استخدم bcrypt لتشفير كلمات المرور
      */
     initializeDefaultUsers() {
         const defaultUsers = [
             {
                 id: 1,
                 username: 'admin',
-                password: 'admin123', // في نظام حقيقي، يجب تشفير كلمة المرور
+                password: 'admin123', // ⚠️ في نظام حقيقي، يجب تشفير كلمة المرور
                 name: 'مدير النظام',
                 email: 'admin@university.edu.sa',
                 role: 'admin',
@@ -45,7 +59,7 @@ class DatabaseManager {
             {
                 id: 2,
                 username: 'violations_officer',
-                password: 'violations123',
+                password: 'violations123', // ⚠️ في نظام حقيقي، يجب تشفير كلمة المرور
                 name: 'مسؤول المخالفات',
                 email: 'violations@university.edu.sa',
                 role: 'violation_entry',
@@ -56,7 +70,7 @@ class DatabaseManager {
             {
                 id: 3,
                 username: 'inquiry_user',
-                password: 'inquiry123',
+                password: 'inquiry123', // ⚠️ في نظام حقيقي، يجب تشفير كلمة المرور
                 name: 'موظف الاستعلام',
                 email: 'inquiry@university.edu.sa',
                 role: 'inquiry',
@@ -264,7 +278,7 @@ class DatabaseManager {
                 id: newId,
                 ...violationData,
                 createdDate: new Date().toISOString(),
-                createdBy: window.authManager.getCurrentUser()?.id || null
+                createdBy: window.authManager ? window.authManager.getCurrentUser()?.id : null
             };
             
             violations.push(newViolation);
@@ -303,7 +317,7 @@ class DatabaseManager {
                 ...violationData,
                 id: id,
                 updatedDate: new Date().toISOString(),
-                updatedBy: window.authManager.getCurrentUser()?.id || null
+                updatedBy: window.authManager ? window.authManager.getCurrentUser()?.id : null
             };
             
             localStorage.setItem('violations', JSON.stringify(violations));

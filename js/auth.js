@@ -142,10 +142,20 @@ class AuthManager {
 
     /**
      * التحقق من بيانات الاعتماد
+     * 
+     * ⚠️ تحذير أمني: في بيئة الإنتاج، يجب:
+     * 1. تشفير كلمات المرور باستخدام bcrypt أو argon2
+     * 2. عدم تخزين كلمات المرور في localStorage
+     * 3. استخدام قاعدة بيانات خلفية مع API آمن
+     * 4. تطبيق HTTPS
+     * 5. إضافة توكنات JWT بدلاً من localStorage
      */
     async validateCredentials(username, password) {
         // محاكاة التحقق من قاعدة البيانات
         const users = await window.db.getUsers();
+        
+        // ⚠️ مقارنة كلمة المرور بشكل مباشر (غير آمن في الإنتاج)
+        // في الإنتاج: استخدم bcrypt.compare(password, user.hashedPassword)
         const user = users.find(u => u.username === username && u.password === password && u.status === 'active');
         
         if (user) {
