@@ -557,6 +557,10 @@
     </div>
 
 
+    <!-- تحميل مكتبات النظام -->
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    
     <script>
         'use strict';
         
@@ -598,30 +602,18 @@
         // التحقق من الجلسة الحالية عند تحميل الصفحة
         // Check current session on page load
         window.addEventListener('load', async () => {
-            try {
-                const response = await fetch('/api/auth/validate', {
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.authenticated) {
-                        const redirectMessage = data.user.role === 'violation_entry' 
-                            ? 'جاري التحويل إلى نموذج المخالفة...' 
-                            : 'جاري التحويل إلى لوحة التحكم...';
-                        showMessage(successMessage, `مرحباً ${data.user.name}! ${redirectMessage}`, 'fas fa-check-circle');
-                        
-                        setTimeout(() => {
-                            if (data.user.role === 'violation_entry') {
-                                window.location.href = 'enhanced_traffic_violations_updated.html';
-                            } else {
-                                window.location.href = 'main_dashboard.html';
-                            }
-                        }, 1500);
-                    }
+            if (window.authManager.isAuthenticated()) {
+                const user = window.authManager.getCurrentUser();
+                if (user) {
+                    const redirectMessage = user.role === 'violation_entry' 
+                        ? 'جاري التحويل إلى نموذج المخالفة...' 
+                        : 'جاري التحويل إلى لوحة التحكم...';
+                    showMessage(successMessage, `مرحباً ${user.name}! ${redirectMessage}`, 'fas fa-check-circle');
+                    
+                    setTimeout(() => {
+                        window.authManager.redirectToDefaultPage();
+                    }, 1500);
                 }
-            } catch (error) {
-                console.log('No active session');
             }
         });
 
@@ -643,53 +635,27 @@
             setButtonLoading(true);
             
             try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ username, password })
-                });
+                // استخدام نظام المصادقة المحلي
+                const result = await window.authManager.login(username, password);
                 
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
-                    showMessage(successMessage, `مرحباً ${data.user.name}! ${data.message_ar}`, 'fas fa-check-circle');
+                if (result.success) {
+                    showMessage(successMessage, `مرحباً ${result.user.name}! ${result.message_ar}`, 'fas fa-check-circle');
                     
-                    // حفظ معلومات المستخدم
-                    localStorage.setItem('currentUser', JSON.stringify({
-                        id: data.user.id,
-                        username: data.user.username,
-                        name: data.user.name,
-                        role: data.user.role,
-                        email: data.user.email
-                    }));
+                    // تحديث وقت آخر تسجيل دخول
+                    await window.db.updateLastLogin(result.user.id);
                     
                     // توجيه المستخدم حسب دوره / Redirect user based on role
                     setTimeout(() => {
-                        if (data.user.role === 'violation_entry') {
-                            // مستخدم تسجيل المخالفات يذهب مباشرة لنموذج المخالفة
-                            window.location.href = 'enhanced_traffic_violations_updated.html';
-                        } else {
-                            // باقي المستخدمين يذهبون للوحة التحكم
-                            window.location.href = 'main_dashboard.html';
-                        }
+                        window.authManager.redirectToDefaultPage();
                     }, 1500);
                 } else {
-                    showMessage(errorMessage, data.error_ar || data.error || 'فشل تسجيل الدخول', 'fas fa-exclamation-circle');
+                    showMessage(errorMessage, result.error_ar || 'فشل تسجيل الدخول', 'fas fa-exclamation-circle');
                     shakeContainer();
                     setButtonLoading(false);
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                let errorMsg = 'عذراً، حدث خطأ في الاتصال بالخادم. يرجى التحقق من الاتصال بالإنترنت والمحاولة مرة أخرى.';
-                if (error.message.includes('Failed to fetch')) {
-                    errorMsg = 'تعذر الاتصال بالخادم. يرجى التأكد من أن الخادم يعمل والمحاولة مرة أخرى.';
-                } else if (error.message.includes('NetworkError') || error.message.includes('network')) {
-                    errorMsg = 'خطأ في الشبكة. يرجى التحقق من اتصالك بالإنترنت.';
-                }
-                showMessage(errorMessage, errorMsg, 'fas fa-times-circle');
+                showMessage(errorMessage, 'حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.', 'fas fa-times-circle');
                 shakeContainer();
                 setButtonLoading(false);
             }

@@ -548,8 +548,8 @@
                     <select id="role" name="role" required>
                         <option value="">اختر الدور</option>
                         <option value="admin">مدير النظام</option>
-                        <option value="violations">مسؤول المخالفات</option>
-                        <option value="visitors">مسؤول الزوار</option>
+                        <option value="violation_entry">مسجل المخالفات</option>
+                        <option value="inquiry">الاستعلام</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -573,47 +573,29 @@
         </div>
     </div>
 
+    <!-- تحميل مكتبات النظام -->
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    
     <script>
-        // بيانات المستخدمين الافتراضية
-        let users = [
-            {
-                id: 1,
-                username: 'admin',
-                fullName: 'مدير النظام',
-                role: 'admin',
-                status: 'active',
-                createdDate: '2025-01-01',
-                lastLogin: '2025-01-27'
-            },
-            {
-                id: 2,
-                username: 'violations_officer',
-                fullName: 'مسؤول المخالفات',
-                role: 'violations',
-                status: 'active',
-                createdDate: '2025-01-15',
-                lastLogin: '2025-01-26'
-            },
-            {
-                id: 3,
-                username: 'visitors_officer',
-                fullName: 'مسؤول الزوار',
-                role: 'visitors',
-                status: 'active',
-                createdDate: '2025-01-20',
-                lastLogin: '2025-01-25'
-            }
-        ];
-
+        'use strict';
+        
+        // حماية الصفحة - السماح فقط للمدراء
+        if (!window.authManager.requireAuth(['admin'])) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+        
+        let users = [];
         let editingUserId = null;
 
         // تحميل البيانات عند تحميل الصفحة
-        window.addEventListener('load', function() {
-            loadUsers();
-            updateStats();
+        window.addEventListener('load', async function() {
+            await loadUsers();
+            await updateStats();
         });
 
-        function loadUsers() {
+        async function loadUsers() {
+            users = await window.db.getUsers();
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
 
@@ -621,11 +603,11 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${user.username}</td>
-                    <td>${user.fullName}</td>
-                    <td><span class="role-badge role-${user.role}">${getRoleText(user.role)}</span></td>
+                    <td>${user.name}</td>
+                    <td><span class="role-badge role-${user.role.replace('_', '-')}">${getRoleText(user.role)}</span></td>
                     <td><span class="status-${user.status}">${getStatusText(user.status)}</span></td>
                     <td>${user.createdDate}</td>
-                    <td>${user.lastLogin}</td>
+                    <td>${user.lastLogin || 'لم يسجل دخول بعد'}</td>
                     <td>
                         <button class="btn btn-warning" onclick="editUser(${user.id})" style="margin: 2px; padding: 5px 10px; font-size: 12px;">
                             <i class="fas fa-edit"></i>
@@ -639,18 +621,19 @@
             });
         }
 
-        function updateStats() {
-            document.getElementById('totalUsers').textContent = users.length;
-            document.getElementById('activeUsers').textContent = users.filter(u => u.status === 'active').length;
-            document.getElementById('adminUsers').textContent = users.filter(u => u.role === 'admin').length;
-            document.getElementById('officerUsers').textContent = users.filter(u => u.role !== 'admin').length;
+        async function updateStats() {
+            const stats = await window.db.getUserStats();
+            document.getElementById('totalUsers').textContent = stats.total;
+            document.getElementById('activeUsers').textContent = stats.active;
+            document.getElementById('adminUsers').textContent = stats.admins;
+            document.getElementById('officerUsers').textContent = stats.violationOfficers + stats.inquiryUsers;
         }
 
         function getRoleText(role) {
             const roles = {
-                'admin': 'مدير',
-                'violations': 'مخالفات',
-                'visitors': 'زوار'
+                'admin': 'مدير النظام',
+                'violation_entry': 'مسجل المخالفات',
+                'inquiry': 'الاستعلام'
             };
             return roles[role] || role;
         }
@@ -666,13 +649,13 @@
             document.getElementById('userModal').style.display = 'block';
         }
 
-        function editUser(userId) {
+        async function editUser(userId) {
             const user = users.find(u => u.id === userId);
             if (user) {
                 editingUserId = userId;
                 document.getElementById('modalTitle').textContent = 'تعديل المستخدم';
                 document.getElementById('username').value = user.username;
-                document.getElementById('fullName').value = user.fullName;
+                document.getElementById('fullName').value = user.name;
                 document.getElementById('password').value = '';
                 document.getElementById('role').value = user.role;
                 document.getElementById('status').value = user.status;
@@ -680,12 +663,16 @@
             }
         }
 
-        function deleteUser(userId) {
+        async function deleteUser(userId) {
             if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
-                users = users.filter(u => u.id !== userId);
-                loadUsers();
-                updateStats();
-                alert('تم حذف المستخدم بنجاح!');
+                const result = await window.db.deleteUser(userId);
+                if (result.success) {
+                    await loadUsers();
+                    await updateStats();
+                    alert('تم حذف المستخدم بنجاح!');
+                } else {
+                    alert('حدث خطأ: ' + result.error);
+                }
             }
         }
 
@@ -703,50 +690,49 @@
             });
         }
 
-        function refreshUsers() {
-            loadUsers();
-            updateStats();
+        async function refreshUsers() {
+            await loadUsers();
+            await updateStats();
             alert('تم تحديث قائمة المستخدمين!');
         }
 
         // معالج نموذج المستخدم
-        document.getElementById('userForm').addEventListener('submit', function(e) {
+        document.getElementById('userForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(e.target);
             const userData = {
                 username: formData.get('username'),
-                fullName: formData.get('fullName'),
+                name: formData.get('fullName'),
                 password: formData.get('password'),
+                email: formData.get('username') + '@university.edu.sa',
                 role: formData.get('role'),
                 status: formData.get('status')
             };
 
             if (editingUserId) {
                 // تعديل مستخدم موجود
-                const userIndex = users.findIndex(u => u.id === editingUserId);
-                if (userIndex !== -1) {
-                    users[userIndex] = {
-                        ...users[userIndex],
-                        ...userData
-                    };
+                const result = await window.db.updateUser(editingUserId, userData);
+                if (result.success) {
                     alert('تم تحديث المستخدم بنجاح!');
+                    await loadUsers();
+                    await updateStats();
+                    closeUserModal();
+                } else {
+                    alert('حدث خطأ: ' + result.error);
                 }
             } else {
                 // إضافة مستخدم جديد
-                const newUser = {
-                    id: Math.max(...users.map(u => u.id)) + 1,
-                    ...userData,
-                    createdDate: new Date().toISOString().split('T')[0],
-                    lastLogin: 'لم يسجل دخول بعد'
-                };
-                users.push(newUser);
-                alert('تم إضافة المستخدم بنجاح!');
+                const result = await window.db.addUser(userData);
+                if (result.success) {
+                    alert('تم إضافة المستخدم بنجاح!');
+                    await loadUsers();
+                    await updateStats();
+                    closeUserModal();
+                } else {
+                    alert('حدث خطأ: ' + result.error);
+                }
             }
-
-            closeUserModal();
-            loadUsers();
-            updateStats();
         });
 
         function exportToPDF() {

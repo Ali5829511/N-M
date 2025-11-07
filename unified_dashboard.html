@@ -361,7 +361,18 @@
         </div>
     </div>
 
+    <!-- تحميل مكتبات النظام -->
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    
     <script>
+        'use strict';
+        
+        // حماية الصفحة - السماح فقط للمدراء
+        if (!window.authManager.requireAuth(['admin'])) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+        
         let fullReportData = [];
 
         // تبديل التبويبات
