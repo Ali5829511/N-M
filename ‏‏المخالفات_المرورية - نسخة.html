@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Untitled</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام المخالفات المرورية - جامعة الإمام محمد بن سعود الإسلامية</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .header {
+      background-color: #1a5276;
+      color: white;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .logo {
+      max-width: 80px;
+      margin-left: 15px;
+    }
+    .form-container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    .form-label {
+      font-weight: bold;
+    }
+    .btn-primary {
+      background-color: #1a5276;
+      border-color: #1a5276;
+    }
+    .btn-primary:hover {
+      background-color: #154360;
+      border-color: #154360;
+    }
+    .footer {
+      background-color: #1a5276;
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      margin-top: 30px;
+    }
+    .nav-tabs .nav-link.active {
+      background-color: #1a5276;
+      color: white;
+      border-color: #1a5276;
+    }
+    .nav-tabs .nav-link {
+      color: #1a5276;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="container">
+      <div class="d-flex align-items-center">
+        <img src="https://d41chssnpqdne.cloudfront.net/user_upload_by_module/chat_bot/files/95939331/E1a6LGgrATTtQ5gW.jpeg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="logo">
+        <h1>نظام المخالفات المرورية</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="true">إدخال مخالفة جديدة</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab" aria-controls="search" aria-selected="false">البحث عن مخالفة</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab" aria-controls="reports" aria-selected="false">التقارير</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+      <!-- تبويب إدخال مخالفة جديدة -->
+      <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+        <div class="form-container">
+          <h3 class="mb-4">إدخال بيانات مخالفة جديدة</h3>
+          <form id="violationForm">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="plateNumber" class="form-label">رقم لوحة السيارة:</label>
+                <input type="text" class="form-control" id="plateNumber" required>
+              </div>
+              <div class="col-md-6">
+                <label for="vehicleType" class="form-label">نوع المركبة:</label>
+                <select class="form-select" id="vehicleType" required>
+                  <option value="" selected disabled>اختر نوع المركبة</option>
+                  <option value="سيارة خاصة">سيارة خاصة</option>
+                  <option value="سيارة نقل">سيارة نقل</option>
+                  <option value="دراجة نارية">دراجة نارية</option>
+                  <option value="حافلة">حافلة</option>
+                  <option value="أخرى">أخرى</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="violationType" class="form-label">نوع المخالفة:</label>
+                <select class="form-select" id="violationType" required>
+                  <option value="" selected disabled>اختر نوع المخالفة</option>
+                  <option value="عكس سير">عكس سير </option>
+                  <option value="وقوف في مواقف ذوي الاحتياجات الخاصة">وقوف في مواقف ذوي الاحتياجات الخاصة</option>
+                  <option value="تجاوز السرعة المحددة">تجاوز السرعة المحددة</option>
+                  <option value="وقوف ممنوع"> وقوف ممنوع </option>
+                  <option value="عدم الالتزام بإشارات رجل الأمن">عدم الالتزام بإشارات رجل الأمن </option>
+                  <option value="أخرى">أخرى</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="location" class="form-label">موقع المخالفة:</label>
+                <select class="form-select" id="location" required>
+                  <option value="" selected disabled>اختر الموقع</option>
+                  <option value="شارع أ">شارع أ</option>
+                  <option value="شارع ج">شارع ج </option>
+                  <option value="شارع 10">شارع 10 </option>
+                  <option value="مواقف المباني القديمة">مواقف المباني القديمة </option>
+                  <option value="مواقف المباني الجديدة">مواقف المباني الجديدة </option>
+                  <option value="مواقف المسجد">مواقف المسجد</option>
+                  <option value="أخرى">أخرى</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="violationDate" class="form-label">تاريخ المخالفة:</label>
+                <input type="date" class="form-control" id="violationDate" required>
+              </div>
+              <div class="col-md-6">
+                <label for="violationTime" class="form-label">وقت المخالفة:</label>
+                <input type="time" class="form-control" id="violationTime" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="officerName" class="form-label">اسم مسجل المخالفة:</label>
+              <input type="text" class="form-control" id="officerName" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="notes" class="form-label">ملاحظات إضافية:</label>
+              <textarea class="form-control" id="notes" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="violationImage" class="form-label">صورة المخالفة (اختياري):</label>
+              <input type="file" class="form-control" id="violationImage" accept="image/*">
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button type="reset" class="btn btn-secondary me-md-2">إعادة تعيين</button>
+              <button type="submit" class="btn btn-primary">تسجيل المخالفة</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- تبويب البحث عن مخالفة -->
+      <div class="tab-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
+        <div class="form-container">
+          <h3 class="mb-4">البحث عن مخالفة</h3>
+          <form id="searchForm">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="searchPlateNumber" class="form-label">رقم لوحة السيارة:</label>
+                <input type="text" class="form-control" id="searchPlateNumber">
+              </div>
+              <div class="col-md-6">
+                <label for="searchViolationDate" class="form-label">تاريخ المخالفة:</label>
+                <input type="date" class="form-control" id="searchViolationDate">
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button type="submit" class="btn btn-primary">بحث</button>
+            </div>
+          </form>
+
+          <hr class="my-4">
+
+          <div class="search-results">
+            <h4>نتائج البحث</h4>
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>رقم اللوحة</th>
+                    <th>نوع المخالفة</th>
+                    <th>الموقع</th>
+                    <th>التاريخ</th>
+                    <th>الوقت</th>
+                    <th>الإجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="7" class="text-center">لا توجد نتائج للبحث</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- تبويب التقارير -->
+      <div class="tab-pane fade" id="reports" role="tabpanel" aria-labelledby="reports-tab">
+        <div class="form-container">
+          <h3 class="mb-4">تقارير المخالفات المرورية</h3>
+          
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">تقرير المخالفات اليومية</h5>
+                  <p class="card-text">عرض تقرير بالمخالفات المسجلة خلال اليوم الحالي</p>
+                  <button class="btn btn-primary">عرض التقرير</button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">تقرير المخالفات الأسبوعية</h5>
+                  <p class="card-text">عرض تقرير بالمخالفات المسجلة خلال الأسبوع الحالي</p>
+                  <button class="btn btn-primary">عرض التقرير</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">تقرير المخالفات الشهرية</h5>
+                  <p class="card-text">عرض تقرير بالمخالفات المسجلة خلال الشهر الحالي</p>
+                  <button class="btn btn-primary">عرض التقرير</button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">تقرير مخصص</h5>
+                  <p class="card-text">إنشاء تقرير مخصص حسب معايير محددة</p>
+                  <button class="btn btn-primary">إنشاء تقرير</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h4>إحصائيات المخالفات</h4>
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <div class="card text-white bg-primary">
+                  <div class="card-body">
+                    <h5 class="card-title">إجمالي المخالفات</h5>
+                    <p class="card-text display-4">0</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="card text-white bg-success">
+                  <div class="card-body">
+                    <h5 class="card-title">مخالفات اليوم</h5>
+                    <p class="card-text display-4">0</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="card text-white bg-warning">
+                  <div class="card-body">
+                    <h5 class="card-title">مخالفات الأسبوع</h5>
+                    <p class="card-text display-4">0</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="card text-white bg-info">
+                  <div class="card-body">
+                    <h5 class="card-title">مخالفات الشهر</h5>
+                    <p class="card-text display-4">0</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="container">
+      <p>جميع الحقوق محفوظة &copy; 2025 - جامعة الإمام محمد بن سعود الإسلامية</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // إضافة سلوك للنموذج
+    document.getElementById('violationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('تم تسجيل المخالفة بنجاح!');
+      this.reset();
+    });
+
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('جاري البحث...');
+    });
+  </script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>

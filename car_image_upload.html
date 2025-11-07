@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفع وتحليل صور السيارات - نظام إدارة إسكان أعضاء هيئة التدريس</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tajawal:700,400&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background: linear-gradient(120deg, #e0e7ef 0%, #f7fcff 100%);
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #0f3d68 60%, #2e8bc0 100%);
+            color: #fff;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px #2e8bc055;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .university-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: contain;
+            background: white;
+            padding: 3px;
+        }
+
+        .header-text h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(15, 61, 104, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2e8bc0;
+        }
+
+        .card-header i {
+            color: #2e8bc0;
+            font-size: 1.5em;
+        }
+
+        .card-header h2 {
+            color: #0f3d68;
+            font-size: 1.4em;
+        }
+
+        .upload-zone {
+            border: 3px dashed #2e8bc0;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            background: #e9ecef;
+            border-color: #0f3d68;
+        }
+
+        .upload-zone.dragover {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .upload-zone i {
+            font-size: 4em;
+            color: #2e8bc0;
+            margin-bottom: 20px;
+        }
+
+        .upload-zone h3 {
+            color: #0f3d68;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .upload-zone p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', Arial, sans-serif;
+        }
+
+        .btn-primary {
+            background: #2e8bc0;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0f3d68;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(46, 139, 192, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .preview-item .info {
+            padding: 10px;
+            background: white;
+        }
+
+        .preview-item .info p {
+            font-size: 0.9em;
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .preview-item .remove-btn:hover {
+            background: #dc3545;
+        }
+
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2e8bc0, #0f3d68);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th {
+            background: #2e8bc0;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .results-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .results-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2e8bc0;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', Arial, sans-serif;
+        }
+
+        .export-excel {
+            background: #217346;
+            color: white;
+        }
+
+        .export-excel:hover {
+            background: #185c37;
+        }
+
+        .export-pdf {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .export-pdf:hover {
+            background: #b71c1c;
+        }
+
+        .export-html {
+            background: #f57c00;
+            color: white;
+        }
+
+        .export-html:hover {
+            background: #e65100;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <img src="university_logo.png" alt="Logo" class="university-logo" onerror="this.style.display='none'">
+                <div class="header-text">
+                    <h1>رفع وتحليل صور السيارات</h1>
+                    <p>Car Image Upload and Analysis System</p>
+                </div>
+            </div>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i> العودة للرئيسية
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Upload Section -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h2>رفع صور السيارات</h2>
+            </div>
+
+            <div id="uploadZone" class="upload-zone">
+                <i class="fas fa-camera"></i>
+                <h3>اسحب الصور هنا أو انقر للاختيار</h3>
+                <p>يمكنك رفع عدة صور في نفس الوقت (PNG, JPG, JPEG)</p>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #999;">
+                    سيتم تحليل كل صورة آلياً لاستخراج رقم اللوحة ونوع السيارة ولونها
+                </p>
+            </div>
+
+            <input type="file" id="fileInput" accept="image/*" multiple>
+
+            <div id="previewSection" style="display: none;">
+                <h3 style="margin-top: 30px; color: #0f3d68;">الصور المحددة:</h3>
+                <div id="previewGrid" class="preview-grid"></div>
+
+                <div class="btn-group">
+                    <button id="uploadBtn" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> رفع وتحليل الصور
+                    </button>
+                    <button id="clearBtn" class="btn" style="background: #6c757d; color: white;">
+                        <i class="fas fa-times"></i> مسح الكل
+                    </button>
+                </div>
+            </div>
+
+            <div id="progressContainer" class="progress-container">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill">0%</div>
+                </div>
+                <p id="progressText" style="text-align: center; color: #666;"></p>
+            </div>
+
+            <div id="loadingIndicator" class="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; color: #666;">جارٍ التحليل باستخدام EasyOCR...</p>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="card" style="display: none;">
+            <div class="card-header">
+                <i class="fas fa-chart-bar"></i>
+                <h2>نتائج التحليل</h2>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <div id="resultsContent"></div>
+
+            <div class="export-buttons">
+                <button class="export-btn export-excel" onclick="exportData('excel')">
+                    <i class="fas fa-file-excel"></i> تصدير Excel
+                </button>
+                <button class="export-btn export-pdf" onclick="exportData('pdf')">
+                    <i class="fas fa-file-pdf"></i> تصدير PDF
+                </button>
+                <button class="export-btn export-html" onclick="exportData('html')">
+                    <i class="fas fa-file-code"></i> تصدير HTML
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+        let analysisResults = [];
+
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const previewSection = document.getElementById('previewSection');
+        const previewGrid = document.getElementById('previewGrid');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsContent = document.getElementById('resultsContent');
+        const alertContainer = document.getElementById('alertContainer');
+
+        // Upload zone click handler
+        uploadZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // File input change handler
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Drag and drop handlers
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        function handleFiles(files) {
+            for (let file of files) {
+                if (file.type.startsWith('image/')) {
+                    selectedFiles.push(file);
+                }
+            }
+
+            if (selectedFiles.length > 0) {
+                displayPreviews();
+                previewSection.style.display = 'block';
+            }
+        }
+
+        function displayPreviews() {
+            previewGrid.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'preview-item';
+                    previewItem.innerHTML = `
+                        <button class="remove-btn" onclick="removeFile(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <img src="${e.target.result}" alt="${file.name}">
+                        <div class="info">
+                            <p><strong>${file.name}</strong></p>
+                            <p>${(file.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                    `;
+                    previewGrid.appendChild(previewItem);
+                };
+
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+
+            if (selectedFiles.length === 0) {
+                previewSection.style.display = 'none';
+            } else {
+                displayPreviews();
+            }
+        }
+
+        clearBtn.addEventListener('click', () => {
+            selectedFiles = [];
+            previewSection.style.display = 'none';
+            fileInput.value = '';
+        });
+
+        uploadBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) {
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            clearBtn.disabled = true;
+            progressContainer.style.display = 'block';
+            loadingIndicator.style.display = 'block';
+
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('images', file);
+            });
+
+            try {
+                const response = await fetch('/api/car-images/upload', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    analysisResults = data.analysis_results;
+                    displayResults(data);
+                    showAlert('success', data.message_ar || data.message);
+
+                    // Clear selections
+                    selectedFiles = [];
+                    previewSection.style.display = 'none';
+                    fileInput.value = '';
+                } else {
+                    showAlert('error', data.error_ar || data.error);
+                }
+            } catch (error) {
+                showAlert('error', 'حدث خطأ أثناء رفع الصور: ' + error.message);
+            } finally {
+                uploadBtn.disabled = false;
+                clearBtn.disabled = false;
+                progressContainer.style.display = 'none';
+                loadingIndicator.style.display = 'none';
+            }
+        });
+
+        function displayResults(data) {
+            resultsSection.style.display = 'block';
+
+            let html = '<table class="results-table">';
+            html += '<thead><tr>';
+            html += '<th>اسم الملف</th>';
+            html += '<th>رقم اللوحة</th>';
+            html += '<th>نوع السيارة</th>';
+            html += '<th>اللون</th>';
+            html += '<th>دقة التعرف</th>';
+            html += '<th>مطابقة</th>';
+            html += '<th>المالك</th>';
+            html += '</tr></thead><tbody>';
+
+            data.analysis_results.forEach(result => {
+                const confidence = result.confidence || 0;
+                let confidenceBadge = '';
+                
+                if (confidence >= 0.8) {
+                    confidenceBadge = `<span class="badge badge-success">${(confidence * 100).toFixed(0)}%</span>`;
+                } else if (confidence >= 0.5) {
+                    confidenceBadge = `<span class="badge badge-warning">${(confidence * 100).toFixed(0)}%</span>`;
+                } else {
+                    confidenceBadge = `<span class="badge badge-danger">${(confidence * 100).toFixed(0)}%</span>`;
+                }
+
+                const matchBadge = result.matched_vehicle 
+                    ? '<span class="badge badge-success">نعم</span>' 
+                    : '<span class="badge badge-warning">لا</span>';
+
+                html += '<tr>';
+                html += `<td>${result.filename}</td>`;
+                html += `<td><strong>${result.plate_number || 'غير محدد'}</strong></td>`;
+                html += `<td>${result.vehicle_type || 'غير محدد'}</td>`;
+                html += `<td>${result.vehicle_color || 'غير محدد'}</td>`;
+                html += `<td>${confidenceBadge}</td>`;
+                html += `<td>${matchBadge}</td>`;
+                html += `<td>${result.vehicle_owner || 'غير معروف'}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            resultsContent.innerHTML = html;
+
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showAlert(type, message) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass}`;
+            alert.textContent = message;
+
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        async function exportData(format) {
+            try {
+                const response = await fetch(`/api/car-images/export/${format}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    
+                    const timestamp = new Date().toISOString().slice(0,19).replace(/:/g,'-');
+                    a.download = `car_analysis_${timestamp}.${format === 'excel' ? 'xlsx' : format}`;
+                    
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    showAlert('success', `تم تصدير البيانات بنجاح إلى ${format.toUpperCase()}`);
+                } else {
+                    const data = await response.json();
+                    showAlert('error', data.error_ar || data.error);
+                }
+            } catch (error) {
+                showAlert('error', 'حدث خطأ أثناء التصدير: ' + error.message);
+            }
+        }
+
+        // Check authentication on page load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/api/auth/check', {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

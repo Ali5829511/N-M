@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استيراد البيانات التاريخية - نظام إدارة إسكان أعضاء هيئة التدريس</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tajawal:700,400&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background: linear-gradient(120deg, #e0e7ef 0%, #f7fcff 100%);
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #0f3d68 60%, #2e8bc0 100%);
+            color: #fff;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px #2e8bc055;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .university-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: contain;
+            background: white;
+            padding: 3px;
+        }
+
+        .header-text h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 40px 20px;
+        }
+
+        .import-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(15, 61, 104, 0.1);
+        }
+
+        .import-section h2 {
+            color: #0f3d68;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .import-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-right: 4px solid #2e8bc0;
+        }
+
+        .import-card h3 {
+            color: #0f3d68;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .import-card p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .file-upload {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border: 2px dashed #2e8bc0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background: #f0f8ff;
+            border-color: #0f3d68;
+        }
+
+        .file-upload-label i {
+            font-size: 1.5em;
+            color: #2e8bc0;
+        }
+
+        .file-name {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            color: #0f3d68;
+            font-weight: bold;
+        }
+
+        .checkbox-group {
+            margin: 15px 0;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .import-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1d8348 0%, #27ae60 100%);
+            color: white;
+            font-family: 'Tajawal', Arial, sans-serif;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .import-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 131, 72, 0.4);
+        }
+
+        .import-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border-right: 4px solid #f39c12;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .instructions ul {
+            margin-right: 20px;
+            color: #856404;
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .result-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result-message.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            display: block;
+        }
+
+        .result-message.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            display: block;
+        }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .result-stats div {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .result-stats div strong {
+            display: block;
+            font-size: 1.5em;
+            color: #0f3d68;
+            margin-bottom: 5px;
+        }
+
+        .result-stats div span {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <img src="university_logo.png" alt="شعار الجامعة" class="university-logo" onerror="this.style.display='none'">
+                <div class="header-text">
+                    <h1><i class="fas fa-file-import"></i> استيراد البيانات التاريخية</h1>
+                    <p>نظام إدارة إسكان أعضاء هيئة التدريس</p>
+                </div>
+            </div>
+            <a href="main_dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i> العودة للوحة التحكم
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Import Section -->
+        <div class="import-section">
+            <h2><i class="fas fa-database"></i> استيراد البيانات من Excel</h2>
+            
+            <!-- Vehicles Import -->
+            <div class="import-card">
+                <h3><i class="fas fa-car"></i> استيراد بيانات السيارات</h3>
+                <p>قم برفع ملف Excel يحتوي على بيانات السيارات التاريخية لإضافتها إلى النظام</p>
+                
+                <div class="file-upload">
+                    <input type="file" id="vehiclesFile" accept=".xlsx,.xls" onchange="handleFileSelect('vehicles', this)">
+                    <div class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>اضغط هنا لاختيار ملف Excel</span>
+                    </div>
+                </div>
+                
+                <div id="vehiclesFileName" class="file-name" style="display: none;"></div>
+                
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="vehiclesMergeMode" checked>
+                        <span>دمج البيانات مع السجلات الموجودة (تحديث البيانات إذا كانت السيارة موجودة مسبقاً)</span>
+                    </label>
+                </div>
+                
+                <button class="import-btn" id="importVehiclesBtn" onclick="importData('vehicles')" disabled>
+                    <i class="fas fa-file-import"></i> استيراد بيانات السيارات
+                </button>
+                
+                <div id="vehiclesResult" class="result-message"></div>
+            </div>
+            
+            <!-- Violations Import -->
+            <div class="import-card">
+                <h3><i class="fas fa-exclamation-triangle"></i> استيراد بيانات المخالفات المرورية</h3>
+                <p>قم برفع ملف Excel يحتوي على بيانات المخالفات التاريخية لربطها بالسيارات المسجلة</p>
+                
+                <div class="file-upload">
+                    <input type="file" id="violationsFile" accept=".xlsx,.xls" onchange="handleFileSelect('violations', this)">
+                    <div class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>اضغط هنا لاختيار ملف Excel</span>
+                    </div>
+                </div>
+                
+                <div id="violationsFileName" class="file-name" style="display: none;"></div>
+                
+                <button class="import-btn" id="importViolationsBtn" onclick="importData('violations')" disabled>
+                    <i class="fas fa-file-import"></i> استيراد بيانات المخالفات
+                </button>
+                
+                <div id="violationsResult" class="result-message"></div>
+            </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> تعليمات تنسيق الملفات</h3>
+            <ul>
+                <li><strong>ملف السيارات:</strong> يجب أن يحتوي على الأعمدة التالية:
+                    <br>رقم اللوحة، نوع السيارة، الماركة، الموديل، السنة، اللون، اسم المالك، الرقم الوطني، رقم الملصق
+                </li>
+                <li><strong>ملف المخالفات:</strong> يجب أن يحتوي على الأعمدة التالية:
+                    <br>رقم اللوحة، نوع المخالفة، تاريخ المخالفة، الموقع، الوصف، الغرامة، الحالة
+                </li>
+                <li>تأكد من أن ملف Excel بتنسيق <code>.xlsx</code> أو <code>.xls</code></li>
+                <li>يجب استيراد بيانات السيارات أولاً قبل استيراد المخالفات</li>
+                <li>سيتم تجاهل الصفوف التي تحتوي على بيانات غير كاملة أو خاطئة</li>
+                <li>سيتم إنشاء ملاك جدد تلقائياً إذا لم يكونوا موجودين في النظام</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function handleFileSelect(type, input) {
+            const fileName = input.files[0]?.name;
+            const fileNameDiv = document.getElementById(`${type}FileName`);
+            const importBtn = document.getElementById(`import${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
+            
+            if (fileName) {
+                fileNameDiv.textContent = `✓ تم اختيار الملف: ${fileName}`;
+                fileNameDiv.style.display = 'block';
+                importBtn.disabled = false;
+            } else {
+                fileNameDiv.style.display = 'none';
+                importBtn.disabled = true;
+            }
+        }
+
+        async function importData(type) {
+            const fileInput = document.getElementById(`${type}File`);
+            const importBtn = document.getElementById(`import${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
+            const resultDiv = document.getElementById(`${type}Result`);
+            
+            if (!fileInput.files[0]) {
+                showResult(type, 'error', 'يرجى اختيار ملف أولاً');
+                return;
+            }
+            
+            // Disable button and show loading
+            importBtn.disabled = true;
+            importBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الاستيراد...';
+            resultDiv.style.display = 'none';
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                
+                if (type === 'vehicles') {
+                    const mergeMode = document.getElementById('vehiclesMergeMode').checked;
+                    formData.append('merge_mode', mergeMode);
+                }
+                
+                const response = await fetch(`/api/import/${type}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error_ar || data.error || 'فشل الاستيراد');
+                }
+                
+                // Show success result
+                showResult(type, 'success', data.message_ar || 'تم الاستيراد بنجاح', data.stats);
+                
+                // Reset form
+                fileInput.value = '';
+                document.getElementById(`${type}FileName`).style.display = 'none';
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                showResult(type, 'error', error.message || 'حدث خطأ أثناء الاستيراد');
+            } finally {
+                importBtn.disabled = false;
+                importBtn.innerHTML = `<i class="fas fa-file-import"></i> استيراد بيانات ${type === 'vehicles' ? 'السيارات' : 'المخالفات'}`;
+            }
+        }
+
+        function showResult(type, status, message, stats) {
+            const resultDiv = document.getElementById(`${type}Result`);
+            resultDiv.className = `result-message ${status}`;
+            
+            let html = `<strong><i class="fas fa-${status === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i> ${message}</strong>`;
+            
+            if (stats) {
+                html += `
+                    <div class="result-stats">
+                        <div>
+                            <strong>${stats.total}</strong>
+                            <span>إجمالي السجلات</span>
+                        </div>
+                        <div>
+                            <strong>${stats.imported}</strong>
+                            <span>تم الاستيراد</span>
+                        </div>
+                        <div>
+                            <strong>${stats.skipped}</strong>
+                            <span>تم التجاهل</span>
+                        </div>
+                        <div>
+                            <strong>${stats.errors}</strong>
+                            <span>أخطاء</span>
+                        </div>
+                    </div>
+                `;
+                
+                if (stats.error_details && stats.error_details.length > 0) {
+                    html += '<details style="margin-top: 15px;"><summary style="cursor: pointer; font-weight: bold;">عرض التفاصيل</summary><ul style="margin: 10px 0 0 20px;">';
+                    stats.error_details.forEach(detail => {
+                        html += `<li>${detail}</li>`;
+                    });
+                    html += '</ul></details>';
+                }
+            }
+            
+            resultDiv.innerHTML = html;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

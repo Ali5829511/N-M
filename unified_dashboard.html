@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم الموحدة - وحدة إسكان أعضاء هيئة التدريس</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tajawal:700,400&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background: linear-gradient(135deg, #D4E9F2 0%, #A8D5E2 100%);
+            direction: rtl;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #5A8CA3;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #7BA7BC 0%, #5A8CA3 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(90, 140, 163, 0.4);
+        }
+
+        /* التبويبات */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #7BA7BC;
+            color: #5A8CA3;
+            padding: 15px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-btn:hover {
+            background: #7BA7BC;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: #5A8CA3;
+            color: white;
+            box-shadow: 0 5px 15px rgba(90, 140, 163, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* بطاقات الإحصائيات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2D5F3F;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        /* جدول التقرير */
+        .report-table {
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .report-table thead {
+            background: linear-gradient(135deg, #2D5F3F 0%, #1a3a28 100%);
+            color: white;
+        }
+
+        .report-table th {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .report-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .report-table tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        /* أدوات التحكم */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .controls input[type="text"] {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .btn-primary, .btn-info {
+            background: #2D5F3F;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-info {
+            background: #2196F3;
+        }
+
+        .btn-primary:hover, .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* تصميم الطباعة */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .header, .tabs, .controls, .back-btn {
+                display: none;
+            }
+            .tab-content {
+                display: block !important;
+            }
+            .report-table {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <h1>
+                    <img src="university_logo.png" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" style="height: 50px; border-radius: 10px; margin-left: 15px;">
+                    <i class="fas fa-tachometer-alt"></i>
+                    لوحة التحكم الموحدة
+                </h1>
+                <a href="main_dashboard.html" class="back-btn">
+                    <i class="fas fa-arrow-right"></i>
+                    العودة للصفحة الرئيسية
+                </a>
+            </div>
+            <p style="color: #666; font-size: 16px;">عرض شامل للإحصائيات والمخالفات في صفحة واحدة</p>
+        </div>
+
+        <!-- التبويبات -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('statistics')">
+                <i class="fas fa-chart-bar"></i>
+                الإحصائيات العامة
+            </button>
+            <button class="tab-btn" onclick="showTab('violations')">
+                <i class="fas fa-exclamation-triangle"></i>
+                تقرير المخالفات
+            </button>
+        </div>
+
+        <!-- تبويب الإحصائيات -->
+        <div id="statistics" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-users stat-icon" style="color: #28a745;"></i>
+                    <div class="stat-number" id="totalResidents">1,057</div>
+                    <div class="stat-label">إجمالي السكان</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-building stat-icon" style="color: #17a2b8;"></i>
+                    <div class="stat-number" id="totalBuildings">165</div>
+                    <div class="stat-label">المباني</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-car stat-icon" style="color: #ffc107;"></i>
+                    <div class="stat-number" id="totalStickers">2,382</div>
+                    <div class="stat-label">ملصقات السيارات</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-home stat-icon" style="color: #6f42c1;"></i>
+                    <div class="stat-number" id="totalUnits">1,134</div>
+                    <div class="stat-label">الوحدات السكنية</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-parking stat-icon" style="color: #fd7e14;"></i>
+                    <div class="stat-number" id="totalParking">1,308</div>
+                    <div class="stat-label">المواقف</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-exclamation-triangle stat-icon" style="color: #dc3545;"></i>
+                    <div class="stat-number" id="activeViolations">12</div>
+                    <div class="stat-label">المخالفات النشطة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تبويب تقرير المخالفات -->
+        <div id="violations" class="tab-content">
+            <div style="background: rgba(255, 255, 255, 0.98); border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                <div class="controls">
+                    <input type="text" id="plateSearch" placeholder="ابحث برقم اللوحة..." />
+                    <button class="btn-primary" onclick="searchReport()">
+                        <i class="fas fa-search"></i> بحث
+                    </button>
+                    <button class="btn-info" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv"></i> تصدير CSV
+                    </button>
+                    <button class="btn-info" onclick="window.print()">
+                        <i class="fas fa-print"></i> طباعة
+                    </button>
+                </div>
+
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>رقم اللوحة</th>
+                            <th>عدد تكرار المخالفة</th>
+                            <th>نوع السيارة</th>
+                            <th>تاريخ المخالفة</th>
+                            <th>اسم الساكن</th>
+                            <th>المبنى</th>
+                            <th>الوحدة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="violationsTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 30px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 2em; color: #2D5F3F;"></i>
+                                <p style="margin-top: 15px; color: #666;">جاري تحميل البيانات...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let fullReportData = [];
+
+        // تبديل التبويبات
+        function showTab(tabName) {
+            // إخفاء جميع التبويبات
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // إظهار التبويب المحدد
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // تحميل البيانات إذا لزم الأمر
+            if (tabName === 'violations' && fullReportData.length === 0) {
+                loadViolationsReport();
+            }
+        }
+
+        // تحميل الإحصائيات
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/statistics');
+                const result = await response.json();
+                if (result.success) {
+                    const stats = result.data;
+                    document.getElementById('totalResidents').textContent = (stats.total_residents || 1057).toLocaleString('ar-SA');
+                    document.getElementById('totalBuildings').textContent = (stats.total_buildings || 165).toLocaleString('ar-SA');
+                    document.getElementById('totalStickers').textContent = (stats.total_stickers || 2382).toLocaleString('ar-SA');
+                    document.getElementById('totalUnits').textContent = (stats.total_units || 1134).toLocaleString('ar-SA');
+                    document.getElementById('totalParking').textContent = (stats.total_parking || 1308).toLocaleString('ar-SA');
+                    document.getElementById('activeViolations').textContent = (stats.active_violations || 12).toLocaleString('ar-SA');
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل الإحصائيات:', error);
+            }
+        }
+
+        // تحميل تقرير المخالفات
+        async function loadViolationsReport() {
+            try {
+                const response = await fetch('/api/violation-report');
+                const result = await response.json();
+                if (result.success) {
+                    fullReportData = result.data;
+                    displayReport(fullReportData);
+                } else {
+                    document.getElementById('violationsTableBody').innerHTML = 
+                        '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #dc3545;">فشل تحميل البيانات</td></tr>';
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل تقرير المخالفات:', error);
+                document.getElementById('violationsTableBody').innerHTML = 
+                    '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #dc3545;">خطأ في الاتصال بالخادم</td></tr>';
+            }
+        }
+
+        // عرض التقرير
+        function displayReport(data) {
+            const tbody = document.getElementById('violationsTableBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">لا توجد مخالفات مسجلة</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td><strong>${item.plateNumber || 'غير محدد'}</strong></td>
+                    <td><span style="background: #dc3545; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold;">${item.violationCount || 1}</span></td>
+                    <td>${item.vehicleType || 'غير محدد'}</td>
+                    <td>${new Date(item.processingDate).toLocaleDateString('ar-SA')}</td>
+                    <td>${item.residentName || 'غير محدد'}</td>
+                    <td>${item.buildingNumber || 'غير محدد'}</td>
+                    <td>${item.unitNumber || 'غير محدد'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // البحث
+        function searchReport() {
+            const searchTerm = document.getElementById('plateSearch').value.toLowerCase();
+            if (!searchTerm) {
+                displayReport(fullReportData);
+                return;
+            }
+            const filteredData = fullReportData.filter(item => 
+                (item.plateNumber || '').toLowerCase().includes(searchTerm)
+            );
+            displayReport(filteredData);
+        }
+
+        // تصدير CSV
+        function exportToCSV() {
+            if (fullReportData.length === 0) {
+                alert('لا توجد بيانات للتصدير.');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            const headers = ["رقم اللوحة", "عدد تكرار المخالفة", "نوع السيارة", "تاريخ المخالفة", "اسم الساكن", "المبنى", "الوحدة"];
+            csvContent += headers.join(",") + "\n";
+
+            fullReportData.forEach(item => {
+                const row = [
+                    `"${item.plateNumber || ''}"`,
+                    item.violationCount || 1,
+                    `"${item.vehicleType || ''}"`,
+                    `"${new Date(item.processingDate).toLocaleDateString('ar-SA')}"`,
+                    `"${item.residentName || ''}"`,
+                    `"${item.buildingNumber || ''}"`,
+                    `"${item.unitNumber || ''}"`
+                ];
+                csvContent += row.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `violations_report_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // تحميل البيانات عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStatistics();
+            // تحديث الإحصائيات كل 30 ثانية
+            setInterval(loadStatistics, 30000);
+        });
+    </script>
+</body>
+</html>
