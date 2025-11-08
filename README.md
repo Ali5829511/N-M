@@ -1,6 +1,12 @@
 # نظام إدارة المرور - Traffic Management System
 
+[![Deploy to GitHub Pages](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml)
+
 نظام شامل لإدارة المخالفات المرورية بنظام أدوار وصلاحيات متقدم للتحكم في الوصول.
+
+## 🌐 النظام المنشور - Live Demo
+
+يمكنك الوصول للنظام المنشور عبر الرابط: [https://ali5829511.github.io/N-M/](https://ali5829511.github.io/N-M/)
 
 ## 🎯 نظرة عامة
 
