@@ -9,6 +9,8 @@
 | **[QUICK_DEPLOY_AR.md](QUICK_DEPLOY_AR.md)** | دليل نشر سريع - 4 خطوات | المستخدمون المتمرسون | 2 دقيقة |
 | **[STEP_BY_STEP_DEPLOY_AR.md](STEP_BY_STEP_DEPLOY_AR.md)** | دليل مصور خطوة بخطوة | المبتدئون | 10 دقائق |
 | **[DEPLOYMENT_INSTRUCTIONS_AR.md](DEPLOYMENT_INSTRUCTIONS_AR.md)** | تعليمات شاملة لجميع خيارات النشر | الجميع | 15 دقيقة |
+| **[RENDER_DEPLOYMENT_AR.md](RENDER_DEPLOYMENT_AR.md)** | دليل النشر على Render.com | مستخدمو Render | 10 دقائق |
+| **[RENDER_QUICK_DEPLOY.md](RENDER_QUICK_DEPLOY.md)** | نشر سريع على Render | الجميع | 3 دقائق |
 
 ### باللغة الإنجليزية:
 
