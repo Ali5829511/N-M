@@ -81,7 +81,7 @@ class DatabaseManager {
         ];
         
         localStorage.setItem('users', JSON.stringify(defaultUsers));
-        console.log('تم إنشاء المستخدمين الافتراضيين');
+        // تم إنشاء المستخدمين الافتراضيين
     }
 
     /**
