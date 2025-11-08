@@ -15,18 +15,18 @@
 
         body {
             font-family: 'Tajawal', Arial, sans-serif;
-            background: linear-gradient(120deg, #e0e7ef 0%, #f7fcff 100%);
+            background: linear-gradient(120deg, #f8f5f0 0%, #fdfbf7 100%);
             direction: rtl;
             min-height: 100vh;
         }
 
         .header {
-            background: linear-gradient(90deg, #0f3d68 60%, #2e8bc0 100%);
+            background: linear-gradient(90deg, #6B5536 60%, #8B6F47 100%);
             color: #fff;
             padding: 20px 0;
             margin-bottom: 30px;
             border-radius: 0 0 20px 20px;
-            box-shadow: 0 4px 12px #2e8bc055;
+            box-shadow: 0 4px 12px #8B6F4755;
         }
 
         .header-content {
@@ -135,14 +135,14 @@
 
         .section-title {
             font-size: 1.5em;
-            color: #0f3d68;
+            color: #6B5536;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #2e8bc0;
+            border-bottom: 2px solid #8B6F47;
         }
 
         .upload-area {
-            border: 3px dashed #2e8bc0;
+            border: 3px dashed #8B6F47;
             border-radius: 15px;
             padding: 40px;
             text-align: center;
@@ -152,24 +152,24 @@
         }
 
         .upload-area:hover {
-            border-color: #0f3d68;
+            border-color: #6B5536;
             background: #e9ecef;
         }
 
         .upload-area.drag-over {
-            border-color: #0f3d68;
+            border-color: #6B5536;
             background: #d4edda;
         }
 
         .upload-icon {
             font-size: 3em;
-            color: #2e8bc0;
+            color: #8B6F47;
             margin-bottom: 15px;
         }
 
         .upload-text {
             font-size: 1.2em;
-            color: #0f3d68;
+            color: #6B5536;
             margin-bottom: 10px;
         }
 
@@ -195,7 +195,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #0f3d68, #2e8bc0);
+            background: linear-gradient(45deg, #6B5536, #8B6F47);
             color: white;
             border: none;
             padding: 12px 30px;
@@ -242,13 +242,13 @@
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 15px;
-            border-left: 4px solid #2e8bc0;
+            border-left: 4px solid #8B6F47;
         }
 
         .plate-number {
             font-size: 2em;
             font-weight: bold;
-            color: #0f3d68;
+            color: #6B5536;
             margin-bottom: 10px;
             font-family: 'Courier New', monospace;
             letter-spacing: 2px;
@@ -282,7 +282,7 @@
 
         .vehicle-info-title {
             font-weight: bold;
-            color: #0f3d68;
+            color: #6B5536;
             margin-bottom: 10px;
         }
 
@@ -303,7 +303,7 @@
 
         .info-value {
             font-weight: bold;
-            color: #0f3d68;
+            color: #6B5536;
         }
 
         .no-match {
@@ -323,7 +323,7 @@
 
         .spinner {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #2e8bc0;
+            border-top: 4px solid #8B6F47;
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -375,7 +375,7 @@
         }
 
         .history-table th {
-            background: #0f3d68;
+            background: #6B5536;
             color: white;
             padding: 12px;
             text-align: right;
@@ -476,10 +476,10 @@
                     <i class="fas fa-file-excel"></i> تصدير إلى Excel
                 </button>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <label style="color: #0f3d68; font-weight: bold;">من:</label>
-                    <input type="date" id="startDate" style="padding: 8px; border: 1px solid #2e8bc0; border-radius: 5px;">
-                    <label style="color: #0f3d68; font-weight: bold;">إلى:</label>
-                    <input type="date" id="endDate" style="padding: 8px; border: 1px solid #2e8bc0; border-radius: 5px;">
+                    <label style="color: #6B5536; font-weight: bold;">من:</label>
+                    <input type="date" id="startDate" style="padding: 8px; border: 1px solid #8B6F47; border-radius: 5px;">
+                    <label style="color: #6B5536; font-weight: bold;">إلى:</label>
+                    <input type="date" id="endDate" style="padding: 8px; border: 1px solid #8B6F47; border-radius: 5px;">
                 </div>
             </div>
             <div id="historyContainer"></div>
@@ -592,8 +592,8 @@
                 fileCountInfo.style.display = 'block';
                 fileCountInfo.innerHTML = `
                     <div style="text-align: center; padding: 40px; background: #e9ecef; border-radius: 10px;">
-                        <i class="fas fa-images" style="font-size: 3em; color: #2e8bc0; margin-bottom: 15px;"></i>
-                        <div style="font-size: 1.5em; font-weight: bold; color: #0f3d68; margin-bottom: 10px;">
+                        <i class="fas fa-images" style="font-size: 3em; color: #8B6F47; margin-bottom: 15px;"></i>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #6B5536; margin-bottom: 10px;">
                             ${files.length} صورة محددة
                         </div>
                         <div style="color: #6c757d; font-size: 0.9em;">
@@ -690,12 +690,12 @@
                     summaryCard.className = 'result-card';
                     summaryCard.style.background = '#e9ecef';
                     summaryCard.innerHTML = `
-                        <h4 style="color: #0f3d68; margin-bottom: 15px;">
+                        <h4 style="color: #6B5536; margin-bottom: 15px;">
                             <i class="fas fa-chart-bar"></i> ملخص المعالجة / Processing Summary
                         </h4>
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
                             <div style="text-align: center; padding: 10px; background: white; border-radius: 8px;">
-                                <div style="font-size: 2em; font-weight: bold; color: #2e8bc0;">${selectedFiles.length}</div>
+                                <div style="font-size: 2em; font-weight: bold; color: #8B6F47;">${selectedFiles.length}</div>
                                 <div style="color: #6c757d;">إجمالي الصور</div>
                                 <div style="font-size: 0.8em; color: #6c757d;">Total Images</div>
                             </div>
@@ -902,9 +902,9 @@
                 loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 10000; text-align: center;';
                 loadingMsg.innerHTML = `
                     <div style="margin-bottom: 15px;">
-                        <i class="fas fa-spinner fa-spin" style="font-size: 2em; color: #2e8bc0;"></i>
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2em; color: #8B6F47;"></i>
                     </div>
-                    <div style="color: #0f3d68; font-size: 1.2em;">جارٍ تصدير التقرير...</div>
+                    <div style="color: #6B5536; font-size: 1.2em;">جارٍ تصدير التقرير...</div>
                     <div style="color: #6c757d; margin-top: 5px;">Exporting report...</div>
                 `;
                 document.body.appendChild(loadingMsg);
