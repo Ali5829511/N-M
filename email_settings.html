@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعدادات البريد الإلكتروني - نظام إدارة المرور</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a5f7a;
+            --secondary-color: #159895;
+            --accent-color: #57c5b6;
+            --success-color: #51cf66;
+            --error-color: #ff6b6b;
+            --warning-color: #ffa94d;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --border-color: #e8ecf1;
+            --bg-light: #f8fffe;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f8fffe 0%, #e8f4f8 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 24px rgba(26, 95, 122, 0.15);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: 'Tajawal', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(21, 152, 149, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-switch input[type="checkbox"] {
+            width: 50px;
+            height: 26px;
+            appearance: none;
+            background: #ccc;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch input[type="checkbox"]:checked {
+            background: var(--success-color);
+        }
+
+        .toggle-switch input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            right: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch input[type="checkbox"]:checked::before {
+            right: 26px;
+        }
+
+        .toggle-label {
+            flex: 1;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 95, 122, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #40c057;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .alert.show {
+            display: flex;
+        }
+
+        .alert-success {
+            background: #d3f9d8;
+            color: #2b8a3e;
+            border: 1px solid #8ce99a;
+        }
+
+        .alert-error {
+            background: #ffe3e3;
+            color: #c92a2a;
+            border: 1px solid #ffa8a8;
+        }
+
+        .alert-info {
+            background: #d0ebff;
+            color: #1864ab;
+            border: 1px solid #74c0fc;
+        }
+
+        .info-box {
+            background: #e7f5ff;
+            border: 2px solid #339af0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-box h3 {
+            color: #1864ab;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-box p {
+            color: #495057;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin: 10px 0 0 25px;
+            color: #495057;
+        }
+
+        .info-box li {
+            margin-bottom: 8px;
+        }
+
+        .info-box a {
+            color: #1864ab;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .info-box a:hover {
+            text-decoration: underline;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-enabled {
+            background: #d3f9d8;
+            color: #2b8a3e;
+        }
+
+        .status-disabled {
+            background: #ffe3e3;
+            color: #c92a2a;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="unified_dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-right"></i>
+            <span>العودة إلى لوحة التحكم</span>
+        </a>
+
+        <div class="header">
+            <h1>
+                <i class="fas fa-envelope"></i>
+                إعدادات البريد الإلكتروني
+            </h1>
+            <p>إدارة وتكوين خدمة إرسال الإشعارات عبر البريد الإلكتروني</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- معلومات الإعداد -->
+        <div class="card">
+            <div class="info-box">
+                <h3>
+                    <i class="fas fa-info-circle"></i>
+                    كيفية إعداد خدمة البريد الإلكتروني
+                </h3>
+                <p>لتفعيل إرسال الإشعارات عبر البريد الإلكتروني، اتبع الخطوات التالية:</p>
+                <ul>
+                    <li>قم بإنشاء حساب مجاني على <a href="https://www.emailjs.com" target="_blank">EmailJS</a></li>
+                    <li>أنشئ خدمة بريد إلكتروني جديدة (Gmail, Outlook, إلخ)</li>
+                    <li>أنشئ قوالب البريد الإلكتروني المطلوبة</li>
+                    <li>انسخ معرف الخدمة (Service ID) والمفتاح العام (Public Key)</li>
+                    <li>الصق المعلومات في الحقول أدناه وقم بالحفظ</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- حالة الخدمة -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-toggle-on"></i>
+                حالة الخدمة
+            </div>
+            <div id="serviceStatus" class="status-indicator status-disabled">
+                <i class="fas fa-circle"></i>
+                <span>غير مفعلة</span>
+            </div>
+        </div>
+
+        <!-- تفعيل/تعطيل الخدمة -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-power-off"></i>
+                التحكم في الخدمة
+            </div>
+            <div class="toggle-switch">
+                <input type="checkbox" id="emailEnabled">
+                <label for="emailEnabled" class="toggle-label">تفعيل خدمة البريد الإلكتروني</label>
+            </div>
+        </div>
+
+        <!-- تكوين EmailJS -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-cog"></i>
+                تكوين EmailJS
+            </div>
+            <form id="emailConfigForm">
+                <div class="form-group">
+                    <label for="serviceId">معرف الخدمة (Service ID) <span style="color: red;">*</span></label>
+                    <input type="text" id="serviceId" placeholder="مثال: service_abc123" required>
+                </div>
+                <div class="form-group">
+                    <label for="publicKey">المفتاح العام (Public Key) <span style="color: red;">*</span></label>
+                    <input type="text" id="publicKey" placeholder="مثال: user_xyz789" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminEmail">البريد الإلكتروني للإدارة</label>
+                    <input type="email" id="adminEmail" placeholder="admin@university.edu.sa">
+                </div>
+            </form>
+        </div>
+
+        <!-- خيارات الإشعارات -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-bell"></i>
+                إعدادات الإشعارات
+            </div>
+            <div class="toggle-switch">
+                <input type="checkbox" id="notifyUserCreation" checked>
+                <label for="notifyUserCreation" class="toggle-label">إرسال إشعار عند إنشاء مستخدم جديد</label>
+            </div>
+            <div class="toggle-switch">
+                <input type="checkbox" id="notifyViolation" checked>
+                <label for="notifyViolation" class="toggle-label">إرسال إشعار عند تسجيل مخالفة جديدة</label>
+            </div>
+            <div class="toggle-switch">
+                <input type="checkbox" id="notifyPasswordReset" checked>
+                <label for="notifyPasswordReset" class="toggle-label">إرسال إشعار عند إعادة تعيين كلمة المرور</label>
+            </div>
+        </div>
+
+        <!-- اختبار الإعدادات -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-vial"></i>
+                اختبار الإعدادات
+            </div>
+            <div class="form-group">
+                <label for="testEmail">أدخل بريدك الإلكتروني لاختبار الإعدادات</label>
+                <input type="email" id="testEmail" placeholder="test@example.com">
+            </div>
+            <button type="button" class="btn btn-success" id="testEmailBtn">
+                <i class="fas fa-paper-plane"></i>
+                إرسال بريد تجريبي
+            </button>
+        </div>
+
+        <!-- أزرار الحفظ -->
+        <div class="card">
+            <div class="button-group">
+                <button type="button" class="btn btn-primary" id="saveSettingsBtn">
+                    <i class="fas fa-save"></i>
+                    حفظ الإعدادات
+                </button>
+                <button type="button" class="btn btn-secondary" id="cancelBtn">
+                    <i class="fas fa-times"></i>
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- تحميل المكتبات -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/email-service.js"></script>
+
+    <script>
+        // التحقق من صلاحيات المستخدم
+        if (!window.authManager.requireAuth([window.ROLES.ADMIN])) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+
+        // عناصر DOM
+        const emailEnabledToggle = document.getElementById('emailEnabled');
+        const serviceIdInput = document.getElementById('serviceId');
+        const publicKeyInput = document.getElementById('publicKey');
+        const adminEmailInput = document.getElementById('adminEmail');
+        const notifyUserCreationToggle = document.getElementById('notifyUserCreation');
+        const notifyViolationToggle = document.getElementById('notifyViolation');
+        const notifyPasswordResetToggle = document.getElementById('notifyPasswordReset');
+        const testEmailInput = document.getElementById('testEmail');
+        const testEmailBtn = document.getElementById('testEmailBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const serviceStatus = document.getElementById('serviceStatus');
+        const alertContainer = document.getElementById('alertContainer');
+
+        // تحميل الإعدادات الحالية
+        function loadSettings() {
+            const settings = window.emailService.loadEmailSettings();
+            
+            emailEnabledToggle.checked = settings.enabled || false;
+            serviceIdInput.value = settings.serviceId || '';
+            publicKeyInput.value = settings.publicKey || '';
+            adminEmailInput.value = settings.adminEmail || 'admin@university.edu.sa';
+            notifyUserCreationToggle.checked = settings.notifyOnUserCreation !== false;
+            notifyViolationToggle.checked = settings.notifyOnViolation !== false;
+            notifyPasswordResetToggle.checked = settings.notifyOnPasswordReset !== false;
+            
+            updateServiceStatus();
+        }
+
+        // تحديث حالة الخدمة
+        function updateServiceStatus() {
+            const status = window.emailService.getStatus();
+            if (status.enabled && status.configured) {
+                serviceStatus.className = 'status-indicator status-enabled';
+                serviceStatus.innerHTML = '<i class="fas fa-circle"></i><span>مفعلة</span>';
+            } else {
+                serviceStatus.className = 'status-indicator status-disabled';
+                serviceStatus.innerHTML = '<i class="fas fa-circle"></i><span>غير مفعلة</span>';
+            }
+        }
+
+        // عرض رسالة
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} show`;
+            
+            const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
+            alertDiv.innerHTML = `<i class="fas fa-${icon}"></i><span>${message}</span>`;
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertDiv);
+            
+            // إخفاء الرسالة بعد 5 ثوانٍ
+            setTimeout(() => {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }, 5000);
+        }
+
+        // حفظ الإعدادات
+        saveSettingsBtn.addEventListener('click', () => {
+            const settings = {
+                enabled: emailEnabledToggle.checked,
+                serviceId: serviceIdInput.value.trim(),
+                publicKey: publicKeyInput.value.trim(),
+                adminEmail: adminEmailInput.value.trim(),
+                notifyOnUserCreation: notifyUserCreationToggle.checked,
+                notifyOnViolation: notifyViolationToggle.checked,
+                notifyOnPasswordReset: notifyPasswordResetToggle.checked
+            };
+
+            // التحقق من الحقول المطلوبة
+            if (settings.enabled && (!settings.serviceId || !settings.publicKey)) {
+                showAlert('يرجى إدخال معرف الخدمة والمفتاح العام', 'error');
+                return;
+            }
+
+            const result = window.emailService.saveEmailSettings(settings);
+            
+            if (result.success) {
+                showAlert('تم حفظ الإعدادات بنجاح', 'success');
+                updateServiceStatus();
+            } else {
+                showAlert(result.error || 'حدث خطأ أثناء حفظ الإعدادات', 'error');
+            }
+        });
+
+        // اختبار إرسال البريد
+        testEmailBtn.addEventListener('click', async () => {
+            const testEmail = testEmailInput.value.trim();
+            
+            if (!testEmail) {
+                showAlert('يرجى إدخال بريد إلكتروني للاختبار', 'error');
+                return;
+            }
+
+            testEmailBtn.disabled = true;
+            testEmailBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+            const result = await window.emailService.testEmailConfiguration(testEmail);
+            
+            testEmailBtn.disabled = false;
+            testEmailBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال بريد تجريبي';
+
+            if (result.success) {
+                showAlert('تم إرسال البريد التجريبي بنجاح! تحقق من صندوق الوارد', 'success');
+            } else {
+                showAlert(result.error || 'فشل إرسال البريد التجريبي. تحقق من الإعدادات', 'error');
+            }
+        });
+
+        // إلغاء
+        cancelBtn.addEventListener('click', () => {
+            window.location.href = 'unified_dashboard.html';
+        });
+
+        // تحميل الإعدادات عند فتح الصفحة
+        loadSettings();
+    </script>
+</body>
+</html>
