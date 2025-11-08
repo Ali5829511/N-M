@@ -9,6 +9,7 @@
     "start:http-server": "http-server -p 8080 -c-1 --cors -o",
     "start:python": "python3 -m http.server 8080",
     "dev": "nodemon server.js",
+    "check": "node check-setup.js",
     "test:server": "node -e \"console.log('Server configuration test passed')\"",
     "build": "echo 'Static site - no build required'"
   },
