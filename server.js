@@ -4,12 +4,20 @@
  * نظام إدارة المرور - خادم محلي عالي الجودة
  * Traffic Management System - High-Quality Local Server
  * 
+ * ⚠️ للتطوير والاختبار المحلي فقط / For local development and testing only
+ * 
  * هذا الخادم يوفر:
  * - خادم HTTP محلي للتطوير والاختبار
  * - ضغط الملفات لتحسين الأداء
  * - دعم CORS للتطوير
  * - معالجة الأخطاء المتقدمة
  * - سجلات مفصلة للطلبات
+ * 
+ * ملاحظة أمنية / Security Note:
+ * هذا الخادم لا يحتوي على rate limiting أو حماية متقدمة
+ * لا تستخدمه في بيئة الإنتاج بدون إضافة طبقات أمان إضافية
+ * This server lacks rate limiting and advanced security features
+ * Do not use in production without additional security layers
  */
 
 const express = require('express');
