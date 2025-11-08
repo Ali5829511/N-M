@@ -68,6 +68,11 @@ class EmailService {
 
     /**
      * حفظ إعدادات البريد الإلكتروني
+     * 
+     * ملاحظة أمنية: المفتاح العام (Public Key) مصمم ليكون عاماً
+     * حسب نموذج أمان EmailJS. لا يتم تخزين أي بيانات حساسة.
+     * Security Note: The Public Key is designed to be public
+     * per EmailJS security model. No sensitive data is stored.
      */
     saveEmailSettings(settings) {
         try {
