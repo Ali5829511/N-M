@@ -574,8 +574,10 @@
     </div>
 
     <!-- تحميل مكتبات النظام -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="js/database.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/email-service.js"></script>
     
     <script>
         'use strict';
@@ -726,6 +728,12 @@
                 const result = await window.db.addUser(userData);
                 if (result.success) {
                     alert('تم إضافة المستخدم بنجاح!');
+                    
+                    // إرسال إشعار بريد إلكتروني إذا كانت الخدمة مفعلة
+                    if (window.emailService && window.emailService.isEmailEnabled()) {
+                        await window.emailService.notifyUserCreated(result.user);
+                    }
+                    
                     await loadUsers();
                     await updateStats();
                     closeUserModal();
