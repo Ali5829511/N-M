@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حالة قاعدة البيانات - Database Status</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .status-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .status-icon.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-icon.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-icon.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-title h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .status-title p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-right: 4px solid #667eea;
+        }
+
+        .info-item label {
+            display: block;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-item strong {
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .feature-list li {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .feature-list li i {
+            font-size: 1.2rem;
+        }
+
+        .feature-list li.active i {
+            color: #28a745;
+        }
+
+        .feature-list li.warning i {
+            color: #ffc107;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-right: 4px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-database"></i> حالة قاعدة البيانات</h1>
+            <p>Database Connection Status & Information</p>
+        </div>
+
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>نظام التخزين الحالي:</strong> localStorage (تخزين محلي في المتصفح)
+                <br>
+                <small>النظام يستخدم localStorage للتطوير والاختبار. للإنتاج، يوصى بالانتقال لقاعدة بيانات حقيقية.</small>
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="status-card">
+            <div class="status-header">
+                <div class="status-icon success" id="connectionIcon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="status-title">
+                    <h2>حالة الاتصال</h2>
+                    <p id="connectionStatus">جاري التحقق...</p>
+                </div>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>نوع قاعدة البيانات</label>
+                    <strong id="dbType">localStorage</strong>
+                </div>
+                <div class="info-item">
+                    <label>اسم قاعدة البيانات</label>
+                    <strong id="dbName">-</strong>
+                </div>
+                <div class="info-item">
+                    <label>الإصدار</label>
+                    <strong id="dbVersion">-</strong>
+                </div>
+                <div class="info-item">
+                    <label>حجم التخزين المستخدم</label>
+                    <strong id="storageSize">-</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="status-card">
+            <div class="status-header">
+                <div class="status-icon info">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="status-title">
+                    <h2>إحصائيات البيانات</h2>
+                    <p>عدد السجلات المخزنة</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>عدد المستخدمين</label>
+                    <strong id="usersCount">-</strong>
+                </div>
+                <div class="info-item">
+                    <label>المستخدمون النشطون</label>
+                    <strong id="activeUsers">-</strong>
+                </div>
+                <div class="info-item">
+                    <label>عدد المخالفات</label>
+                    <strong id="violationsCount">-</strong>
+                </div>
+                <div class="info-item">
+                    <label>المخالفات هذا الشهر</label>
+                    <strong id="monthlyViolations">-</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="status-card">
+            <div class="status-header">
+                <div class="status-icon success">
+                    <i class="fas fa-list-check"></i>
+                </div>
+                <div class="status-title">
+                    <h2>الميزات المدعومة</h2>
+                    <p>العمليات المتاحة حالياً</p>
+                </div>
+            </div>
+
+            <ul class="feature-list">
+                <li class="active">
+                    <i class="fas fa-check-circle"></i>
+                    <span>تخزين بيانات المستخدمين والمخالفات</span>
+                </li>
+                <li class="active">
+                    <i class="fas fa-check-circle"></i>
+                    <span>عمليات CRUD (إنشاء، قراءة، تحديث، حذف)</span>
+                </li>
+                <li class="active">
+                    <i class="fas fa-check-circle"></i>
+                    <span>البحث والاستعلامات</span>
+                </li>
+                <li class="active">
+                    <i class="fas fa-check-circle"></i>
+                    <span>الإحصائيات والتقارير</span>
+                </li>
+                <li class="active">
+                    <i class="fas fa-check-circle"></i>
+                    <span>استيراد وتصدير البيانات</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Limitations -->
+        <div class="status-card">
+            <div class="status-header">
+                <div class="status-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="status-title">
+                    <h2>القيود الحالية</h2>
+                    <p>محددات localStorage</p>
+                </div>
+            </div>
+
+            <ul class="feature-list">
+                <li class="warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>التخزين محدود (5-10 ميجابايت)</span>
+                </li>
+                <li class="warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>البيانات محلية فقط (لا مزامنة بين المستخدمين)</span>
+                </li>
+                <li class="warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>قد تُفقد البيانات عند مسح بيانات المتصفح</span>
+                </li>
+                <li class="warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>لا يوجد نسخ احتياطي تلقائي</span>
+                </li>
+                <li class="warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>غير مناسب للبيئات الإنتاجية الحقيقية</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Actions -->
+        <div class="status-card">
+            <div class="status-header">
+                <div class="status-icon info">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="status-title">
+                    <h2>الأدوات والإجراءات</h2>
+                    <p>إدارة قاعدة البيانات</p>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="checkConnection()">
+                    <i class="fas fa-sync-alt"></i> تحديث الحالة
+                </button>
+                <button class="btn btn-success" onclick="exportData()">
+                    <i class="fas fa-download"></i> تصدير البيانات
+                </button>
+                <button class="btn btn-primary" onclick="openConsole()">
+                    <i class="fas fa-terminal"></i> فتح Console
+                </button>
+                <button class="btn btn-primary" onclick="window.location.href='index.html'">
+                    <i class="fas fa-home"></i> العودة للنظام
+                </button>
+            </div>
+        </div>
+
+        <div class="alert alert-warning">
+            <i class="fas fa-shield-alt"></i>
+            <div>
+                <strong>ملاحظة أمنية مهمة:</strong> 
+                هذا النظام مصمم للتطوير والاختبار فقط. للإنتاج، يجب الانتقال لقاعدة بيانات حقيقية (PostgreSQL/MySQL/MongoDB) مع تطبيق معايير الأمان الكاملة. راجع ملف SECURITY.md للمزيد من المعلومات.
+            </div>
+        </div>
+    </div>
+
+    <script src="js/database.js"></script>
+    <script>
+        // Check database connection and display status
+        async function checkConnection() {
+            try {
+                // Show loading
+                document.getElementById('connectionStatus').innerHTML = 
+                    '<i class="fas fa-spinner loading"></i> جاري التحقق...';
+
+                // Check if database manager exists
+                if (typeof window.db === 'undefined') {
+                    throw new Error('Database Manager not found');
+                }
+
+                // Get database info
+                document.getElementById('dbName').textContent = window.db.dbName || 'TrafficSystemDB';
+                document.getElementById('dbVersion').textContent = window.db.version || '1.0';
+
+                // Calculate storage size
+                const storageSize = calculateStorageSize();
+                document.getElementById('storageSize').textContent = storageSize + ' KB';
+
+                // Get user statistics
+                const userStats = await window.db.getUserStats();
+                document.getElementById('usersCount').textContent = userStats.total;
+                document.getElementById('activeUsers').textContent = userStats.active;
+
+                // Get violation statistics
+                const violationStats = await window.db.getViolationStats();
+                document.getElementById('violationsCount').textContent = violationStats.total;
+                document.getElementById('monthlyViolations').textContent = violationStats.thisMonth;
+
+                // Update connection status
+                document.getElementById('connectionStatus').innerHTML = 
+                    '<strong style="color: #28a745;">✓ متصل بنجاح</strong> - النظام يعمل بشكل صحيح';
+                document.getElementById('connectionIcon').innerHTML = 
+                    '<i class="fas fa-check-circle"></i>';
+
+            } catch (error) {
+                console.error('Error checking connection:', error);
+                document.getElementById('connectionStatus').innerHTML = 
+                    '<strong style="color: #dc3545;">✗ خطأ في الاتصال</strong> - ' + error.message;
+                document.getElementById('connectionIcon').innerHTML = 
+                    '<i class="fas fa-times-circle"></i>';
+                document.getElementById('connectionIcon').className = 'status-icon warning';
+            }
+        }
+
+        function calculateStorageSize() {
+            let total = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    total += localStorage[key].length + key.length;
+                }
+            }
+            return (total / 1024).toFixed(2);
+        }
+
+        async function exportData() {
+            try {
+                const data = await window.db.exportData('all');
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `traffic_system_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                alert('✓ تم تصدير البيانات بنجاح!');
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                alert('✗ حدث خطأ أثناء تصدير البيانات');
+            }
+        }
+
+        function openConsole() {
+            alert('اضغط F12 أو Ctrl+Shift+I لفتح أدوات المطور والوصول إلى Console');
+        }
+
+        // Check connection on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkConnection, 500);
+        });
+    </script>
+</body>
+</html>

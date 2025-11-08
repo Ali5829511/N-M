@@ -13,12 +13,16 @@
  * 4. تطبيق SSL/TLS (HTTPS)
  * 5. إضافة معالجة الأخطاء والتحقق من صحة البيانات
  * 6. تطبيق rate limiting و CSRF protection
+ * 
+ * 📊 للتحقق من حالة قاعدة البيانات، افتح: database_status.html
  */
 
 class DatabaseManager {
     constructor() {
         this.dbName = 'TrafficSystemDB';
         this.version = 1;
+        this.dbType = 'localStorage'; // نوع قاعدة البيانات
+        this.connectionStatus = 'disconnected'; // حالة الاتصال
         this.init();
     }
 
@@ -26,15 +30,45 @@ class DatabaseManager {
      * تهيئة قاعدة البيانات
      */
     init() {
-        // إنشاء المستخدمين الافتراضيين إذا لم يكونوا موجودين
-        if (!localStorage.getItem('users')) {
-            this.initializeDefaultUsers();
+        try {
+            // التحقق من دعم localStorage
+            if (typeof localStorage === 'undefined') {
+                console.error('localStorage غير مدعوم في هذا المتصفح');
+                this.connectionStatus = 'error';
+                return;
+            }
+
+            // إنشاء المستخدمين الافتراضيين إذا لم يكونوا موجودين
+            if (!localStorage.getItem('users')) {
+                this.initializeDefaultUsers();
+            }
+            
+            // إنشاء جدول المخالفات إذا لم يكن موجوداً
+            if (!localStorage.getItem('violations')) {
+                localStorage.setItem('violations', JSON.stringify([]));
+            }
+
+            // تحديث حالة الاتصال
+            this.connectionStatus = 'connected';
+            console.log('✓ قاعدة البيانات متصلة بنجاح (localStorage)');
+            console.log('📊 للتحقق من الحالة، افتح: database_status.html');
+        } catch (error) {
+            console.error('خطأ في تهيئة قاعدة البيانات:', error);
+            this.connectionStatus = 'error';
         }
-        
-        // إنشاء جدول المخالفات إذا لم يكن موجوداً
-        if (!localStorage.getItem('violations')) {
-            localStorage.setItem('violations', JSON.stringify([]));
-        }
+    }
+
+    /**
+     * الحصول على حالة الاتصال
+     */
+    getConnectionStatus() {
+        return {
+            status: this.connectionStatus,
+            type: this.dbType,
+            name: this.dbName,
+            version: this.version,
+            isConnected: this.connectionStatus === 'connected'
+        };
     }
 
     /**
