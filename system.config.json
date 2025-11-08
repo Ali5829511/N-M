@@ -1,0 +1,111 @@
+{
+  "name": "نظام إدارة المرور - Traffic Management System",
+  "version": "1.0.0",
+  "description": {
+    "ar": "نظام شامل لإدارة المخالفات المرورية مع نظام صلاحيات متقدم",
+    "en": "Comprehensive traffic violations management system with advanced permissions"
+  },
+  "server": {
+    "default": "express",
+    "options": [
+      {
+        "name": "express",
+        "command": "npm start",
+        "description": {
+          "ar": "خادم Express.js عالي الأداء (موصى به)",
+          "en": "High-performance Express.js server (Recommended)"
+        },
+        "port": 8080,
+        "features": ["compression", "cors", "logging", "error-handling", "caching"]
+      },
+      {
+        "name": "http-server",
+        "command": "npm run start:http-server",
+        "description": {
+          "ar": "خادم HTTP خفيف وسريع",
+          "en": "Lightweight and fast HTTP server"
+        },
+        "port": 8080,
+        "features": ["cors", "auto-open"]
+      },
+      {
+        "name": "python",
+        "command": "npm run start:python",
+        "description": {
+          "ar": "خادم Python البسيط (بدون تثبيت)",
+          "en": "Simple Python server (no installation)"
+        },
+        "port": 8080,
+        "features": ["basic"]
+      }
+    ]
+  },
+  "quickStart": {
+    "scripts": {
+      "windows": "start-server.bat",
+      "linux": "./start-server.sh",
+      "mac": "./start-server.sh"
+    },
+    "npm": {
+      "install": "npm install",
+      "start": "npm start",
+      "dev": "npm run dev"
+    }
+  },
+  "documentation": {
+    "ar": {
+      "main": "README.md",
+      "quickstart": "QUICKSTART.md",
+      "server": "SERVER_SETUP_AR.md",
+      "deployment": "DEPLOYMENT_INSTRUCTIONS_AR.md",
+      "security": "SECURITY.md"
+    },
+    "en": {
+      "main": "README.md",
+      "quickstart": "QUICKSTART.md",
+      "server": "SERVER_SETUP_EN.md",
+      "deployment": "DEPLOYMENT.md",
+      "security": "SECURITY.md"
+    }
+  },
+  "urls": {
+    "local": "http://localhost:8080",
+    "github_pages": "https://ali5829511.github.io/N-M/",
+    "repository": "https://github.com/Ali5829511/N-M"
+  },
+  "requirements": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0",
+    "python": ">=3.0.0 (optional)",
+    "browsers": ["Chrome 90+", "Firefox 88+", "Safari 14+", "Edge 90+"]
+  },
+  "defaultUsers": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin",
+      "description": {
+        "ar": "مدير النظام - صلاحيات كاملة",
+        "en": "System Administrator - Full access"
+      }
+    },
+    {
+      "username": "violations_officer",
+      "password": "violations123",
+      "role": "violation_entry",
+      "description": {
+        "ar": "مسجل المخالفات - إضافة فقط",
+        "en": "Violations Officer - Add only"
+      }
+    },
+    {
+      "username": "inquiry_user",
+      "password": "inquiry123",
+      "role": "inquiry",
+      "description": {
+        "ar": "موظف الاستعلام - عرض فقط",
+        "en": "Inquiry Officer - View only"
+      }
+    }
+  ]
+}
