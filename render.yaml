@@ -3,7 +3,7 @@ services:
     name: n-m-traffic-system
     env: static
     buildCommand: npm install
-    staticPublishPath: .
+    publishPath: .
     routes:
       - type: rewrite
         source: /*
