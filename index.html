@@ -417,6 +417,88 @@
             border-width: 0;
         }
 
+        /* رابط النشر على الإنترنت */
+        .publish-link-section {
+            margin-top: 20px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.1) 0%, rgba(160, 130, 109, 0.1) 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(139, 111, 71, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .publish-link-section:hover {
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.15) 0%, rgba(160, 130, 109, 0.15) 100%);
+            border-color: rgba(139, 111, 71, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.15);
+        }
+
+        .publish-link-title {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .publish-link-title i {
+            font-size: 16px;
+            color: var(--secondary-color);
+        }
+
+        .publish-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            gap: 8px;
+            word-break: break-all;
+        }
+
+        .publish-link:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.02);
+        }
+
+        .publish-link:active {
+            transform: scale(0.98);
+        }
+
+        .publish-link i {
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .publish-link-section {
+                padding: 12px;
+                margin-top: 16px;
+            }
+
+            .publish-link-title {
+                font-size: 13px;
+            }
+
+            .publish-link {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+        }
+
         /* تحميل */
         .loading-spinner {
             display: inline-block;
@@ -555,6 +637,18 @@
                     </span>
                 </button>
             </form>
+
+            <!-- رابط النشر على الإنترنت -->
+            <div class="publish-link-section">
+                <div class="publish-link-title">
+                    <i class="fas fa-globe" aria-hidden="true"></i>
+                    <span>رابط النظام المنشور</span>
+                </div>
+                <a href="https://ali5829511.github.io/N-M/" target="_blank" rel="noopener noreferrer" class="publish-link" aria-label="فتح رابط النظام المنشور على الإنترنت">
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                    <span>ali5829511.github.io/N-M</span>
+                </a>
+            </div>
 
             <div class="footer">
                 <p>جميع الحقوق محفوظة © جامعة الإمام محمد بن سعود الإسلامية 2025</p>
