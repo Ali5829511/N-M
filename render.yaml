@@ -3,7 +3,7 @@ services:
     name: n-m-traffic-system
     env: static
     buildCommand: echo "Static site - no build needed"
-    staticPublishPath: .
+    staticPublishPath: ./
     routes:
       - type: rewrite
         source: /*
