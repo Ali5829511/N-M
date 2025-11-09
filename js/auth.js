@@ -250,7 +250,7 @@ class AuthManager {
      */
     requireAuth(requiredRoles = null) {
         if (!this.isAuthenticated()) {
-            window.location.href = '../pages/login.html';
+            window.location.href = '../index.html';
             return false;
         }
         
@@ -277,13 +277,12 @@ class AuthManager {
             return;
         }
         
-        // جميع الأدوار تذهب إلى الصفحة الرئيسية (لوحة التحكم)
+        // توجيه جميع المستخدمين إلى الصفحة الرئيسية
         const currentPath = window.location.pathname;
         if (currentPath.includes('/pages/')) {
-            window.location.href = '../index.html';
+            window.location.href = 'home.html';
         } else {
-            window.location.href = 'index.html';
-        }
+            window.location.href = 'pages/home.html';
         }
     }
 
