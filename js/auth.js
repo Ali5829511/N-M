@@ -188,8 +188,11 @@ class AuthManager {
         localStorage.removeItem('currentUser');
         
         // إعادة التوجيه إلى صفحة تسجيل الدخول
-        if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
-            window.location.href = '../index.html';
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/pages/')) {
+            window.location.href = '../pages/login.html';
+        } else if (!currentPath.endsWith('login.html')) {
+            window.location.href = 'pages/login.html';
         }
     }
 
@@ -247,7 +250,7 @@ class AuthManager {
      */
     requireAuth(requiredRoles = null) {
         if (!this.isAuthenticated()) {
-            window.location.href = '../index.html';
+            window.location.href = '../pages/login.html';
             return false;
         }
         
@@ -265,22 +268,22 @@ class AuthManager {
      */
     redirectToDefaultPage() {
         if (!this.currentUser) {
-            window.location.href = 'index.html';
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/pages/')) {
+                window.location.href = '../index.html';
+            } else {
+                window.location.href = 'index.html';
+            }
             return;
         }
         
-        switch (this.currentUser.role) {
-            case ROLES.ADMIN:
-                window.location.href = 'pages/unified_dashboard.html';
-                break;
-            case ROLES.VIOLATION_ENTRY:
-                window.location.href = 'pages/المخالفات_المرورية.html';
-                break;
-            case ROLES.INQUIRY:
-                window.location.href = 'pages/inquiry_violations.html';
-                break;
-            default:
-                window.location.href = 'index.html';
+        // جميع الأدوار تذهب إلى الصفحة الرئيسية (لوحة التحكم)
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/pages/')) {
+            window.location.href = '../index.html';
+        } else {
+            window.location.href = 'index.html';
+        }
         }
     }
 

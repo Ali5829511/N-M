@@ -459,9 +459,21 @@
                     اسحب الصور هنا أو انقر للاختيار
                 </div>
                 <div class="upload-hint">
-                    يدعم: JPG, PNG (الحد الأقصى: 10 صور، 5MB لكل صورة)
+                    يدعم: JPG, PNG, BMP, GIF (بدون حد للعدد أو الحجم)
                 </div>
                 <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
+                <input type="file" id="folderInput" class="file-input" webkitdirectory directory multiple>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="document.getElementById('fileInput').click()" style="padding: 12px 25px;">
+                    <i class="fas fa-images"></i>
+                    اختيار صور متعددة
+                </button>
+                <button class="btn-primary" onclick="document.getElementById('folderInput').click()" style="padding: 12px 25px; background: linear-gradient(135deg, #6B5536 0%, #8B6F47 100%);">
+                    <i class="fas fa-folder-open"></i>
+                    اختيار مجلد كامل
+                </button>
             </div>
 
             <div class="preview-container" id="previewContainer">
@@ -591,13 +603,18 @@
             handleFiles(files);
         });
 
+        // معالج لاختيار المجلد
+        const folderInput = document.getElementById('folderInput');
+        folderInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+            handleFiles(files);
+        });
+
         function handleFiles(files) {
             if (files.length === 0) return;
 
-            if (files.length > 10) {
-                alert('يمكنك رفع 10 صور كحد أقصى\nMaximum 10 images allowed');
-                return;
-            }
+            // إزالة قيد العدد - يمكن رفع أي عدد من الصور
+            console.log(`تم اختيار ${files.length} صورة`);
 
             selectedFiles = files;
             displayPreviews();
