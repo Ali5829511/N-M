@@ -2,7 +2,7 @@ services:
   - type: web
     name: n-m-traffic-system
     env: static
-    buildCommand: echo "Static site - no build needed"
+    buildCommand: npm install
     staticPublishPath: .
     routes:
       - type: rewrite
