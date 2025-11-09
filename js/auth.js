@@ -271,7 +271,7 @@ class AuthManager {
         
         switch (this.currentUser.role) {
             case ROLES.ADMIN:
-                window.location.href = 'unified_dashboard.html';
+                window.location.href = 'main_dashboard.html';
                 break;
             case ROLES.VIOLATION_ENTRY:
                 window.location.href = 'المخالفات_المرورية.html';
