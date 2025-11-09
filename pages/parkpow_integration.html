@@ -716,6 +716,8 @@
             currentResults = results; // حفظ النتائج للتصدير
             const resultsSection = document.getElementById('resultsSection');
             const resultsContainer = document.getElementById('resultsContainer');
+
+            if (results.length === 0) {
                 resultsContainer.innerHTML = `
                     <div class="result-card" style="text-align: center;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #ffc107; margin-bottom: 15px;"></i>
@@ -771,8 +773,6 @@
             resultsSection.style.display = 'block';
         }
 
-        // متغير عام لحفظ النتائج
-        let currentResults = [];
 
         function displayResults(results) {
             currentResults = results; // حفظ النتائج للتصدير
