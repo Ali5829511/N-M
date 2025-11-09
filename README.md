@@ -45,7 +45,8 @@ npm install && npm start
 **الحالة:** ✅ جاهز للنشر على GitHub Pages و Render.com
 
 **التحديثات الأخيرة (2025-11-09):**
-- ✅ تم إصلاح تكوين Render.com (`staticPublishPath: .` في `render.yaml`)
+- ✅ **إصلاح خطأ 404 على Render.com** - تم تحديث `render.yaml` من static إلى Node.js web service
+- ✅ تم إصلاح تكوين Render.com (استخدام `env: node` بدلاً من `env: static`)
 - ✅ تم إصلاح workflow النشر (إزالة enablement parameter)
 - ✅ تم إضافة دليل نشر مفصل بالعربية
 - ✅ تم توضيح متطلبات النشر (المستودع العام أو GitHub Pro)

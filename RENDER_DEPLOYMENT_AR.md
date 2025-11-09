@@ -6,13 +6,29 @@
 
 ---
 
+## ⚠️ إصلاح مشكلة 404 (تم الإصلاح)
+
+**المشكلة السابقة:** كانت المواقع المنشورة على Render تعرض خطأ 404
+
+**السبب:** كان ملف `render.yaml` مُعد كـ **Static Site** بينما المشروع يحتاج **Web Service** لتشغيل خادم Node.js
+
+**الحل:** ✅ تم تحديث `render.yaml` لاستخدام:
+- `env: node` بدلاً من `env: static`
+- `startCommand: npm start` لتشغيل خادم Express
+- `healthCheckPath: /` للتحقق من صحة الخدمة
+
+**الآن:** المشروع جاهز للنشر بشكل صحيح على Render.com!
+
+---
+
 ## ✅ المتطلبات
 
 - حساب على Render.com (مجاني)
 - المشروع متصل بـ GitHub
 - الملفات التالية موجودة:
-  - ✅ `render.yaml` - ملف التكوين
+  - ✅ `render.yaml` - ملف التكوين (تم إصلاحه)
   - ✅ `package.json` - معلومات المشروع
+  - ✅ `server.js` - خادم Express
 
 ---
 
@@ -32,23 +48,24 @@ https://dashboard.render.com/static/srv-d47fc1ili9vc738meet0/deploys/dep-d47lhm3
 1. اذهب إلى: https://dashboard.render.com/
 2. سجل الدخول بحساب GitHub
 
-#### الخطوة 2: إنشاء Static Site جديد
+#### الخطوة 2: إنشاء Web Service جديد
 1. اضغط على **"New +"** في الأعلى
-2. اختر **"Static Site"**
+2. اختر **"Web Service"** (وليس Static Site)
 3. اختر Repository: **Ali5829511/N-M**
-4. اسم الموقع: `n-m-traffic-system` (أو أي اسم)
+4. اسم الخدمة: `n-m-traffic-system` (أو أي اسم)
 
 #### الخطوة 3: إعدادات النشر
 ```
 Name: n-m-traffic-system
 Branch: main
-Build Command: (اتركها فارغة أو اكتب: echo "No build")
-Publish Directory: . (نقطة)
+Runtime: Node
+Build Command: npm install
+Start Command: npm start
 ```
 
 #### الخطوة 4: نشر
-1. اضغط **"Create Static Site"**
-2. انتظر 1-2 دقيقة للنشر
+1. اضغط **"Create Web Service"**
+2. انتظر 2-3 دقائق للنشر
 3. الرابط سيكون: `https://n-m-traffic-system.onrender.com`
 
 ---
@@ -73,20 +90,18 @@ Publish Directory: . (نقطة)
 services:
   - type: web
     name: n-m-traffic-system
-    env: static
-    buildCommand: echo "Static site - no build needed"
-    staticPublishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
 ```
 
 ### ماذا يفعل:
-- ✅ ينشئ موقع static
-- ✅ يستخدم جميع الملفات من root (.)
-- ✅ يحول جميع الطلبات إلى index.html
-- ✅ جاهز للاستخدام مباشرة!
+- ✅ ينشئ خدمة ويب Node.js
+- ✅ يقوم بتثبيت المكتبات المطلوبة (npm install)
+- ✅ يشغل خادم Express (npm start)
+- ✅ يتحقق من صحة الخدمة عبر الصفحة الرئيسية
+- ✅ يوفر جميع ميزات التوجيه والضغط والأمان
 
 ---
 
