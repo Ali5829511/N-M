@@ -11,6 +11,7 @@
     "dev": "nodemon server.js",
     "check": "node check-setup.js",
     "deploy:check": "node deploy-check.js",
+    "deploy:status": "node check-deployment-status.js",
     "test:server": "node -e \"console.log('Server configuration test passed')\"",
     "build": "echo 'Static site - no build required'"
   },
