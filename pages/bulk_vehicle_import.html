@@ -815,22 +815,84 @@
 
         // Export functions
         function exportToExcel() {
-            const data = uploadedFiles.map((file, index) => ({
-                '#': index + 1,
+            const wb = XLSX.utils.book_new();
+            
+            // ورقة 1: ملخص البيانات (Summary Sheet)
+            const summaryData = [
+                ['تقرير شامل لقاعدة بيانات السيارات'],
+                ['تاريخ التقرير', new Date().toLocaleDateString('ar-SA')],
+                [''],
+                ['الإحصائيات'],
+                ['إجمالي الصور', uploadedFiles.length],
+                ['الصور الفريدة', uploadedFiles.filter(f => !f.isDuplicate).length],
+                ['الصور المكررة', uploadedFiles.filter(f => f.isDuplicate).length],
+                ['الحجم الإجمالي', formatFileSize(uploadedFiles.reduce((sum, f) => sum + f.size, 0))]
+            ];
+            const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+            XLSX.utils.book_append_sheet(wb, wsSummary, 'الملخص');
+            
+            // ورقة 2: بيانات السيارات الكاملة (Full Vehicle Data)
+            const vehicleData = uploadedFiles.map((file, index) => ({
+                'الرقم': index + 1,
+                'اسم الملف': file.name,
+                'الحجم (بايت)': file.size,
+                'الحجم': formatFileSize(file.size),
+                'تاريخ الرفع': file.date,
+                'العرض (px)': file.width,
+                'الارتفاع (px)': file.height,
+                'الأبعاد': `${file.width} × ${file.height}`,
+                'نوع الملف': file.type,
+                'مكرر': file.isDuplicate ? 'نعم' : 'لا',
+                'معرف التجزئة': file.hash
+            }));
+            const wsVehicles = XLSX.utils.json_to_sheet(vehicleData);
+            XLSX.utils.book_append_sheet(wb, wsVehicles, 'بيانات السيارات');
+            
+            // ورقة 3: السيارات الفريدة فقط (Unique Vehicles Only)
+            const uniqueVehicles = uploadedFiles.filter(f => !f.isDuplicate).map((file, index) => ({
+                'الرقم': index + 1,
                 'اسم الملف': file.name,
                 'الحجم': formatFileSize(file.size),
                 'التاريخ': file.date,
-                'العرض': file.width,
-                'الارتفاع': file.height,
-                'مكرر': file.isDuplicate ? 'نعم' : 'لا'
+                'الأبعاد': `${file.width} × ${file.height}`
             }));
-
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'بيانات السيارات');
-            XLSX.writeFile(wb, `vehicle_data_${new Date().toISOString().split('T')[0]}.xlsx`);
+            if (uniqueVehicles.length > 0) {
+                const wsUnique = XLSX.utils.json_to_sheet(uniqueVehicles);
+                XLSX.utils.book_append_sheet(wb, wsUnique, 'السيارات الفريدة');
+            }
             
-            showStatus('success', 'تم تصدير البيانات إلى Excel بنجاح');
+            // ورقة 4: السيارات المكررة (Duplicate Vehicles)
+            const duplicateVehicles = uploadedFiles.filter(f => f.isDuplicate).map((file, index) => ({
+                'الرقم': index + 1,
+                'اسم الملف': file.name,
+                'الحجم': formatFileSize(file.size),
+                'التاريخ': file.date,
+                'معرف التجزئة': file.hash,
+                'ملاحظة': 'مكرر'
+            }));
+            if (duplicateVehicles.length > 0) {
+                const wsDuplicates = XLSX.utils.json_to_sheet(duplicateVehicles);
+                XLSX.utils.book_append_sheet(wb, wsDuplicates, 'السيارات المكررة');
+            }
+            
+            // ورقة 5: المخالفات المرتبطة (Related Violations) - للدمج المستقبلي
+            const violationsData = [
+                ['نظام المخالفات المرورية'],
+                [''],
+                ['ملاحظة: هذه الورقة جاهزة لربطها مع بيانات المخالفات'],
+                [''],
+                ['الحقول المتوقعة:'],
+                ['رقم المخالفة', 'نوع المخالفة', 'التاريخ', 'رقم اللوحة', 'الحالة', 'المبلغ'],
+                ['', '', '', '', '', '']
+            ];
+            const wsViolations = XLSX.utils.aoa_to_sheet(violationsData);
+            XLSX.utils.book_append_sheet(wb, wsViolations, 'المخالفات');
+            
+            // حفظ الملف
+            const filename = `تقرير_شامل_${new Date().toISOString().split('T')[0].replace(/-/g, '')}_${Date.now().toString().slice(-6)}.xlsx`;
+            XLSX.writeFile(wb, filename);
+            
+            showStatus('success', `تم تصدير ${wb.SheetNames.length} ورقات بنجاح إلى ${filename}`);
         }
 
         function exportToPDF() {
