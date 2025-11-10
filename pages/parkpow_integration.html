@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkPow - التعرف على اللوحات - نظام إدارة إسكان أعضاء هيئة التدريس</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tajawal:700,400&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background: linear-gradient(120deg, #1a1f35 0%, #2d3561 100%);
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #6B5536 60%, #8B6F47 100%);
+            color: #fff;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .parkpow-logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3561;
+        }
+
+        .header-text h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-unconfigured {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-info h3 {
+            font-size: 1.3em;
+            color: #2d3561;
+            margin-bottom: 5px;
+        }
+
+        .status-info p {
+            color: #666;
+        }
+
+        .upload-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #2d3561;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed #8B6F47;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f5f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            background: #ede9e0;
+            border-color: #6B5536;
+        }
+
+        .upload-area.drag-over {
+            background: #e3dfd5;
+            border-color: #6B5536;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 60px;
+            color: #8B6F47;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-container {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8B6F47 0%, #6B5536 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 111, 71, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #8B6F47;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 5px solid #8B6F47;
+        }
+
+        .plate-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2d3561;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f5f0 0%, #e8dcc8 100%);
+            border-radius: 10px;
+        }
+
+        .confidence-section {
+            margin: 20px 0;
+        }
+
+        .confidence-label {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .confidence-bar {
+            background: #e9ecef;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s ease;
+        }
+
+        .vehicle-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .info-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2d3561;
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .preview-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .plate-number {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <div class="parkpow-logo">
+                    <i class="fas fa-parking"></i>
+                </div>
+                <div class="header-text">
+                    <h1>ParkPow - التعرف الذكي على لوحات السيارات</h1>
+                    <p>نظام متقدم للتعرف على اللوحات السعودية</p>
+                </div>
+            </div>
+            <a href="unified_dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+                العودة للوحة التحكم
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- API Status -->
+        <div class="status-card">
+            <div class="status-header">
+                <div class="status-icon status-unconfigured" id="statusIcon">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <div class="status-info">
+                    <h3 id="statusTitle">جارٍ التحقق من حالة الاتصال...</h3>
+                    <p id="statusMessage">Checking ParkPow API connection...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <h2 class="section-title">
+                <i class="fas fa-cloud-upload-alt"></i>
+                رفع صور اللوحات
+            </h2>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-images"></i>
+                </div>
+                <div class="upload-text">
+                    اسحب الصور هنا أو انقر للاختيار
+                </div>
+                <div class="upload-hint">
+                    يدعم: JPG, PNG, BMP, GIF (بدون حد للعدد أو الحجم)
+                </div>
+                <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
+                <input type="file" id="folderInput" class="file-input" webkitdirectory directory multiple>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="document.getElementById('fileInput').click()" style="padding: 12px 25px;">
+                    <i class="fas fa-images"></i>
+                    اختيار صور متعددة
+                </button>
+                <button class="btn-primary" onclick="document.getElementById('folderInput').click()" style="padding: 12px 25px; background: linear-gradient(135deg, #6B5536 0%, #8B6F47 100%);">
+                    <i class="fas fa-folder-open"></i>
+                    اختيار مجلد كامل
+                </button>
+            </div>
+
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-grid" id="previewGrid"></div>
+                <div class="action-buttons">
+                    <button class="btn-primary" id="recognizeBtn" onclick="recognizePlates()">
+                        <i class="fas fa-search"></i>
+                        بدء التعرف على اللوحات
+                    </button>
+                    <button class="btn-secondary" onclick="clearSelection()">
+                        <i class="fas fa-times"></i>
+                        مسح الكل
+                    </button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>جارٍ التعرف على اللوحات...<br>Processing plates with ParkPow...</p>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 class="section-title" style="margin: 0;">
+                    <i class="fas fa-list-check"></i>
+                    نتائج التعرف على اللوحات
+                </h2>
+                <div class="action-buttons" style="margin: 0;">
+                    <button class="btn-primary" onclick="exportToExcel()" style="padding: 10px 20px;">
+                        <i class="fas fa-file-excel"></i>
+                        تصدير Excel
+                    </button>
+                    <button class="btn-primary" onclick="exportToPDF()" style="padding: 10px 20px;">
+                        <i class="fas fa-file-pdf"></i>
+                        تصدير PDF
+                    </button>
+                    <button class="btn-primary" onclick="exportToHTML()" style="padding: 10px 20px;">
+                        <i class="fas fa-file-code"></i>
+                        تصدير HTML
+                    </button>
+                </div>
+            </div>
+            <div id="resultsContainer"></div>
+        </div>
+    </div>
+
+    <!-- تحميل مكتبات النظام -->
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+
+    <!-- مكتبات التصدير -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        'use strict';
+
+        // التحقق من الصلاحيات
+        window.authManager.requireAuth(['admin']);
+
+        let selectedFiles = [];
+
+        // التحقق من حالة API عند تحميل الصفحة
+        window.addEventListener('load', () => {
+            checkAPIStatus();
+        });
+
+        async function checkAPIStatus() {
+            try {
+                const response = await fetch('/api/parkpow/status', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                const statusIcon = document.getElementById('statusIcon');
+                const statusTitle = document.getElementById('statusTitle');
+                const statusMessage = document.getElementById('statusMessage');
+
+                if (data.configured && data.connected) {
+                    statusIcon.className = 'status-icon status-connected';
+                    statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    statusTitle.textContent = 'الخدمة متصلة ومفعلة ✓';
+                    statusMessage.textContent = 'ParkPow API Connected Successfully';
+                } else if (data.configured && !data.connected) {
+                    statusIcon.className = 'status-icon status-disconnected';
+                    statusIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+                    statusTitle.textContent = 'خطأ في الاتصال بالخدمة';
+                    statusMessage.textContent = data.message || 'Connection Error';
+                } else {
+                    statusIcon.className = 'status-icon status-unconfigured';
+                    statusIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
+                    statusTitle.textContent = 'الخدمة غير مفعلة';
+                    statusMessage.textContent = 'API not configured. Please set PARKPOW_API_TOKEN';
+                }
+            } catch (error) {
+                console.error('Error checking API status:', error);
+            }
+        }
+
+        // معالجة السحب والإفلات
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            handleFiles(files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            handleFiles(files);
+        });
+
+        // معالج لاختيار المجلد
+        const folderInput = document.getElementById('folderInput');
+        folderInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+
+            // إزالة قيد العدد - يمكن رفع أي عدد من الصور
+            console.log(`تم اختيار ${files.length} صورة`);
+
+            selectedFiles = files;
+            displayPreviews();
+        }
+
+        function displayPreviews() {
+            const previewGrid = document.getElementById('previewGrid');
+            const previewContainer = document.getElementById('previewContainer');
+            
+            previewGrid.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="preview-image" alt="Preview ${index + 1}">
+                        <button class="remove-btn" onclick="removeFile(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    previewGrid.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            previewContainer.style.display = 'block';
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            if (selectedFiles.length === 0) {
+                document.getElementById('previewContainer').style.display = 'none';
+                fileInput.value = '';
+            } else {
+                displayPreviews();
+            }
+        }
+
+        function clearSelection() {
+            selectedFiles = [];
+            document.getElementById('previewContainer').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            fileInput.value = '';
+        }
+
+        async function recognizePlates() {
+            if (selectedFiles.length === 0) {
+                alert('الرجاء اختيار صورة أولاً\nPlease select images first');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const recognizeBtn = document.getElementById('recognizeBtn');
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContainer = document.getElementById('resultsContainer');
+
+            loading.style.display = 'block';
+            recognizeBtn.disabled = true;
+            resultsSection.style.display = 'none';
+
+            let allResults = [];
+
+            try {
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    
+                    loading.innerHTML = `
+                        <div class="spinner"></div>
+                        <p>جارٍ معالجة الصورة ${i + 1} من ${selectedFiles.length}<br>
+                        Processing image ${i + 1} of ${selectedFiles.length}</p>
+                        <p style="font-size: 0.9em; color: #666;">${file.name}</p>
+                    `;
+
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('regions', 'sa');
+
+                    try {
+                        const response = await fetch('/api/parkpow/recognize', {
+                            method: 'POST',
+                            body: formData,
+                            credentials: 'include'
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success && data.results) {
+                            data.results.forEach(result => {
+                                result.filename = file.name;
+                                allResults.push(result);
+                            });
+                        }
+                    } catch (error) {
+                        console.error(`Error processing ${file.name}:`, error);
+                    }
+                }
+
+                // عرض النتائج
+                displayResults(allResults);
+                
+            } catch (error) {
+                console.error('Recognition error:', error);
+                alert('حدث خطأ أثناء التعرف على اللوحات\nError during plate recognition');
+            } finally {
+                loading.style.display = 'none';
+                recognizeBtn.disabled = false;
+            }
+        }
+
+        // متغير عام لحفظ النتائج
+        let currentResults = [];
+
+        function displayResults(results) {
+            currentResults = results; // حفظ النتائج للتصدير
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContainer = document.getElementById('resultsContainer');
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="result-card" style="text-align: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #ffc107; margin-bottom: 15px;"></i>
+                        <h3>لم يتم العثور على لوحات</h3>
+                        <p>لم يتم التعرف على أي لوحات في الصور المرفوعة</p>
+                    </div>
+                `;
+            } else {
+                resultsContainer.innerHTML = results.map((result, index) => `
+                    <div class="result-card">
+                        <div class="plate-number">${result.plate || 'غير محدد'}</div>
+                        
+                        ${result.score ? `
+                            <div class="confidence-section">
+                                <div class="confidence-label">
+                                    دقة التعرف: ${(result.score * 100).toFixed(1)}%
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: ${result.score * 100}%">
+                                        ${(result.score * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="vehicle-info">
+                            <div class="info-title">معلومات اللوحة</div>
+                            <div class="info-row">
+                                <span class="info-label">اسم الملف:</span>
+                                <span class="info-value">${result.filename || '-'}</span>
+                            </div>
+                            ${result.region ? `
+                                <div class="info-row">
+                                    <span class="info-label">المنطقة:</span>
+                                    <span class="info-value">${result.region}</span>
+                                </div>
+                            ` : ''}
+                            ${result.vehicle_type ? `
+                                <div class="info-row">
+                                    <span class="info-label">نوع المركبة:</span>
+                                    <span class="info-value">${result.vehicle_type}</span>
+                                </div>
+                            ` : ''}
+                            <div class="info-row">
+                                <span class="info-label">وقت المعالجة:</span>
+                                <span class="info-value">${new Date().toLocaleString('ar-SA')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            resultsSection.style.display = 'block';
+        }
+
+
+        function displayResults(results) {
+            currentResults = results; // حفظ النتائج للتصدير
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContainer = document.getElementById('resultsContainer');
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="result-card" style="text-align: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #ffc107; margin-bottom: 15px;"></i>
+                        <h3>لم يتم العثور على لوحات</h3>
+                        <p>لم يتم التعرف على أي لوحات في الصور المرفوعة</p>
+                    </div>
+                `;
+            } else {
+                resultsContainer.innerHTML = results.map((result, index) => `
+                    <div class="result-card">
+                        <div class="plate-number">${result.plate || 'غير محدد'}</div>
+                        
+                        ${result.score ? `
+                            <div class="confidence-section">
+                                <div class="confidence-label">
+                                    دقة التعرف: ${(result.score * 100).toFixed(1)}%
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: ${result.score * 100}%">
+                                        ${(result.score * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="vehicle-info">
+                            <div class="info-title">معلومات اللوحة</div>
+                            <div class="info-row">
+                                <span class="info-label">اسم الملف:</span>
+                                <span class="info-value">${result.filename || '-'}</span>
+                            </div>
+                            ${result.region ? `
+                                <div class="info-row">
+                                    <span class="info-label">المنطقة:</span>
+                                    <span class="info-value">${result.region}</span>
+                                </div>
+                            ` : ''}
+                            ${result.vehicle_type ? `
+                                <div class="info-row">
+                                    <span class="info-label">نوع المركبة:</span>
+                                    <span class="info-value">${result.vehicle_type}</span>
+                                </div>
+                            ` : ''}
+                            <div class="info-row">
+                                <span class="info-label">وقت المعالجة:</span>
+                                <span class="info-value">${new Date().toLocaleString('ar-SA')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            resultsSection.style.display = 'block';
+        }
+
+        // ============================================
+        // وظائف التصدير - Export Functions
+        // ============================================
+
+        // تصدير إلى Excel
+        function exportToExcel() {
+            if (currentResults.length === 0) {
+                alert('لا توجد نتائج للتصدير\nNo results to export');
+                return;
+            }
+
+            try {
+                // تحضير البيانات
+                const data = currentResults.map((result, index) => ({
+                    'الرقم': index + 1,
+                    'رقم اللوحة': result.plate || 'غير محدد',
+                    'دقة التعرف %': result.score ? (result.score * 100).toFixed(1) : '-',
+                    'المنطقة': result.region || '-',
+                    'نوع المركبة': result.vehicle_type || '-',
+                    'اسم الملف': result.filename || '-',
+                    'وقت المعالجة': new Date().toLocaleString('ar-SA')
+                }));
+
+                // إنشاء ورقة عمل
+                const ws = XLSX.utils.json_to_sheet(data);
+
+                // تحسين عرض الأعمدة
+                const cols = [
+                    { wch: 8 },  // الرقم
+                    { wch: 15 }, // رقم اللوحة
+                    { wch: 12 }, // دقة التعرف
+                    { wch: 12 }, // المنطقة
+                    { wch: 15 }, // نوع المركبة
+                    { wch: 20 }, // اسم الملف
+                    { wch: 20 }  // وقت المعالجة
+                ];
+                ws['!cols'] = cols;
+
+                // إنشاء كتاب العمل
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'نتائج التعرف على اللوحات');
+
+                // تصدير الملف
+                const fileName = `ParkPow_Results_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+
+                alert(`✅ تم التصدير بنجاح!\n${fileName}`);
+            } catch (error) {
+                console.error('Excel export error:', error);
+                alert('حدث خطأ أثناء التصدير\nExport error occurred');
+            }
+        }
+
+        // تصدير إلى PDF
+        async function exportToPDF() {
+            if (currentResults.length === 0) {
+                alert('لا توجد نتائج للتصدير\nNo results to export');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+
+                // إعدادات PDF
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 15;
+                let yPosition = margin;
+
+                // عنوان التقرير
+                doc.setFontSize(20);
+                doc.text('ParkPow - Report', pageWidth / 2, yPosition, { align: 'center' });
+                yPosition += 10;
+
+                doc.setFontSize(16);
+                doc.text('Plate Recognition Results', pageWidth / 2, yPosition, { align: 'center' });
+                yPosition += 10;
+
+                doc.setFontSize(10);
+                doc.text(`Date: ${new Date().toLocaleString('en-US')}`, pageWidth / 2, yPosition, { align: 'center' });
+                yPosition += 10;
+
+                doc.setFontSize(10);
+                doc.text(`Total Results: ${currentResults.length}`, pageWidth / 2, yPosition, { align: 'center' });
+                yPosition += 15;
+
+                // جدول النتائج
+                doc.setFontSize(10);
+                const lineHeight = 8;
+                const columnWidths = {
+                    no: 15,
+                    plate: 40,
+                    score: 30,
+                    region: 30,
+                    vehicle: 35,
+                    file: 40
+                };
+
+                // رأس الجدول
+                doc.setFillColor(139, 111, 71);
+                doc.setTextColor(255, 255, 255);
+                doc.rect(margin, yPosition, pageWidth - 2 * margin, lineHeight, 'F');
+                
+                let xPos = margin + 2;
+                doc.text('No', xPos, yPosition + 6);
+                xPos += columnWidths.no;
+                doc.text('Plate Number', xPos, yPosition + 6);
+                xPos += columnWidths.plate;
+                doc.text('Score %', xPos, yPosition + 6);
+                xPos += columnWidths.score;
+                doc.text('Region', xPos, yPosition + 6);
+                xPos += columnWidths.region;
+                doc.text('Vehicle', xPos, yPosition + 6);
+
+                yPosition += lineHeight;
+                doc.setTextColor(0, 0, 0);
+
+                // محتوى الجدول
+                currentResults.forEach((result, index) => {
+                    if (yPosition > pageHeight - 30) {
+                        doc.addPage();
+                        yPosition = margin;
+                    }
+
+                    // خلفية الصف
+                    if (index % 2 === 0) {
+                        doc.setFillColor(248, 245, 240);
+                        doc.rect(margin, yPosition, pageWidth - 2 * margin, lineHeight, 'F');
+                    }
+
+                    xPos = margin + 2;
+                    doc.text(String(index + 1), xPos, yPosition + 6);
+                    xPos += columnWidths.no;
+                    doc.text(result.plate || 'N/A', xPos, yPosition + 6);
+                    xPos += columnWidths.plate;
+                    doc.text(result.score ? `${(result.score * 100).toFixed(1)}%` : '-', xPos, yPosition + 6);
+                    xPos += columnWidths.score;
+                    doc.text(result.region || '-', xPos, yPosition + 6);
+                    xPos += columnWidths.region;
+                    doc.text(result.vehicle_type || '-', xPos, yPosition + 6);
+
+                    yPosition += lineHeight;
+                });
+
+                // تذييل
+                yPosition = pageHeight - 15;
+                doc.setFontSize(8);
+                doc.setTextColor(128, 128, 128);
+                doc.text('Generated by ParkPow Integration System', pageWidth / 2, yPosition, { align: 'center' });
+
+                // حفظ الملف
+                const fileName = `ParkPow_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+
+                alert(`✅ تم التصدير بنجاح!\n${fileName}`);
+            } catch (error) {
+                console.error('PDF export error:', error);
+                alert('حدث خطأ أثناء التصدير\nExport error occurred');
+            }
+        }
+
+        // تصدير إلى HTML
+        function exportToHTML() {
+            if (currentResults.length === 0) {
+                alert('لا توجد نتائج للتصدير\nNo results to export');
+                return;
+            }
+
+            try {
+                const timestamp = new Date().toLocaleString('ar-SA');
+                const resultsHTML = currentResults.map((result, index) => `
+                    <tr style="${index % 2 === 0 ? 'background: #f8f5f0;' : ''}">
+                        <td style="padding: 12px; border: 1px solid #ddd;">${index + 1}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; font-size: 1.2em; font-family: monospace;">${result.plate || 'غير محدد'}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">${result.score ? (result.score * 100).toFixed(1) + '%' : '-'}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">${result.region || '-'}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">${result.vehicle_type || '-'}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">${result.filename || '-'}</td>
+                    </tr>
+                `).join('');
+
+                const htmlContent = `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير ParkPow - نتائج التعرف على اللوحات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f5f0 0%, #e8dcc8 100%);
+            direction: rtl;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #8B6F47;
+        }
+        .header h1 {
+            color: #2d3561;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        .info-section {
+            background: #f8f5f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .info-value {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background: linear-gradient(135deg, #8B6F47 0%, #6B5536 100%);
+            color: white;
+            padding: 15px;
+            text-align: right;
+            font-weight: bold;
+        }
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🅿️ تقرير ParkPow</h1>
+            <p>نتائج التعرف على لوحات السيارات</p>
+        </div>
+
+        <div class="info-section">
+            <div class="info-row">
+                <span class="info-label">📅 تاريخ التقرير:</span>
+                <span class="info-value">${timestamp}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">📊 إجمالي النتائج:</span>
+                <span class="info-value">${currentResults.length} لوحة</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">🎯 النظام:</span>
+                <span class="info-value">ParkPow Integration System</span>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>الرقم</th>
+                    <th>رقم اللوحة</th>
+                    <th>دقة التعرف</th>
+                    <th>المنطقة</th>
+                    <th>نوع المركبة</th>
+                    <th>اسم الملف</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${resultsHTML}
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>تم إنشاء هذا التقرير بواسطة نظام ParkPow للتعرف على اللوحات</p>
+            <p>جامعة الإمام محمد بن سعود الإسلامية - وحدة إسكان أعضاء هيئة التدريس</p>
+        </div>
+    </div>
+</body>
+</html>
+                `;
+
+                // إنشاء وتحميل الملف
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ParkPow_Report_${new Date().toISOString().split('T')[0]}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                alert(`✅ تم التصدير بنجاح!\n${a.download}`);
+            } catch (error) {
+                console.error('HTML export error:', error);
+                alert('حدث خطأ أثناء التصدير\nExport error occurred');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,8 +1,63 @@
 # نظام إدارة المرور - Traffic Management System
 
 [![Deploy to GitHub Pages](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 نظام شامل لإدارة المخالفات المرورية بنظام أدوار وصلاحيات متقدم للتحكم في الوصول.
+
+**الإصدار الحالي / Current Version:** 1.1.0 | [سجل التغييرات / Changelog](CHANGELOG.md) | [ملاحظات الإصدار / Release Notes](RELEASE_NOTES.md)
+
+## 📁 هيكل المشروع - Project Structure
+
+```
+/
+├── index.html              # صفحة تسجيل الدخول (نقطة البداية)
+├── pages/                  # جميع صفحات التطبيق
+│   ├── unified_dashboard.html    # لوحة التحكم الرئيسية
+│   ├── المخالفات_المرورية.html  # نموذج إدخال المخالفات
+│   ├── inquiry_violations.html   # الاستعلام عن المخالفات
+│   └── ...                       # (20+ صفحة أخرى)
+├── assets/                 # الصور والوسائط
+│   ├── شعار.jpg
+│   ├── university_logo.png
+│   └── هوية بصرية لنافذه الدخول.jpeg
+├── js/                     # ملفات JavaScript
+│   ├── auth.js            # نظام المصادقة والصلاحيات
+│   ├── database.js        # إدارة قاعدة البيانات
+│   └── email-service.js   # خدمة البريد الإلكتروني
+└── docs/                   # التوثيق الكامل
+    └── ...                # (44+ ملف توثيق)
+```
+
+---
+
+## 🔓 فتح القفل والنشر - Unlock & Deploy
+
+**النظام جاهز للنشر!** لتفعيل الموقع وإتاحته على الإنترنت:
+
+### ⚡ خطوات سريعة (5 دقائق):
+1. **[دليل النشر السريع](QUICK_PUBLISH_GUIDE.md)** ⭐ ابدأ هنا!
+2. أو شغّل: `./publish.sh` (Linux/Mac) أو `publish.bat` (Windows)
+3. اتبع الخطوات البسيطة المعروضة
+4. احصل على رابط النشر: `https://ali5829511.github.io/N-M/`
+
+### 📚 أدلة النشر المتاحة:
+- 📖 [QUICK_PUBLISH_GUIDE.md](QUICK_PUBLISH_GUIDE.md) - الأسرع! (ابدأ هنا ⭐)
+- 📖 [PUBLISHING_TOOLS_README.md](PUBLISHING_TOOLS_README.md) - جميع الأدوات
+- 📖 [UPDATE_PUBLISH_SUMMARY.md](UPDATE_PUBLISH_SUMMARY.md) - ملخص كامل
+- 📖 [UNLOCK_AND_DEPLOY.md](UNLOCK_AND_DEPLOY.md) - دليل مفصل
+- 📖 [GITHUB_RELEASE.md](GITHUB_RELEASE.md) - قالب الإصدار
+
+### 🛠️ أوامر سريعة:
+```bash
+./publish.sh              # فحص الجاهزية والنشر (Linux/Mac)
+publish.bat               # فحص الجاهزية والنشر (Windows)
+npm run publish:prepare   # نفس الأعلى
+npm run deploy:status     # فحص حالة النشر فقط
+```
+
+**🎯 [ابدأ الآن - دليل سريع](QUICK_PUBLISH_GUIDE.md)**
 
 ---
 
@@ -22,7 +77,7 @@ npm install && npm start
 
 **افتح المتصفح على:** `http://localhost:8080`
 
-📖 **[دليل كامل للخادم المحلي](SERVER_SETUP_AR.md)** | **[English Guide](SERVER_SETUP_EN.md)**
+📖 **[دليل كامل للخادم المحلي](docs/SERVER_SETUP_AR.md)** | **[English Guide](docs/SERVER_SETUP_EN.md)**
 
 ---
 
@@ -30,15 +85,15 @@ npm install && npm start
 
 | المكون | الحالة | التفاصيل |
 |--------|--------|-----------|
-| **الخادم المحلي** | ✅ جاهز | 4 خوادم عالية الجودة - [الدليل](SERVER_SETUP_AR.md) |
-| **قاعدة البيانات** | ✅ نشط | localStorage (للتطوير) - [التفاصيل](DATABASE_STATUS.md) |
-| **النشر** | ✅ جاهز | GitHub Pages + Render.com - [الدليل](GITHUB_PAGES_SETUP.md) |
-| **Render.com** | ✅ مُصلح | تم إصلاح `render.yaml` - [دليل Render](RENDER_DEPLOYMENT_AR.md) |
-| **الأمان** | ✅ آمن | 0 ثغرات - [تقرير الأمان](SECURITY_SUMMARY.md) |
+| **الخادم المحلي** | ✅ جاهز | 4 خوادم عالية الجودة - [الدليل](docs/SERVER_SETUP_AR.md) |
+| **قاعدة البيانات** | ✅ نشط | localStorage (للتطوير) - [التفاصيل](docs/DATABASE_STATUS.md) |
+| **النشر** | ✅ جاهز | GitHub Pages + Render.com - [الدليل](docs/GITHUB_PAGES_SETUP.md) |
+| **Render.com** | ✅ مُصلح | تم إصلاح `render.yaml` - [دليل Render](docs/RENDER_DEPLOYMENT_AR.md) |
+| **الأمان** | ✅ آمن | 0 ثغرات - [تقرير الأمان](docs/SECURITY_SUMMARY.md) |
 
 ### 🔍 التحقق من حالة قاعدة البيانات
-- **صفحة الحالة المباشرة:** [database_status.html](database_status.html)
-- **التوثيق الكامل:** [DATABASE_STATUS.md](DATABASE_STATUS.md)
+- **صفحة الحالة المباشرة:** [database_status.html](pages/database_status.html)
+- **التوثيق الكامل:** [DATABASE_STATUS.md](docs/DATABASE_STATUS.md)
 
 ## 🌐 النظام المنشور - Live Demo
 
@@ -57,7 +112,7 @@ npm install && npm start
 2. **تفعيل GitHub Pages** من Settings > Pages > Source: "GitHub Actions"
 
 **خطوات النشر السريعة:**
-راجع الدليل الشامل: **[DEPLOYMENT_GUIDE_AR.md](DEPLOYMENT_GUIDE_AR.md)**
+راجع الدليل الشامل: **[DEPLOYMENT_GUIDE_AR.md](docs/DEPLOYMENT_GUIDE_AR.md)**
 
 **بعد التفعيل، الموقع سيكون متاحاً على:**
 ```
