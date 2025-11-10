@@ -32,11 +32,19 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const HOST = process.env.HOST || '0.0.0.0';
 
+// تكوين ParkPow API
+const PARKPOW_API_TOKEN = process.env.PARKPOW_API_TOKEN || '7c13be422713a758a42a0bc453cf3331fbf4d346';
+const PARKPOW_API_URL = 'https://app.parkpow.com/api/v1';
+
 // تفعيل ضغط الملفات لتحسين الأداء
 app.use(compression());
 
 // تفعيل CORS للسماح بالطلبات من أي مصدر
 app.use(cors());
+
+// تفعيل JSON parsing للـ API requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // تسجيل جميع الطلبات
 app.use((req, res, next) => {
@@ -69,6 +77,152 @@ app.use(express.static(path.join(__dirname), {
 // معالجة الصفحة الرئيسية
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// ============================================
+// ParkPow API Endpoints
+// ============================================
+
+// التحقق من حالة الاتصال بـ ParkPow API
+app.get('/api/parkpow/status', async (req, res) => {
+  try {
+    const response = await fetch(`${PARKPOW_API_URL}/user/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Token ${PARKPOW_API_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      res.json({
+        success: true,
+        configured: true,
+        connected: true,
+        message: 'متصل بـ ParkPow API',
+        user: data
+      });
+    } else {
+      res.json({
+        success: false,
+        configured: true,
+        connected: false,
+        message: 'فشل الاتصال بـ ParkPow API'
+      });
+    }
+  } catch (error) {
+    res.json({
+      success: false,
+      configured: !!PARKPOW_API_TOKEN,
+      connected: false,
+      message: error.message
+    });
+  }
+});
+
+// التعرف على اللوحات من خلال ParkPow
+app.post('/api/parkpow/recognize', async (req, res) => {
+  try {
+    const { image, regions = 'sa' } = req.body;
+    
+    if (!image) {
+      return res.status(400).json({
+        success: false,
+        error: 'الرجاء إرفاق صورة'
+      });
+    }
+
+    // استدعاء ParkPow API
+    const formData = new FormData();
+    formData.append('upload', image);
+    formData.append('regions', regions);
+
+    const response = await fetch(`${PARKPOW_API_URL}/plate-reader/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Token ${PARKPOW_API_TOKEN}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.results) {
+      res.json({
+        success: true,
+        results: data.results,
+        processing_time: data.processing_time,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.json({
+        success: false,
+        error: data.error || 'فشل التعرف على اللوحة'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// استقبال Webhook من ParkPow
+app.post('/api/parkpow/webhook', async (req, res) => {
+  try {
+    const webhookData = req.body;
+    console.log('📨 ParkPow Webhook received:', webhookData);
+    
+    // هنا يمكن معالجة البيانات وحفظها في قاعدة البيانات
+    
+    res.json({
+      success: true,
+      message: 'تم استقبال البيانات بنجاح'
+    });
+  } catch (error) {
+    console.error('❌ خطأ في معالجة Webhook:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// الحصول على سجل التعرف على اللوحات
+app.get('/api/parkpow/history', async (req, res) => {
+  try {
+    const { limit = 20 } = req.query;
+    
+    const response = await fetch(`${PARKPOW_API_URL}/plate-reader/?limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Token ${PARKPOW_API_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      res.json({
+        success: true,
+        history: data.results || [],
+        count: data.count || 0
+      });
+    } else {
+      res.json({
+        success: false,
+        error: 'فشل الحصول على السجل'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 // معالجة الصفحات غير الموجودة

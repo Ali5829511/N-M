@@ -1,14 +1,4 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>Untitled</title>
-  
-
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
   <meta charset="UTF-8">
@@ -21,7 +11,7 @@
       background-color: #f8f9fa;
     }
     .header {
-      background-color: #1a5276;
+      background-color: #6B5536;
       color: white;
       padding: 15px 0;
       margin-bottom: 30px;
@@ -41,27 +31,27 @@
       font-weight: bold;
     }
     .btn-primary {
-      background-color: #1a5276;
-      border-color: #1a5276;
+      background-color: #6B5536;
+      border-color: #6B5536;
     }
     .btn-primary:hover {
       background-color: #154360;
       border-color: #154360;
     }
     .footer {
-      background-color: #1a5276;
+      background-color: #6B5536;
       color: white;
       padding: 15px 0;
       text-align: center;
       margin-top: 30px;
     }
     .nav-tabs .nav-link.active {
-      background-color: #1a5276;
+      background-color: #6B5536;
       color: white;
-      border-color: #1a5276;
+      border-color: #6B5536;
     }
     .nav-tabs .nav-link {
-      color: #1a5276;
+      color: #6B5536;
     }
   </style>
 </head>
@@ -318,23 +308,56 @@
     </div>
   </div>
 
+  <!-- تحميل مكتبات النظام -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script src="../js/database.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/email-service.js"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    'use strict';
+    
+    // حماية الصفحة - السماح لمسجلي المخالفات والمدراء
+    if (!window.authManager.requireAuth(['violation_entry', 'admin'])) {
+      // سيتم إعادة التوجيه تلقائياً
+    }
+    
     // إضافة سلوك للنموذج
-    document.getElementById('violationForm').addEventListener('submit', function(e) {
+    document.getElementById('violationForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      alert('تم تسجيل المخالفة بنجاح!');
-      this.reset();
+      
+      // جمع بيانات النموذج
+      const formData = {
+        plateNumber: document.getElementById('plateNumber').value,
+        violationType: document.getElementById('violationType')?.value || 'parking',
+        violationDate: document.getElementById('violationDate')?.value || new Date().toISOString().split('T')[0],
+        location: document.getElementById('location')?.value || '',
+        amount: document.getElementById('amount')?.value || '0',
+        isPaid: false
+      };
+      
+      // حفظ المخالفة في قاعدة البيانات
+      const result = await window.db.addViolation(formData);
+      
+      if (result.success) {
+        alert('تم تسجيل المخالفة بنجاح!');
+        
+        // إرسال إشعار بريد إلكتروني إذا كانت الخدمة مفعلة
+        if (window.emailService && window.emailService.isEmailEnabled()) {
+          await window.emailService.notifyViolationAdded(result.violation);
+        }
+        
+        this.reset();
+      } else {
+        alert('حدث خطأ أثناء تسجيل المخالفة: ' + result.error);
+      }
     });
 
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
+    document.getElementById('searchForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       alert('جاري البحث...');
     });
   </script>
-</body>
-</html>
-<!-- partial -->
-  
 </body>
 </html>
