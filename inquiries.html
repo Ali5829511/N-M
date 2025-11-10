@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاستعلامات - وحدة إسكان هيئة التدريس</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #8B6F47;
+            --secondary-color: #A0826D;
+            --accent-color: #C9B896;
+            --light-bg: #f8f5f0;
+            --success-color: #51cf66;
+            --error-color: #ff6b6b;
+            --warning-color: #ffa94d;
+            --info-color: #3b82f6;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --border-radius: 16px;
+            --shadow-sm: 0 2px 8px rgba(139, 111, 71, 0.08);
+            --shadow-md: 0 8px 24px rgba(139, 111, 71, 0.12);
+            --shadow-lg: 0 16px 48px rgba(139, 111, 71, 0.16);
+        }
+
+        body {
+            font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f8f5f0 0%, #e8dcc8 100%);
+            min-height: 100vh;
+            direction: rtl;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* الترويسة */
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: contain;
+            background: white;
+            padding: 8px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-text h1 {
+            font-size: clamp(22px, 4vw, 28px);
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            color: var(--text-light);
+            font-size: clamp(13px, 2vw, 15px);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* بطاقات الاستعلام */
+        .inquiry-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .inquiry-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .inquiry-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .inquiry-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8ecf1;
+        }
+
+        .inquiry-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+
+        .icon-violations-bg {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .icon-immobilized-bg {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .icon-accidents-bg {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .inquiry-card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* نماذج البحث */
+        .search-form {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e8ecf1;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(139, 111, 71, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Tajawal', sans-serif;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* نتائج البحث */
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: var(--shadow-sm);
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-item {
+            padding: 15px;
+            border: 2px solid #e8ecf1;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .result-value {
+            color: var(--text-light);
+        }
+
+        /* شارات الحالة */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-warning {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* رسائل التنبيه */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-right: 4px solid #3b82f6;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-right: 4px solid #f59e0b;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-right: 4px solid #10b981;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .no-results i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-content {
+                flex-direction: column;
+            }
+
+            .inquiry-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 14px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- الترويسة -->
+        <div class="header">
+            <div class="header-content">
+                <img src="شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="logo">
+                <div class="header-text">
+                    <h1>الاستعلامات</h1>
+                    <p>الاستعلام عن المخالفات والسيارات المحجوزة والحوادث المرورية</p>
+                </div>
+            </div>
+            <a href="main_dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+                العودة للرئيسية
+            </a>
+        </div>
+
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <span>أدخل رقم اللوحة أو رقم السجل للاستعلام عن البيانات المطلوبة</span>
+        </div>
+
+        <!-- بطاقات الاستعلام -->
+        <div class="inquiry-cards">
+            <!-- استعلام عن المخالفات -->
+            <div class="inquiry-card">
+                <div class="inquiry-card-header">
+                    <div class="inquiry-icon icon-violations-bg">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div>
+                        <h2 class="inquiry-card-title">المخالفات المرورية</h2>
+                    </div>
+                </div>
+                
+                <form class="search-form" onsubmit="searchViolations(event)">
+                    <div class="form-group">
+                        <label>رقم اللوحة</label>
+                        <input type="text" id="violationPlate" placeholder="مثال: أ ب ج 1234" required>
+                    </div>
+                    <button type="submit" class="btn btn-search">
+                        <i class="fas fa-search"></i>
+                        بحث عن المخالفات
+                    </button>
+                </form>
+
+                <div class="results-section" id="violationResults">
+                    <h3 class="results-title">
+                        <i class="fas fa-list"></i>
+                        نتائج البحث
+                    </h3>
+                    <div id="violationResultsContent"></div>
+                </div>
+            </div>
+
+            <!-- استعلام عن السيارات المحجوزة -->
+            <div class="inquiry-card">
+                <div class="inquiry-card-header">
+                    <div class="inquiry-icon icon-immobilized-bg">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div>
+                        <h2 class="inquiry-card-title">السيارات المحجوزة</h2>
+                    </div>
+                </div>
+                
+                <form class="search-form" onsubmit="searchImmobilized(event)">
+                    <div class="form-group">
+                        <label>رقم اللوحة</label>
+                        <input type="text" id="immobilizedPlate" placeholder="مثال: أ ب ج 1234" required>
+                    </div>
+                    <button type="submit" class="btn btn-search">
+                        <i class="fas fa-search"></i>
+                        بحث عن السيارات المحجوزة
+                    </button>
+                </form>
+
+                <div class="results-section" id="immobilizedResults">
+                    <h3 class="results-title">
+                        <i class="fas fa-list"></i>
+                        نتائج البحث
+                    </h3>
+                    <div id="immobilizedResultsContent"></div>
+                </div>
+            </div>
+
+            <!-- استعلام عن الحوادث -->
+            <div class="inquiry-card">
+                <div class="inquiry-card-header">
+                    <div class="inquiry-icon icon-accidents-bg">
+                        <i class="fas fa-car-crash"></i>
+                    </div>
+                    <div>
+                        <h2 class="inquiry-card-title">الحوادث المرورية</h2>
+                    </div>
+                </div>
+                
+                <form class="search-form" onsubmit="searchAccidents(event)">
+                    <div class="form-group">
+                        <label>البحث بواسطة</label>
+                        <select id="accidentSearchType" onchange="toggleAccidentSearch()">
+                            <option value="plate">رقم اللوحة</option>
+                            <option value="date">التاريخ</option>
+                            <option value="location">الموقع</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="accidentPlateGroup">
+                        <label>رقم اللوحة</label>
+                        <input type="text" id="accidentPlate" placeholder="مثال: أ ب ج 1234">
+                    </div>
+                    <div class="form-group" id="accidentDateGroup" style="display: none;">
+                        <label>التاريخ</label>
+                        <input type="date" id="accidentDate">
+                    </div>
+                    <div class="form-group" id="accidentLocationGroup" style="display: none;">
+                        <label>الموقع</label>
+                        <input type="text" id="accidentLocation" placeholder="موقع الحادث">
+                    </div>
+                    <button type="submit" class="btn btn-search">
+                        <i class="fas fa-search"></i>
+                        بحث عن الحوادث
+                    </button>
+                </form>
+
+                <div class="results-section" id="accidentResults">
+                    <h3 class="results-title">
+                        <i class="fas fa-list"></i>
+                        نتائج البحث
+                    </h3>
+                    <div id="accidentResultsContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- التذييل -->
+        <div class="footer">
+            <p>جميع الحقوق محفوظة © جامعة الإمام محمد بن سعود الإسلامية 2025</p>
+        </div>
+    </div>
+
+    <!-- تحميل مكتبات النظام -->
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
+        'use strict';
+        
+        // حماية الصفحة - متاح للجميع (admin, violation_entry, inquiry)
+        if (!window.authManager.requireAuth(['admin', 'violation_entry', 'inquiry'])) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+
+        // تبديل نوع البحث في الحوادث
+        function toggleAccidentSearch() {
+            const searchType = document.getElementById('accidentSearchType').value;
+            document.getElementById('accidentPlateGroup').style.display = searchType === 'plate' ? 'block' : 'none';
+            document.getElementById('accidentDateGroup').style.display = searchType === 'date' ? 'block' : 'none';
+            document.getElementById('accidentLocationGroup').style.display = searchType === 'location' ? 'block' : 'none';
+        }
+
+        // البحث عن المخالفات
+        async function searchViolations(event) {
+            event.preventDefault();
+            const plateNumber = document.getElementById('violationPlate').value.trim();
+            const resultsSection = document.getElementById('violationResults');
+            const resultsContent = document.getElementById('violationResultsContent');
+            
+            try {
+                const violations = await window.db.getViolations();
+                const results = violations.filter(v => 
+                    v.plateNumber && v.plateNumber.includes(plateNumber)
+                );
+                
+                resultsSection.classList.add('active');
+                
+                if (results.length === 0) {
+                    resultsContent.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد مخالفات لهذا الرقم</p>
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = results.map(v => `
+                        <div class="result-item">
+                            <div class="result-row">
+                                <span class="result-label">رقم اللوحة:</span>
+                                <span class="result-value">${v.plateNumber || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">نوع المخالفة:</span>
+                                <span class="result-value">${v.violationType || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">التاريخ:</span>
+                                <span class="result-value">${v.date || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">الموقع:</span>
+                                <span class="result-value">${v.location || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">الحالة:</span>
+                                <span class="badge badge-${v.status === 'resolved' ? 'success' : 'warning'}">
+                                    ${v.status === 'resolved' ? 'محلولة' : 'معلقة'}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('خطأ في البحث:', error);
+                resultsContent.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.</span>
+                    </div>
+                `;
+            }
+        }
+
+        // البحث عن السيارات المحجوزة
+        async function searchImmobilized(event) {
+            event.preventDefault();
+            const plateNumber = document.getElementById('immobilizedPlate').value.trim();
+            const resultsSection = document.getElementById('immobilizedResults');
+            const resultsContent = document.getElementById('immobilizedResultsContent');
+            
+            try {
+                const immobilized = await window.db.getImmobilizedCars();
+                const results = immobilized.filter(c => 
+                    c.plateNumber && c.plateNumber.includes(plateNumber)
+                );
+                
+                resultsSection.classList.add('active');
+                
+                if (results.length === 0) {
+                    resultsContent.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد سيارات محجوزة لهذا الرقم</p>
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = results.map(c => `
+                        <div class="result-item">
+                            <div class="result-row">
+                                <span class="result-label">رقم اللوحة:</span>
+                                <span class="result-value">${c.plateNumber || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">سبب الحجز:</span>
+                                <span class="result-value">${c.reason || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">تاريخ الحجز:</span>
+                                <span class="result-value">${c.date || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">الموقع:</span>
+                                <span class="result-value">${c.location || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">الحالة:</span>
+                                <span class="badge badge-${c.status === 'released' ? 'success' : 'danger'}">
+                                    ${c.status === 'released' ? 'تم الإفراج' : 'محجوزة'}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('خطأ في البحث:', error);
+                resultsContent.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.</span>
+                    </div>
+                `;
+            }
+        }
+
+        // البحث عن الحوادث
+        async function searchAccidents(event) {
+            event.preventDefault();
+            const searchType = document.getElementById('accidentSearchType').value;
+            const resultsSection = document.getElementById('accidentResults');
+            const resultsContent = document.getElementById('accidentResultsContent');
+            
+            let searchValue;
+            if (searchType === 'plate') {
+                searchValue = document.getElementById('accidentPlate').value.trim();
+            } else if (searchType === 'date') {
+                searchValue = document.getElementById('accidentDate').value;
+            } else {
+                searchValue = document.getElementById('accidentLocation').value.trim();
+            }
+            
+            if (!searchValue) {
+                alert('الرجاء إدخال قيمة للبحث');
+                return;
+            }
+            
+            try {
+                const accidents = await window.db.getAccidents();
+                let results = [];
+                
+                if (searchType === 'plate') {
+                    results = accidents.filter(a => 
+                        (a.plate1 && a.plate1.includes(searchValue)) ||
+                        (a.plate2 && a.plate2.includes(searchValue))
+                    );
+                } else if (searchType === 'date') {
+                    results = accidents.filter(a => 
+                        a.date && a.date.includes(searchValue)
+                    );
+                } else {
+                    results = accidents.filter(a => 
+                        a.location && a.location.includes(searchValue)
+                    );
+                }
+                
+                resultsSection.classList.add('active');
+                
+                if (results.length === 0) {
+                    resultsContent.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد حوادث مطابقة للبحث</p>
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = results.map(a => `
+                        <div class="result-item">
+                            <div class="result-row">
+                                <span class="result-label">نوع الحادث:</span>
+                                <span class="result-value">${a.type || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">التاريخ:</span>
+                                <span class="result-value">${a.date || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">الموقع:</span>
+                                <span class="result-value">${a.location || '-'}</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">الإصابات:</span>
+                                <span class="badge badge-${a.injuries && a.injuries !== 'none' ? 'danger' : 'success'}">
+                                    ${a.injuries === 'none' ? 'بدون إصابات' : 'يوجد إصابات'}
+                                </span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">الحالة:</span>
+                                <span class="badge badge-${a.status === 'resolved' ? 'success' : 'warning'}">
+                                    ${a.status === 'resolved' ? 'تم المعالجة' : 'قيد المتابعة'}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('خطأ في البحث:', error);
+                resultsContent.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.</span>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
