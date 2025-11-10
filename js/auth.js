@@ -31,6 +31,8 @@ const PERMISSIONS = {
         canEditViolation: false,
         canDeleteViolation: false,
         canViewViolation: true,
+        canAddImmobilizedCar: true,
+        canAddAccident: true,
         canManageUsers: false,
         canViewReports: false,
         canExportData: false,
@@ -274,7 +276,7 @@ class AuthManager {
                 window.location.href = 'main_dashboard.html';
                 break;
             case ROLES.VIOLATION_ENTRY:
-                window.location.href = 'المخالفات_المرورية.html';
+                window.location.href = 'violation_entry_dashboard.html';
                 break;
             case ROLES.INQUIRY:
                 window.location.href = 'inquiry_violations.html';
