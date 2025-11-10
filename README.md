@@ -1,8 +1,12 @@
 # نظام إدارة المرور - Traffic Management System
 
 [![Deploy to GitHub Pages](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 نظام شامل لإدارة المخالفات المرورية بنظام أدوار وصلاحيات متقدم للتحكم في الوصول.
+
+**الإصدار الحالي / Current Version:** 1.1.0 | [سجل التغييرات / Changelog](CHANGELOG.md) | [ملاحظات الإصدار / Release Notes](RELEASE_NOTES.md)
 
 ## 📁 هيكل المشروع - Project Structure
 
