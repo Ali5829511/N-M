@@ -13,7 +13,9 @@
     "deploy:check": "node deploy-check.js",
     "deploy:status": "node check-deployment-status.js",
     "test:server": "node -e \"console.log('Server configuration test passed')\"",
-    "build": "echo 'Static site - no build required'"
+    "build": "echo 'Static site - no build required'",
+    "publish:prepare": "bash publish.sh",
+    "version:tag": "git tag -a v$(node -p \"require('./package.json').version\") -m \"Version $(node -p \"require('./package.json').version\")\""
   },
   "keywords": [
     "traffic",
