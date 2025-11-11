@@ -66,5 +66,10 @@ config.local.js
 *copy*
 *Copy*
 
+# Generated databases and output folders
+vehicles.db
+input_images/
+output_reports/
+
 # Cache
 .cache/
