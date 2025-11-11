@@ -73,5 +73,10 @@ traffic.db
 *copy*
 *Copy*
 
+# Generated databases and output folders
+vehicles.db
+input_images/
+output_reports/
+
 # Cache
 .cache/

@@ -1,12 +1,12 @@
 # نظام إدارة المرور - Traffic Management System
 
 [![Deploy to GitHub Pages](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml)
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 نظام شامل لإدارة المخالفات المرورية بنظام أدوار وصلاحيات متقدم للتحكم في الوصول.
 
-**الإصدار الحالي / Current Version:** 1.1.0 | [سجل التغييرات / Changelog](CHANGELOG.md)
+**الإصدار الحالي / Current Version:** 1.2.0 | [سجل التغييرات / Changelog](CHANGELOG.md)
 
 ## 📁 هيكل المشروع - Project Structure
 
@@ -307,9 +307,14 @@ npm start
 - **PRODUCTION_CHECKLIST.md**: قائمة تحقق من جاهزية النظام للإنتاج
 - **SECURITY.md**: إرشادات الأمان والثغرات الحالية والحلول
 - **OFFLINE_USAGE.md**: دليل الاستخدام بدون اتصال بالإنترنت
+- **DEVELOPER_GUIDE.md**: دليل شامل للمطورين
+
+### أدلة Git و GitHub
+- **[GITHUB_LARGE_COMMITS_GUIDE.md](docs/GITHUB_LARGE_COMMITS_GUIDE.md)**: فهم الالتزامات الكبيرة والمحتوى المخفي في GitHub
 
 ### ملفات النظام
 - **.gitignore**: قائمة الملفات المستثناة من Git
+- **[DOCUMENTATION_INDEX.md](docs/DOCUMENTATION_INDEX.md)**: فهرس شامل لجميع ملفات التوثيق
 
 ## 🏗️ بنية المشروع
 

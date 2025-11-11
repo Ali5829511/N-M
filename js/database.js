@@ -48,6 +48,11 @@ class DatabaseManager {
                 localStorage.setItem('violations', JSON.stringify([]));
             }
 
+            // إنشاء جدول الملصقات إذا لم يكن موجوداً
+            if (!localStorage.getItem('stickers')) {
+                this.initializeDefaultStickers();
+            }
+
             // تحديث حالة الاتصال
             this.connectionStatus = 'connected';
             console.log('✓ قاعدة البيانات متصلة بنجاح (localStorage)');
@@ -286,6 +291,223 @@ class DatabaseManager {
     }
 
     /**
+     * إنشاء بيانات الملصقات الافتراضية
+     */
+    initializeDefaultStickers() {
+        const defaultStickers = [
+            {
+                id: 1,
+                idNumber: '1234567890',
+                residentName: 'د. أحمد محمد علي',
+                status: 'فعال',
+                issueDate: '2025-01-15',
+                plateNumber: 'ر ق ل 1234',
+                vehicleType: 'سيدان',
+                unitType: 'V',
+                building: '15',
+                apartment: '25',
+                deliveryImage: '',
+                notes: 'ملصق جديد',
+                createdDate: new Date().toISOString()
+            },
+            {
+                id: 2,
+                idNumber: '9876543210',
+                residentName: 'د. فاطمة أحمد',
+                status: 'فعال',
+                issueDate: '2025-01-20',
+                plateNumber: 'ر ق ل 5678',
+                vehicleType: 'SUV',
+                unitType: 'A',
+                building: '8',
+                apartment: '45',
+                deliveryImage: '',
+                notes: 'تجديد ملصق',
+                createdDate: new Date().toISOString()
+            },
+            {
+                id: 3,
+                idNumber: '5555555555',
+                residentName: 'د. محمد سعد',
+                status: 'غير فعال',
+                issueDate: '2024-12-01',
+                plateNumber: 'ر ق ل 9999',
+                vehicleType: 'هاتشباك',
+                unitType: 'V',
+                building: '12',
+                apartment: '10',
+                deliveryImage: '',
+                notes: 'منتهي الصلاحية',
+                createdDate: new Date().toISOString()
+            }
+        ];
+        
+        localStorage.setItem('stickers', JSON.stringify(defaultStickers));
+    }
+
+    /**
+     * الحصول على جميع الملصقات
+     */
+    async getStickers() {
+        try {
+            const stickers = JSON.parse(localStorage.getItem('stickers') || '[]');
+            return stickers;
+        } catch (error) {
+            console.error('Error getting stickers:', error);
+            return [];
+        }
+    }
+
+    /**
+     * الحصول على ملصق بواسطة المعرف
+     */
+    async getStickerById(id) {
+        const stickers = await this.getStickers();
+        return stickers.find(s => s.id === id);
+    }
+
+    /**
+     * إضافة ملصق جديد
+     */
+    async addSticker(stickerData) {
+        try {
+            const stickers = await this.getStickers();
+            
+            // إنشاء معرف جديد
+            const newId = stickers.length > 0 ? Math.max(...stickers.map(s => s.id)) + 1 : 1;
+            
+            const newSticker = {
+                id: newId,
+                ...stickerData,
+                createdDate: new Date().toISOString(),
+                createdBy: window.authManager ? window.authManager.getCurrentUser()?.id : null
+            };
+            
+            stickers.push(newSticker);
+            localStorage.setItem('stickers', JSON.stringify(stickers));
+            
+            return {
+                success: true,
+                sticker: newSticker
+            };
+        } catch (error) {
+            console.error('Error adding sticker:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء إضافة الملصق'
+            };
+        }
+    }
+
+    /**
+     * تحديث ملصق
+     */
+    async updateSticker(id, stickerData) {
+        try {
+            const stickers = await this.getStickers();
+            const index = stickers.findIndex(s => s.id === id);
+            
+            if (index === -1) {
+                return {
+                    success: false,
+                    error: 'الملصق غير موجود'
+                };
+            }
+            
+            stickers[index] = {
+                ...stickers[index],
+                ...stickerData,
+                id: id,
+                updatedDate: new Date().toISOString(),
+                updatedBy: window.authManager ? window.authManager.getCurrentUser()?.id : null
+            };
+            
+            localStorage.setItem('stickers', JSON.stringify(stickers));
+            
+            return {
+                success: true,
+                sticker: stickers[index]
+            };
+        } catch (error) {
+            console.error('Error updating sticker:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء تحديث الملصق'
+            };
+        }
+    }
+
+    /**
+     * حذف ملصق
+     */
+    async deleteSticker(id) {
+        try {
+            const stickers = await this.getStickers();
+            const filteredStickers = stickers.filter(s => s.id !== id);
+            
+            if (stickers.length === filteredStickers.length) {
+                return {
+                    success: false,
+                    error: 'الملصق غير موجود'
+                };
+            }
+            
+            localStorage.setItem('stickers', JSON.stringify(filteredStickers));
+            
+            return {
+                success: true
+            };
+        } catch (error) {
+            console.error('Error deleting sticker:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء حذف الملصق'
+            };
+        }
+    }
+
+    /**
+     * البحث عن ملصقات برقم الهوية
+     */
+    async searchStickersByIdNumber(idNumber) {
+        const stickers = await this.getStickers();
+        return stickers.filter(s => 
+            s.idNumber && s.idNumber.includes(idNumber)
+        );
+    }
+
+    /**
+     * البحث عن ملصقات برقم اللوحة
+     */
+    async searchStickersByPlate(plateNumber) {
+        const stickers = await this.getStickers();
+        return stickers.filter(s => 
+            s.plateNumber && s.plateNumber.includes(plateNumber)
+        );
+    }
+
+    /**
+     * الحصول على إحصائيات الملصقات
+     */
+    async getStickerStats() {
+        const stickers = await this.getStickers();
+        const today = new Date().toISOString().split('T')[0];
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        
+        return {
+            total: stickers.length,
+            active: stickers.filter(s => s.status === 'فعال').length,
+            inactive: stickers.filter(s => s.status === 'غير فعال').length,
+            canceled: stickers.filter(s => s.status === 'ملغي').length,
+            violated: stickers.filter(s => s.status === 'مخالف').length,
+            today: stickers.filter(s => s.issueDate === today).length,
+            thisWeek: stickers.filter(s => s.issueDate >= weekAgo).length,
+            villas: stickers.filter(s => s.unitType === 'V').length,
+            apartments: stickers.filter(s => s.unitType === 'A').length
+        };
+    }
+
+    /**
      * الحصول على جميع المخالفات
      */
     async getViolations() {
@@ -469,6 +691,10 @@ class DatabaseManager {
             data.violations = await this.getViolations();
         }
         
+        if (type === 'all' || type === 'stickers') {
+            data.stickers = await this.getStickers();
+        }
+        
         return data;
     }
 
@@ -483,6 +709,10 @@ class DatabaseManager {
             
             if (data.violations) {
                 localStorage.setItem('violations', JSON.stringify(data.violations));
+            }
+            
+            if (data.stickers) {
+                localStorage.setItem('stickers', JSON.stringify(data.stickers));
             }
             
             return {
@@ -504,6 +734,7 @@ class DatabaseManager {
     async resetDatabase() {
         localStorage.removeItem('users');
         localStorage.removeItem('violations');
+        localStorage.removeItem('stickers');
         this.init();
     }
 }

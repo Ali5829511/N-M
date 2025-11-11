@@ -1,7 +1,15 @@
-# Python Dependencies for Automatic Plate Recognition System
-# متطلبات نظام التعرف التلقائي على لوحات السيارات
+# Python dependencies for plate violation processor
+# متطلبات Python لمعالج المخالفات
 
-# HTTP requests library
+# Plate Recognition API
 requests>=2.31.0
 
-# SQLite3 is built-in with Python, no need to install
+# PDF Generation
+fpdf>=1.7.2
+
+# Excel Generation
+pandas>=2.0.0
+openpyxl>=3.1.0
+
+# Image Processing
+Pillow>=10.0.0
