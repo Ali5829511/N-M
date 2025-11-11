@@ -1,10 +1,10 @@
 services:
   - type: web
     name: n-m-traffic-system
-    env: static
+    env: node
     buildCommand: npm install
-    publishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production

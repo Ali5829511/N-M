@@ -32,23 +32,24 @@ https://dashboard.render.com/static/srv-d47fc1ili9vc738meet0/deploys/dep-d47lhm3
 1. اذهب إلى: https://dashboard.render.com/
 2. سجل الدخول بحساب GitHub
 
-#### الخطوة 2: إنشاء Static Site جديد
+#### الخطوة 2: إنشاء Web Service جديد
 1. اضغط على **"New +"** في الأعلى
-2. اختر **"Static Site"**
+2. اختر **"Web Service"**
 3. اختر Repository: **Ali5829511/N-M**
-4. اسم الموقع: `n-m-traffic-system` (أو أي اسم)
+4. اسم الخدمة: `n-m-traffic-system` (أو أي اسم)
 
 #### الخطوة 3: إعدادات النشر
 ```
 Name: n-m-traffic-system
 Branch: main
-Build Command: (اتركها فارغة أو اكتب: echo "No build")
-Publish Directory: . (نقطة)
+Environment: Node
+Build Command: npm install
+Start Command: npm start
 ```
 
 #### الخطوة 4: نشر
-1. اضغط **"Create Static Site"**
-2. انتظر 1-2 دقيقة للنشر
+1. اضغط **"Create Web Service"**
+2. انتظر 2-3 دقائق للبناء والنشر
 3. الرابط سيكون: `https://n-m-traffic-system.onrender.com`
 
 ---
@@ -73,19 +74,20 @@ Publish Directory: . (نقطة)
 services:
   - type: web
     name: n-m-traffic-system
-    env: static
-    buildCommand: echo "Static site - no build needed"
-    staticPublishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
 ```
 
 ### ماذا يفعل:
-- ✅ ينشئ موقع static
-- ✅ يستخدم جميع الملفات من root (.)
-- ✅ يحول جميع الطلبات إلى index.html
+- ✅ ينشئ خدمة Node.js web service
+- ✅ يبني المشروع باستخدام npm install
+- ✅ يشغل الخادم باستخدام npm start (node server.js)
+- ✅ يراقب صحة الخادم من خلال /
 - ✅ جاهز للاستخدام مباشرة!
 
 ---
