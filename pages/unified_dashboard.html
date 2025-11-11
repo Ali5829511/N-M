@@ -15,23 +15,63 @@
 
         body {
             font-family: 'Tajawal', Arial, sans-serif;
-            background: linear-gradient(135deg, #f8f5f0 0%, #e8dcc8 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
             direction: rtl;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* تأثير الخلفية المتحركة */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            animation: backgroundPulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
         }
 
         .container {
             max-width: 1600px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            padding: 30px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 35px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3), 
+                        0 0 0 1px rgba(255,255,255,0.3) inset;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            z-index: 0;
         }
 
         .header-title {
@@ -41,69 +81,124 @@
             margin-bottom: 15px;
             flex-wrap: wrap;
             gap: 15px;
+            position: relative;
+            z-index: 1;
         }
 
         .header h1 {
-            font-size: 32px;
-            color: #8B6F47;
+            font-size: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             display: flex;
             align-items: center;
             gap: 15px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
         }
 
         .back-btn {
-            background: linear-gradient(135deg, #8B6F47 0%, #A0826D 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
+            padding: 14px 28px;
+            border-radius: 30px;
             cursor: pointer;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 10px;
             font-weight: bold;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .back-btn:hover::before {
+            left: 100%;
         }
 
         .back-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 111, 71, 0.4);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
         }
 
         /* التبويبات */
         .tabs {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 30px;
             flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
         .tab-btn {
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid #A0826D;
-            color: #8B6F47;
-            padding: 15px 30px;
+            background: transparent;
+            border: none;
+            color: #667eea;
+            padding: 16px 32px;
             border-radius: 15px;
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+            z-index: -1;
         }
 
         .tab-btn:hover {
-            background: #A0826D;
             color: white;
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        .tab-btn:hover::before {
+            width: 120%;
+            height: 120%;
         }
 
         .tab-btn.active {
-            background: #8B6F47;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            box-shadow: 0 5px 15px rgba(139, 111, 71, 0.4);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+
+        .tab-btn.active::before {
+            display: none;
         }
 
         .tab-content {
@@ -112,120 +207,202 @@
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
 
         /* بطاقات الإحصائيات */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
             margin-bottom: 30px;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.2);
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 25px 60px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
         }
 
         .stat-icon {
-            font-size: 3em;
+            font-size: 3.5em;
             margin-bottom: 15px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .stat-number {
-            font-size: 2.5em;
+            font-size: 3em;
             font-weight: bold;
-            color: #2D5F3F;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
         }
 
         .stat-label {
-            color: #666;
-            font-size: 1.1em;
+            color: #555;
+            font-size: 1.15em;
+            font-weight: 600;
         }
 
         /* جدول التقرير */
         .report-table {
             width: 100%;
-            background: white;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .report-table thead {
-            background: linear-gradient(135deg, #2D5F3F 0%, #1a3a28 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .report-table th {
-            padding: 15px;
+            padding: 18px;
             text-align: center;
             font-weight: bold;
+            font-size: 1.05em;
         }
 
         .report-table td {
-            padding: 12px;
+            padding: 15px;
             text-align: center;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .report-table tbody tr {
+            transition: all 0.3s ease;
         }
 
         .report-table tbody tr:hover {
-            background: #f5f5f5;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            transform: scale(1.01);
         }
 
         /* أدوات التحكم */
         .controls {
             display: flex;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
             align-items: center;
         }
 
         .controls input[type="text"] {
             flex-grow: 1;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
+            padding: 15px 20px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 15px;
             font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .controls input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            transform: scale(1.02);
         }
 
         .btn-primary, .btn-info {
-            background: #2D5F3F;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
+            padding: 15px 28px;
+            border-radius: 15px;
             cursor: pointer;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
+            gap: 10px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-info {
-            background: #2196F3;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
+        }
+
+        .btn-primary::before, .btn-info::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover::before, .btn-info:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary:hover, .btn-info:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-info:hover {
+            box-shadow: 0 15px 40px rgba(240, 147, 251, 0.5);
         }
 
         /* تصميم الطباعة */
@@ -233,6 +410,9 @@
             body {
                 background: white;
                 padding: 0;
+            }
+            body::before {
+                display: none;
             }
             .header, .tabs, .controls, .back-btn {
                 display: none;
@@ -247,11 +427,66 @@
 
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 24px;
+                font-size: 28px;
             }
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+            .tabs {
+                flex-direction: column;
+            }
+            .tab-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* تأثيرات إضافية */
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* تحسين مظهر الأيقونات */
+        i.fas, i.far {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover i.fas {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        /* تحسين الشعار */
+        .logo-img {
+            height: 60px; 
+            border-radius: 15px; 
+            margin-left: 15px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.1) rotate(3deg);
+        }
+
+        /* تحسين تسمية badge في الجدول */
+        .violation-badge {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            color: white; 
+            padding: 8px 18px; 
+            border-radius: 25px; 
+            font-weight: bold;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .violation-badge:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -260,22 +495,25 @@
         <div class="header">
             <div class="header-title">
                 <h1>
-                    <img src="../assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" style="height: 50px; border-radius: 10px; margin-left: 15px;">
-                    <i class="fas fa-tachometer-alt"></i>
+                    <img src="../assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="logo-img">
+                    <i class="fas fa-chart-line"></i>
                     لوحة التحكم الموحدة
                 </h1>
-                <a href="unified_dashboard.html" class="back-btn">
-                    <i class="fas fa-arrow-right"></i>
+                <a href="home.html" class="back-btn">
+                    <i class="fas fa-home"></i>
                     العودة للصفحة الرئيسية
                 </a>
             </div>
-            <p style="color: #666; font-size: 16px;">عرض شامل للإحصائيات والمخالفات في صفحة واحدة</p>
+            <p style="color: #555; font-size: 17px; position: relative; z-index: 1;">
+                <i class="fas fa-info-circle" style="color: #667eea;"></i>
+                عرض شامل للإحصائيات والمخالفات في واجهة حديثة ومتطورة
+            </p>
         </div>
 
         <!-- التبويبات -->
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('statistics')">
-                <i class="fas fa-chart-bar"></i>
+                <i class="fas fa-chart-pie"></i>
                 الإحصائيات العامة
             </button>
             <button class="tab-btn" onclick="showTab('violations')">
@@ -292,32 +530,32 @@
         <div id="statistics" class="tab-content active">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <i class="fas fa-users stat-icon" style="color: #28a745;"></i>
+                    <i class="fas fa-users stat-icon" style="color: #667eea;"></i>
                     <div class="stat-number" id="totalResidents">1,057</div>
                     <div class="stat-label">إجمالي السكان</div>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-building stat-icon" style="color: #17a2b8;"></i>
+                    <i class="fas fa-building stat-icon" style="color: #764ba2;"></i>
                     <div class="stat-number" id="totalBuildings">165</div>
                     <div class="stat-label">المباني</div>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-car stat-icon" style="color: #ffc107;"></i>
+                    <i class="fas fa-car stat-icon" style="color: #f093fb;"></i>
                     <div class="stat-number" id="totalStickers">2,382</div>
                     <div class="stat-label">ملصقات السيارات</div>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-home stat-icon" style="color: #6f42c1;"></i>
+                    <i class="fas fa-home stat-icon" style="color: #f5576c;"></i>
                     <div class="stat-number" id="totalUnits">1,134</div>
                     <div class="stat-label">الوحدات السكنية</div>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-parking stat-icon" style="color: #fd7e14;"></i>
+                    <i class="fas fa-parking stat-icon" style="color: #667eea;"></i>
                     <div class="stat-number" id="totalParking">1,308</div>
                     <div class="stat-label">المواقف</div>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-exclamation-triangle stat-icon" style="color: #dc3545;"></i>
+                    <i class="fas fa-exclamation-circle stat-icon" style="color: #f5576c;"></i>
                     <div class="stat-number" id="activeViolations">12</div>
                     <div class="stat-label">المخالفات النشطة</div>
                 </div>
@@ -326,9 +564,9 @@
 
         <!-- تبويب تقرير المخالفات -->
         <div id="violations" class="tab-content">
-            <div style="background: rgba(255, 255, 255, 0.98); border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <div class="content-wrapper">
                 <div class="controls">
-                    <input type="text" id="plateSearch" placeholder="ابحث برقم اللوحة..." />
+                    <input type="text" id="plateSearch" placeholder="🔍 ابحث برقم اللوحة..." />
                     <button class="btn-primary" onclick="searchReport()">
                         <i class="fas fa-search"></i> بحث
                     </button>
@@ -343,20 +581,20 @@
                 <table class="report-table">
                     <thead>
                         <tr>
-                            <th>رقم اللوحة</th>
-                            <th>عدد تكرار المخالفة</th>
-                            <th>نوع السيارة</th>
-                            <th>تاريخ المخالفة</th>
-                            <th>اسم الساكن</th>
-                            <th>المبنى</th>
-                            <th>الوحدة</th>
+                            <th><i class="fas fa-id-card"></i> رقم اللوحة</th>
+                            <th><i class="fas fa-redo"></i> عدد تكرار المخالفة</th>
+                            <th><i class="fas fa-car-side"></i> نوع السيارة</th>
+                            <th><i class="fas fa-calendar"></i> تاريخ المخالفة</th>
+                            <th><i class="fas fa-user"></i> اسم الساكن</th>
+                            <th><i class="fas fa-building"></i> المبنى</th>
+                            <th><i class="fas fa-door-open"></i> الوحدة</th>
                         </tr>
                     </thead>
                     <tbody id="violationsTableBody">
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 30px;">
-                                <i class="fas fa-spinner fa-spin" style="font-size: 2em; color: #2D5F3F;"></i>
-                                <p style="margin-top: 15px; color: #666;">جاري تحميل البيانات...</p>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 3em; color: #667eea;"></i>
+                                <p style="margin-top: 20px; color: #666; font-size: 1.1em;">جاري تحميل البيانات...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -441,14 +679,14 @@
         function displayReport(data) {
             const tbody = document.getElementById('violationsTableBody');
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">لا توجد مخالفات مسجلة</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;"><i class="fas fa-info-circle" style="font-size: 2em; color: #667eea; margin-bottom: 10px;"></i><p style="color: #666;">لا توجد مخالفات مسجلة</p></td></tr>';
                 return;
             }
 
             tbody.innerHTML = data.map(item => `
                 <tr>
-                    <td><strong>${item.plateNumber || 'غير محدد'}</strong></td>
-                    <td><span style="background: #dc3545; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold;">${item.violationCount || 1}</span></td>
+                    <td><strong style="color: #667eea;">${item.plateNumber || 'غير محدد'}</strong></td>
+                    <td><span class="violation-badge">${item.violationCount || 1}</span></td>
                     <td>${item.vehicleType || 'غير محدد'}</td>
                     <td>${new Date(item.processingDate).toLocaleDateString('ar-SA')}</td>
                     <td>${item.residentName || 'غير محدد'}</td>
