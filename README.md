@@ -44,12 +44,16 @@ npm install && npm start
 
 **الحالة:** ✅ جاهز للنشر على GitHub Pages و Render.com
 
-**التحديثات الأخيرة (2025-11-09):**
-- ✅ **إصلاح خطأ 404 على Render.com** - تم تحديث `render.yaml` من static إلى Node.js web service
-- ✅ تم إصلاح تكوين Render.com (استخدام `env: node` بدلاً من `env: static`)
+**التحديثات الأخيرة (2025-11-10):**
+- ✅ **إصلاح نهائي لخطأ 404 على Render.com** - تم تحديث `render.yaml` من static إلى Node.js web service
+- ✅ تم إصلاح تكوين Render.com (استخدام `env: node` و `startCommand: npm start`)
 - ✅ تم إصلاح workflow النشر (إزالة enablement parameter)
 - ✅ تم إضافة دليل نشر مفصل بالعربية
 - ✅ تم توضيح متطلبات النشر (المستودع العام أو GitHub Pro)
+
+**التحديثات السابقة:**
+- تم إصلاح `publishPath` في `render.yaml` - [دليل الإصلاح](RENDER_FIX.md)  
+  *(ملاحظة: تم استبدال هذا الحل بحل أفضل يستخدم Node.js web service)*
 
 **⚠️ ملاحظة مهمة:**
 لنشر الموقع، يجب:
