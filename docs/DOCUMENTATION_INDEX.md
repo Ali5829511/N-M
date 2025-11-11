@@ -57,6 +57,7 @@
 | الملف | الوصف |
 |------|-------|
 | **[EMAIL_NOTIFICATION_README.md](EMAIL_NOTIFICATION_README.md)** | نظام إشعارات البريد الإلكتروني |
+| **[AUTO_PLATE_RECOGNITION.md](AUTO_PLATE_RECOGNITION.md)** | نظام التعرف التلقائي على لوحات السيارات (ALPR) |
 | **[FINAL_REVIEW.md](FINAL_REVIEW.md)** | مراجعة نهائية للنظام |
 
 ---
@@ -80,6 +81,9 @@
 
 ### أريد البدء السريع؟
 👉 اقرأ: **[QUICKSTART.md](QUICKSTART.md)**
+
+### أريد استخدام نظام التعرف على اللوحات؟
+👉 اقرأ: **[AUTO_PLATE_RECOGNITION.md](AUTO_PLATE_RECOGNITION.md)**
 
 ---
 

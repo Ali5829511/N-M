@@ -1,0 +1,11 @@
+{
+    "api_token": "ضع هنا رمز API الخاص بك من Plate Recognizer",
+    "api_url": "https://api.platerecognizer.com/v1/plate-reader/",
+    "input_folder": "images",
+    "output_folder": "processed_images",
+    "database_name": "traffic.db",
+    "violation_type": "دخول موقف خاص بدون تصريح",
+    "fine_amount": 1000,
+    "officer_name": "نظام تلقائي",
+    "auto_process": true
+}

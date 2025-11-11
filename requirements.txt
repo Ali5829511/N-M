@@ -1,0 +1,7 @@
+# Python Dependencies for Automatic Plate Recognition System
+# متطلبات نظام التعرف التلقائي على لوحات السيارات
+
+# HTTP requests library
+requests>=2.31.0
+
+# SQLite3 is built-in with Python, no need to install
