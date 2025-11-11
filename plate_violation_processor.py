@@ -21,12 +21,45 @@ This script:
 
 import os
 import sqlite3
-import requests
-from fpdf import FPDF
-import pandas as pd
-from PIL import Image
 from datetime import datetime
 import json
+
+# Check for required dependencies
+try:
+    import requests
+except ImportError:
+    print("❌ خطأ: المكتبة 'requests' غير مثبتة")
+    print("   Error: 'requests' library not installed")
+    print("   يرجى تشغيل: pip install -r requirements.txt")
+    print("   Please run: pip install -r requirements.txt")
+    exit(1)
+
+try:
+    from fpdf import FPDF
+except ImportError:
+    print("❌ خطأ: المكتبة 'fpdf' غير مثبتة")
+    print("   Error: 'fpdf' library not installed")
+    print("   يرجى تشغيل: pip install -r requirements.txt")
+    print("   Please run: pip install -r requirements.txt")
+    exit(1)
+
+try:
+    import pandas as pd
+except ImportError:
+    print("❌ خطأ: المكتبة 'pandas' غير مثبتة")
+    print("   Error: 'pandas' library not installed")
+    print("   يرجى تشغيل: pip install -r requirements.txt")
+    print("   Please run: pip install -r requirements.txt")
+    exit(1)
+
+try:
+    from PIL import Image
+except ImportError:
+    print("❌ خطأ: المكتبة 'Pillow' غير مثبتة")
+    print("   Error: 'Pillow' library not installed")
+    print("   يرجى تشغيل: pip install -r requirements.txt")
+    print("   Please run: pip install -r requirements.txt")
+    exit(1)
 
 # إعدادات المجلدات وقاعدة البيانات
 # Folder and database settings
