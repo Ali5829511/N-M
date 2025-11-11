@@ -808,12 +808,33 @@
                     </div>
                 `;
             } else {
+                // Get vehicle details from API result if available
+                const vehicleMake = result.vehicle?.make?.[0]?.name || '';
+                const vehicleModel = result.vehicle?.model?.[0]?.name || '';
+                const vehicleColor = result.vehicle?.color?.[0]?.name || '';
+                
+                // Build URL parameters for car registration page
+                const registrationUrl = new URL('car_registration_from_plate.html', window.location.href);
+                registrationUrl.searchParams.set('plate', result.plate);
+                if (vehicleMake) registrationUrl.searchParams.set('make', vehicleMake);
+                if (vehicleModel) registrationUrl.searchParams.set('model', vehicleModel);
+                if (vehicleColor) registrationUrl.searchParams.set('color', vehicleColor);
+                
                 html += `
                     <div class="no-match">
                         <i class="fas fa-exclamation-circle"></i>
                         هذه المركبة غير مسجلة في النظام
                         <br>
                         This vehicle is not registered in the system
+                        <div style="margin-top: 15px;">
+                            <a href="${registrationUrl.toString()}" 
+                               style="display: inline-block; padding: 10px 20px; background: linear-gradient(45deg, #6B5536, #8B6F47); 
+                                      color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease;"
+                               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(107,85,54,0.4)'"
+                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <i class="fas fa-plus-circle"></i> تسجيل السيارة في النظام
+                            </a>
+                        </div>
                     </div>
                 `;
             }
