@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-11-11
+
+### Added - الإضافات
+- 📦 Installed all project dependencies (express, compression, cors, http-server, nodemon)
+- ✅ Verified server functionality and confirmed 0 security vulnerabilities
+- 🔧 Prepared system for new deployment
+
+### Changed - التغييرات
+- 📦 Updated version from 1.1.0 to 1.2.0
+- 🚀 Ready for production deployment with all dependencies installed
+
+### Fixed - الإصلاحات
+- ✅ Resolved missing dependencies issue
+- ✅ Ensured all npm packages are properly installed
+
 ## [1.1.0] - 2025-11-10
 
 ### Added - الإضافات
