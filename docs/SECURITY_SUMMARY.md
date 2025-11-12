@@ -70,7 +70,7 @@ These alerts are **expected and acceptable** because:
 ✅ **Error Handling** - Proper error pages, no stack traces exposed  
 ✅ **File Compression** - Gzip compression for better performance  
 ✅ **Cache Headers** - Appropriate caching for different file types  
-✅ **No Secrets** - No hardcoded passwords or API keys  
+✅ **No Secrets** - No hardcoded passwords or API keys (secured via environment variables)  
 ✅ **UTF-8 Encoding** - Proper character encoding  
 ✅ **Graceful Shutdown** - Proper signal handling  
 

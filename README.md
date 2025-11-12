@@ -1,12 +1,12 @@
 # نظام إدارة المرور - Traffic Management System
 
 [![Deploy to GitHub Pages](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml)
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 نظام شامل لإدارة المخالفات المرورية بنظام أدوار وصلاحيات متقدم للتحكم في الوصول.
 
-**الإصدار الحالي / Current Version:** 1.2.0 | [سجل التغييرات / Changelog](CHANGELOG.md)
+**الإصدار الحالي / Current Version:** 1.2.1 | [سجل التغييرات / Changelog](CHANGELOG.md)
 
 ## 📁 هيكل المشروع - Project Structure
 
@@ -77,7 +77,7 @@ npm install && npm start
 | **النشر** | ✅ جاهز | GitHub Pages + Render.com - [الدليل](docs/GITHUB_PAGES_SETUP.md) |
 | **Render.com** | ✅ مُصلح | تم إصلاح `render.yaml` - [دليل Render](docs/RENDER_DEPLOYMENT_AR.md) |
 | **الأمان** | ✅ آمن | 0 ثغرات - [تقرير الأمان](docs/SECURITY_SUMMARY.md) |
-| **المراجعة** | ⭐⭐⭐⭐⭐ | تم المراجعة الشاملة |
+| **المراجعة** | ⭐⭐⭐⭐⭐ | [المراجعة الشاملة للنظام](docs/COMPREHENSIVE_SYSTEM_REVIEW.md) |
 
 ### 🔍 التحقق من حالة قاعدة البيانات
 - **صفحة الحالة المباشرة:** [database_status.html](pages/database_status.html)
