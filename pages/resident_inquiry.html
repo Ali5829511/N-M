@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>استعلام عن ساكن - نظام إدارة إسكان هيئة التدريس</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --primary: #8B6F47;
@@ -45,6 +46,7 @@
             margin-bottom: 25px;
             box-shadow: var(--shadow-lg);
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -57,6 +59,29 @@
             color: var(--dark);
             opacity: 0.7;
             font-size: clamp(14px, 3vw, 16px);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
         }
 
         .search-section {
@@ -405,6 +430,10 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
+            <a href="../index.html" class="back-btn">
+                <i class="fas fa-home"></i>
+                العودة للرئيسية
+            </a>
             <h1>🔍 استعلام عن ساكن</h1>
             <p>نظام إدارة إسكان هيئة التدريس - استعلام شامل</p>
         </div>
