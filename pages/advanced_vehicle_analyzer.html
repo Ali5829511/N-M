@@ -627,6 +627,10 @@
     <script src="../js/advanced_export.js"></script>
     <script>
         // التحقق من تسجيل الدخول
+        if (window.authManager) {
+            window.authManager.requireAuth();
+        }
+        // التحقق من تسجيل الدخول
         if (!authManager || !authManager.isAuthenticated()) {
             window.location.href = '../index.html';
         }
