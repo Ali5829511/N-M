@@ -735,7 +735,292 @@ class DatabaseManager {
         localStorage.removeItem('users');
         localStorage.removeItem('violations');
         localStorage.removeItem('stickers');
+        localStorage.removeItem('vehiclesDatabase');
         this.init();
+    }
+
+    // ============================================
+    // وظائف قاعدة بيانات السيارات والتحليلات
+    // Vehicles Database and Analytics Functions
+    // ============================================
+
+    /**
+     * الحصول على جميع السيارات من قاعدة البيانات
+     */
+    async getVehiclesDatabase() {
+        try {
+            const vehicles = JSON.parse(localStorage.getItem('vehiclesDatabase') || '[]');
+            return vehicles;
+        } catch (error) {
+            console.error('Error getting vehicles database:', error);
+            return [];
+        }
+    }
+
+    /**
+     * إضافة أو تحديث سيارة في قاعدة البيانات
+     */
+    async addOrUpdateVehicle(vehicleData) {
+        try {
+            const vehicles = await this.getVehiclesDatabase();
+            const existingIndex = vehicles.findIndex(v => v.plateNumber === vehicleData.plateNumber);
+            
+            if (existingIndex !== -1) {
+                // تحديث السيارة الموجودة
+                vehicles[existingIndex] = {
+                    ...vehicles[existingIndex],
+                    ...vehicleData,
+                    updatedDate: new Date().toISOString()
+                };
+            } else {
+                // إضافة سيارة جديدة
+                const newVehicle = {
+                    plateNumber: vehicleData.plateNumber,
+                    vehicleType: vehicleData.vehicleType || 'غير محدد',
+                    ownerName: vehicleData.ownerName || 'غير محدد',
+                    ownerPhone: vehicleData.ownerPhone || '',
+                    ownerEmail: vehicleData.ownerEmail || '',
+                    violationsCount: 0,
+                    lastViolationDate: null,
+                    status: 'نشط',
+                    createdDate: new Date().toISOString(),
+                    notes: vehicleData.notes || ''
+                };
+                vehicles.push(newVehicle);
+            }
+            
+            localStorage.setItem('vehiclesDatabase', JSON.stringify(vehicles));
+            
+            return {
+                success: true,
+                message: 'تم حفظ بيانات السيارة بنجاح'
+            };
+        } catch (error) {
+            console.error('Error adding/updating vehicle:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء حفظ بيانات السيارة'
+            };
+        }
+    }
+
+    /**
+     * الحصول على سيارة بواسطة رقم اللوحة
+     */
+    async getVehicleByPlateNumber(plateNumber) {
+        const vehicles = await this.getVehiclesDatabase();
+        return vehicles.find(v => v.plateNumber === plateNumber);
+    }
+
+    /**
+     * حساب عدد المخالفات لكل سيارة
+     */
+    async calculateVehicleViolations() {
+        try {
+            const vehicles = await this.getVehiclesDatabase();
+            const violations = await this.getViolations();
+            
+            // إعادة تعيين العدادات
+            vehicles.forEach(vehicle => {
+                const vehicleViolations = violations.filter(v => v.plateNumber === vehicle.plateNumber);
+                vehicle.violationsCount = vehicleViolations.length;
+                
+                if (vehicleViolations.length > 0) {
+                    // ترتيب حسب التاريخ
+                    const sortedViolations = vehicleViolations.sort((a, b) => 
+                        new Date(b.date || b.createdDate) - new Date(a.date || a.createdDate)
+                    );
+                    vehicle.lastViolationDate = sortedViolations[0].date || sortedViolations[0].createdDate;
+                    
+                    // تحديث حالة السيارة بناءً على عدد المخالفات
+                    if (vehicle.violationsCount >= 5) {
+                        vehicle.status = 'خطر';
+                    } else if (vehicle.violationsCount >= 3) {
+                        vehicle.status = 'تحذير';
+                    } else {
+                        vehicle.status = 'نشط';
+                    }
+                } else {
+                    vehicle.lastViolationDate = null;
+                    vehicle.status = 'نشط';
+                }
+            });
+            
+            localStorage.setItem('vehiclesDatabase', JSON.stringify(vehicles));
+            
+            return {
+                success: true,
+                vehicles: vehicles
+            };
+        } catch (error) {
+            console.error('Error calculating vehicle violations:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء حساب المخالفات'
+            };
+        }
+    }
+
+    /**
+     * الحصول على المخالفين المتكررين
+     * @param {number} minViolations - الحد الأدنى لعدد المخالفات
+     */
+    async getRepeatedOffenders(minViolations = 2) {
+        try {
+            const vehicles = await this.getVehiclesDatabase();
+            return vehicles.filter(v => v.violationsCount >= minViolations)
+                          .sort((a, b) => b.violationsCount - a.violationsCount);
+        } catch (error) {
+            console.error('Error getting repeated offenders:', error);
+            return [];
+        }
+    }
+
+    /**
+     * الحصول على إحصائيات متقدمة
+     */
+    async getAdvancedStatistics() {
+        try {
+            const vehicles = await this.getVehiclesDatabase();
+            const violations = await this.getViolations();
+            
+            // حساب الإحصائيات
+            const totalVehicles = vehicles.length;
+            const totalViolations = violations.length;
+            const repeatedOffenders = vehicles.filter(v => v.violationsCount >= 2).length;
+            const dangerousVehicles = vehicles.filter(v => v.status === 'خطر').length;
+            const warningVehicles = vehicles.filter(v => v.status === 'تحذير').length;
+            
+            // حساب المخالفات حسب النوع
+            const violationsByType = {};
+            violations.forEach(v => {
+                const type = v.violationType || 'غير محدد';
+                violationsByType[type] = (violationsByType[type] || 0) + 1;
+            });
+            
+            // حساب المخالفات حسب الشهر
+            const violationsByMonth = {};
+            violations.forEach(v => {
+                const date = new Date(v.date || v.createdDate);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                violationsByMonth[monthKey] = (violationsByMonth[monthKey] || 0) + 1;
+            });
+            
+            return {
+                success: true,
+                statistics: {
+                    totalVehicles,
+                    totalViolations,
+                    repeatedOffenders,
+                    dangerousVehicles,
+                    warningVehicles,
+                    violationsByType,
+                    violationsByMonth,
+                    averageViolationsPerVehicle: totalVehicles > 0 ? (totalViolations / totalVehicles).toFixed(2) : 0
+                }
+            };
+        } catch (error) {
+            console.error('Error getting advanced statistics:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء حساب الإحصائيات'
+            };
+        }
+    }
+
+    /**
+     * مزامنة قاعدة بيانات السيارات مع المخالفات
+     */
+    async syncVehiclesFromViolations() {
+        try {
+            const vehicles = await this.getVehiclesDatabase();
+            const violations = await this.getViolations();
+            
+            // إضافة سيارات جديدة من المخالفات
+            violations.forEach(violation => {
+                if (!vehicles.find(v => v.plateNumber === violation.plateNumber)) {
+                    const newVehicle = {
+                        plateNumber: violation.plateNumber,
+                        vehicleType: violation.vehicleType || 'غير محدد',
+                        ownerName: violation.driverName || violation.ownerName || 'غير محدد',
+                        ownerPhone: violation.driverPhone || '',
+                        ownerEmail: '',
+                        violationsCount: 0,
+                        lastViolationDate: null,
+                        status: 'نشط',
+                        createdDate: new Date().toISOString(),
+                        notes: 'تم الإضافة تلقائياً من المخالفات'
+                    };
+                    vehicles.push(newVehicle);
+                }
+            });
+            
+            localStorage.setItem('vehiclesDatabase', JSON.stringify(vehicles));
+            
+            // حساب عدد المخالفات
+            await this.calculateVehicleViolations();
+            
+            return {
+                success: true,
+                message: 'تم مزامنة قاعدة البيانات بنجاح'
+            };
+        } catch (error) {
+            console.error('Error syncing vehicles from violations:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء المزامنة'
+            };
+        }
+    }
+
+    /**
+     * حذف سيارة من قاعدة البيانات
+     */
+    async deleteVehicle(plateNumber) {
+        try {
+            const vehicles = await this.getVehiclesDatabase();
+            const filteredVehicles = vehicles.filter(v => v.plateNumber !== plateNumber);
+            
+            if (vehicles.length === filteredVehicles.length) {
+                return {
+                    success: false,
+                    error: 'السيارة غير موجودة'
+                };
+            }
+            
+            localStorage.setItem('vehiclesDatabase', JSON.stringify(filteredVehicles));
+            
+            return {
+                success: true,
+                message: 'تم حذف السيارة بنجاح'
+            };
+        } catch (error) {
+            console.error('Error deleting vehicle:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء حذف السيارة'
+            };
+        }
+    }
+
+    /**
+     * البحث في قاعدة بيانات السيارات
+     */
+    async searchVehicles(searchTerm) {
+        try {
+            const vehicles = await this.getVehiclesDatabase();
+            const term = searchTerm.toLowerCase();
+            
+            return vehicles.filter(v => 
+                v.plateNumber.toLowerCase().includes(term) ||
+                v.vehicleType.toLowerCase().includes(term) ||
+                v.ownerName.toLowerCase().includes(term) ||
+                (v.ownerPhone && v.ownerPhone.includes(term))
+            );
+        } catch (error) {
+            console.error('Error searching vehicles:', error);
+            return [];
+        }
     }
 }
 

@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحليلات المتقدمة - نظام إدارة المرور</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #8B6F47;
+            --secondary-color: #003c50;
+            --success-color: #51cf66;
+            --warning-color: #ffa94d;
+            --danger-color: #ff6b6b;
+            --info-color: #339af0;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .stat-card .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card.vehicles .icon {
+            background: rgba(51, 154, 240, 0.1);
+            color: var(--info-color);
+        }
+
+        .stat-card.violations .icon {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--danger-color);
+        }
+
+        .stat-card.repeated .icon {
+            background: rgba(255, 169, 77, 0.1);
+            color: var(--warning-color);
+        }
+
+        .stat-card.resolved .icon {
+            background: rgba(81, 207, 102, 0.1);
+            color: var(--success-color);
+        }
+
+        .stat-card h3 {
+            color: var(--text-dark);
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-bg);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: var(--light-bg);
+            padding: 12px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light-bg);
+        }
+
+        table tr:hover {
+            background: var(--light-bg);
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-danger {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--danger-color);
+        }
+
+        .badge-warning {
+            background: rgba(255, 169, 77, 0.1);
+            color: var(--warning-color);
+        }
+
+        .badge-success {
+            background: rgba(81, 207, 102, 0.1);
+            color: var(--success-color);
+        }
+
+        .badge-info {
+            background: rgba(51, 154, 240, 0.1);
+            color: var(--info-color);
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--light-bg);
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+            background: var(--light-bg);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: var(--primary-color);
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-controls select,
+        .filter-controls input {
+            padding: 10px;
+            border: 2px solid var(--light-bg);
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .violation-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 30px;
+            height: 30px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-chart-line"></i> لوحة التحليلات المتقدمة</h1>
+                <p style="color: #666; margin-top: 5px;">تحليل شامل للسيارات والمخالفات</p>
+            </div>
+            <a href="unified_dashboard.html" class="btn btn-primary">
+                <i class="fas fa-home"></i> العودة للرئيسية
+            </a>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card vehicles">
+                <div class="icon"><i class="fas fa-car"></i></div>
+                <h3>إجمالي السيارات المسجلة</h3>
+                <div class="number" id="totalVehicles">0</div>
+            </div>
+            <div class="stat-card violations">
+                <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <h3>إجمالي المخالفات</h3>
+                <div class="number" id="totalViolations">0</div>
+            </div>
+            <div class="stat-card repeated">
+                <div class="icon"><i class="fas fa-redo"></i></div>
+                <h3>المخالفون المتكررون</h3>
+                <div class="number" id="repeatedOffenders">0</div>
+            </div>
+            <div class="stat-card resolved">
+                <div class="icon"><i class="fas fa-check-circle"></i></div>
+                <h3>المخالفات المحلولة</h3>
+                <div class="number" id="resolvedViolations">0</div>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Top Offenders -->
+            <div class="card">
+                <h2><i class="fas fa-trophy"></i> أكثر المخالفين تكراراً</h2>
+                <div class="search-box">
+                    <input type="text" id="searchOffenders" placeholder="🔍 البحث عن مخالف...">
+                </div>
+                <div class="table-container">
+                    <table id="topOffendersTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>رقم اللوحة</th>
+                                <th>عدد المخالفات</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topOffendersBody">
+                            <tr>
+                                <td colspan="4" class="empty-state">
+                                    <i class="fas fa-database"></i>
+                                    <p>لا توجد بيانات متاحة</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Violations -->
+            <div class="card">
+                <h2><i class="fas fa-clock"></i> أحدث المخالفات</h2>
+                <div class="filter-controls">
+                    <select id="filterType">
+                        <option value="">جميع الأنواع</option>
+                        <option value="توقف خاطئ">توقف خاطئ</option>
+                        <option value="تجاوز السرعة">تجاوز السرعة</option>
+                        <option value="عدم الالتزام بالإشارة">عدم الالتزام بالإشارة</option>
+                    </select>
+                    <input type="date" id="filterDate">
+                </div>
+                <div class="table-container">
+                    <table id="recentViolationsTable">
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>رقم اللوحة</th>
+                                <th>نوع المخالفة</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentViolationsBody">
+                            <tr>
+                                <td colspan="4" class="empty-state">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <p>لا توجد مخالفات</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicles Database -->
+        <div class="card">
+            <h2><i class="fas fa-database"></i> قاعدة بيانات السيارات</h2>
+            <div class="search-box">
+                <input type="text" id="searchVehicles" placeholder="🔍 البحث برقم اللوحة، نوع السيارة، أو اسم المالك...">
+            </div>
+            <div class="table-container">
+                <table id="vehiclesTable">
+                    <thead>
+                        <tr>
+                            <th>رقم اللوحة</th>
+                            <th>نوع السيارة</th>
+                            <th>اسم المالك</th>
+                            <th>عدد المخالفات</th>
+                            <th>آخر مخالفة</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vehiclesBody">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <i class="fas fa-car"></i>
+                                <p>لا توجد سيارات مسجلة</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner fa-spin" style="font-size: 48px;"></i>
+            <p>جاري تحميل البيانات...</p>
+        </div>
+    </div>
+
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // إدارة قاعدة البيانات
+        const db = new DatabaseManager();
+        const auth = new AuthManager();
+
+        // التحقق من تسجيل الدخول
+        if (!auth.currentUser) {
+            window.location.href = '../index.html';
+        }
+
+        // بيانات السيارات والمخالفات
+        let vehiclesDatabase = [];
+        let violationsDatabase = [];
+
+        // تهيئة البيانات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            loadAnalytics();
+            setupEventListeners();
+        });
+
+        // تهيئة قواعد البيانات
+        function initializeData() {
+            // التحقق من وجود قواعد البيانات
+            if (!localStorage.getItem('vehiclesDatabase')) {
+                vehiclesDatabase = [];
+                localStorage.setItem('vehiclesDatabase', JSON.stringify(vehiclesDatabase));
+            } else {
+                vehiclesDatabase = JSON.parse(localStorage.getItem('vehiclesDatabase'));
+            }
+
+            if (!localStorage.getItem('violations')) {
+                violationsDatabase = [];
+                localStorage.setItem('violations', JSON.stringify(violationsDatabase));
+            } else {
+                violationsDatabase = JSON.parse(localStorage.getItem('violations'));
+            }
+
+            // دمج البيانات من المخالفات إلى قاعدة السيارات
+            syncVehiclesFromViolations();
+        }
+
+        // مزامنة السيارات من المخالفات
+        function syncVehiclesFromViolations() {
+            violationsDatabase.forEach(violation => {
+                if (!vehiclesDatabase.find(v => v.plateNumber === violation.plateNumber)) {
+                    const vehicleData = {
+                        plateNumber: violation.plateNumber,
+                        vehicleType: violation.vehicleType || 'غير محدد',
+                        ownerName: violation.driverName || 'غير محدد',
+                        violationsCount: 0,
+                        lastViolationDate: null,
+                        status: 'نشط',
+                        createdDate: new Date().toISOString()
+                    };
+                    vehiclesDatabase.push(vehicleData);
+                }
+            });
+            
+            // حساب عدد المخالفات لكل سيارة
+            vehiclesDatabase.forEach(vehicle => {
+                const vehicleViolations = violationsDatabase.filter(v => v.plateNumber === vehicle.plateNumber);
+                vehicle.violationsCount = vehicleViolations.length;
+                
+                if (vehicleViolations.length > 0) {
+                    const sortedViolations = vehicleViolations.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    vehicle.lastViolationDate = sortedViolations[0].date;
+                }
+                
+                // تحديد الحالة بناءً على عدد المخالفات
+                if (vehicle.violationsCount >= 5) {
+                    vehicle.status = 'خطر';
+                } else if (vehicle.violationsCount >= 3) {
+                    vehicle.status = 'تحذير';
+                } else {
+                    vehicle.status = 'نشط';
+                }
+            });
+            
+            localStorage.setItem('vehiclesDatabase', JSON.stringify(vehiclesDatabase));
+        }
+
+        // تحميل التحليلات
+        function loadAnalytics() {
+            // حساب الإحصائيات
+            const totalVehicles = vehiclesDatabase.length;
+            const totalViolations = violationsDatabase.length;
+            const repeatedOffenders = vehiclesDatabase.filter(v => v.violationsCount >= 2).length;
+            const resolvedViolations = violationsDatabase.filter(v => v.status === 'محلول' || v.status === 'مدفوع').length;
+
+            // تحديث البطاقات الإحصائية
+            document.getElementById('totalVehicles').textContent = totalVehicles;
+            document.getElementById('totalViolations').textContent = totalViolations;
+            document.getElementById('repeatedOffenders').textContent = repeatedOffenders;
+            document.getElementById('resolvedViolations').textContent = resolvedViolations;
+
+            // تحميل الجداول
+            loadTopOffenders();
+            loadRecentViolations();
+            loadVehiclesTable();
+        }
+
+        // تحميل أكثر المخالفين
+        function loadTopOffenders() {
+            const topOffenders = vehiclesDatabase
+                .filter(v => v.violationsCount > 0)
+                .sort((a, b) => b.violationsCount - a.violationsCount)
+                .slice(0, 10);
+
+            const tbody = document.getElementById('topOffendersBody');
+            
+            if (topOffenders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <i class="fas fa-database"></i>
+                            <p>لا توجد بيانات متاحة</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = topOffenders.map((vehicle, index) => {
+                let badgeClass = 'badge-info';
+                if (vehicle.violationsCount >= 5) badgeClass = 'badge-danger';
+                else if (vehicle.violationsCount >= 3) badgeClass = 'badge-warning';
+
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${vehicle.plateNumber}</strong></td>
+                        <td><span class="violation-count">${vehicle.violationsCount}</span></td>
+                        <td><span class="badge ${badgeClass}">${vehicle.status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // تحميل أحدث المخالفات
+        function loadRecentViolations() {
+            const recentViolations = [...violationsDatabase]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10);
+
+            const tbody = document.getElementById('recentViolationsBody');
+            
+            if (recentViolations.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>لا توجد مخالفات</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = recentViolations.map(violation => {
+                const statusBadge = getViolationStatusBadge(violation.status || 'جديد');
+                return `
+                    <tr>
+                        <td>${formatDate(violation.date)}</td>
+                        <td><strong>${violation.plateNumber}</strong></td>
+                        <td>${violation.violationType || 'غير محدد'}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // تحميل جدول السيارات
+        function loadVehiclesTable() {
+            const tbody = document.getElementById('vehiclesBody');
+            
+            if (vehiclesDatabase.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-car"></i>
+                            <p>لا توجد سيارات مسجلة</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = vehiclesDatabase.map(vehicle => {
+                let statusBadge = 'badge-success';
+                if (vehicle.status === 'خطر') statusBadge = 'badge-danger';
+                else if (vehicle.status === 'تحذير') statusBadge = 'badge-warning';
+
+                return `
+                    <tr>
+                        <td><strong>${vehicle.plateNumber}</strong></td>
+                        <td>${vehicle.vehicleType}</td>
+                        <td>${vehicle.ownerName}</td>
+                        <td><span class="violation-count">${vehicle.violationsCount}</span></td>
+                        <td>${vehicle.lastViolationDate ? formatDate(vehicle.lastViolationDate) : 'لا يوجد'}</td>
+                        <td><span class="badge ${statusBadge}">${vehicle.status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // إعداد مستمعات الأحداث
+        function setupEventListeners() {
+            // البحث في المخالفين
+            document.getElementById('searchOffenders').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                filterTopOffenders(searchTerm);
+            });
+
+            // البحث في السيارات
+            document.getElementById('searchVehicles').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                filterVehicles(searchTerm);
+            });
+
+            // تصفية نوع المخالفة
+            document.getElementById('filterType').addEventListener('change', function() {
+                filterViolations();
+            });
+
+            // تصفية التاريخ
+            document.getElementById('filterDate').addEventListener('change', function() {
+                filterViolations();
+            });
+        }
+
+        // تصفية المخالفين
+        function filterTopOffenders(searchTerm) {
+            const topOffenders = vehiclesDatabase
+                .filter(v => v.violationsCount > 0 && v.plateNumber.toLowerCase().includes(searchTerm))
+                .sort((a, b) => b.violationsCount - a.violationsCount)
+                .slice(0, 10);
+
+            const tbody = document.getElementById('topOffendersBody');
+            
+            if (topOffenders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد نتائج</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = topOffenders.map((vehicle, index) => {
+                let badgeClass = 'badge-info';
+                if (vehicle.violationsCount >= 5) badgeClass = 'badge-danger';
+                else if (vehicle.violationsCount >= 3) badgeClass = 'badge-warning';
+
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${vehicle.plateNumber}</strong></td>
+                        <td><span class="violation-count">${vehicle.violationsCount}</span></td>
+                        <td><span class="badge ${badgeClass}">${vehicle.status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // تصفية السيارات
+        function filterVehicles(searchTerm) {
+            const filteredVehicles = vehiclesDatabase.filter(vehicle => 
+                vehicle.plateNumber.toLowerCase().includes(searchTerm) ||
+                vehicle.vehicleType.toLowerCase().includes(searchTerm) ||
+                vehicle.ownerName.toLowerCase().includes(searchTerm)
+            );
+
+            const tbody = document.getElementById('vehiclesBody');
+            
+            if (filteredVehicles.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد نتائج</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredVehicles.map(vehicle => {
+                let statusBadge = 'badge-success';
+                if (vehicle.status === 'خطر') statusBadge = 'badge-danger';
+                else if (vehicle.status === 'تحذير') statusBadge = 'badge-warning';
+
+                return `
+                    <tr>
+                        <td><strong>${vehicle.plateNumber}</strong></td>
+                        <td>${vehicle.vehicleType}</td>
+                        <td>${vehicle.ownerName}</td>
+                        <td><span class="violation-count">${vehicle.violationsCount}</span></td>
+                        <td>${vehicle.lastViolationDate ? formatDate(vehicle.lastViolationDate) : 'لا يوجد'}</td>
+                        <td><span class="badge ${statusBadge}">${vehicle.status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // تصفية المخالفات
+        function filterViolations() {
+            const filterType = document.getElementById('filterType').value;
+            const filterDate = document.getElementById('filterDate').value;
+
+            let filteredViolations = [...violationsDatabase];
+
+            if (filterType) {
+                filteredViolations = filteredViolations.filter(v => v.violationType === filterType);
+            }
+
+            if (filterDate) {
+                filteredViolations = filteredViolations.filter(v => v.date === filterDate);
+            }
+
+            const recentViolations = filteredViolations
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10);
+
+            const tbody = document.getElementById('recentViolationsBody');
+            
+            if (recentViolations.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <i class="fas fa-filter"></i>
+                            <p>لا توجد نتائج للتصفية</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = recentViolations.map(violation => {
+                const statusBadge = getViolationStatusBadge(violation.status || 'جديد');
+                return `
+                    <tr>
+                        <td>${formatDate(violation.date)}</td>
+                        <td><strong>${violation.plateNumber}</strong></td>
+                        <td>${violation.violationType || 'غير محدد'}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // وظائف مساعدة
+        function getViolationStatusBadge(status) {
+            const statusMap = {
+                'جديد': 'badge-info',
+                'قيد المعالجة': 'badge-warning',
+                'محلول': 'badge-success',
+                'مدفوع': 'badge-success',
+                'ملغي': 'badge-secondary'
+            };
+            
+            const badgeClass = statusMap[status] || 'badge-info';
+            return `<span class="badge ${badgeClass}">${status}</span>`;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'غير محدد';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-SA');
+        }
+
+        // تحديث البيانات كل 30 ثانية
+        setInterval(() => {
+            initializeData();
+            loadAnalytics();
+        }, 30000);
+    </script>
+</body>
+</html>
