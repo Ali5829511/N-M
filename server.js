@@ -33,8 +33,19 @@ const PORT = process.env.PORT || 8080;
 const HOST = process.env.HOST || '0.0.0.0';
 
 // تكوين ParkPow API
-const PARKPOW_API_TOKEN = process.env.PARKPOW_API_TOKEN || '7c13be422713a758a42a0bc453cf3331fbf4d346';
+// ⚠️ Security Note: ParkPow API token should be set via environment variable
+// For development, set PARKPOW_API_TOKEN in .env file (see .env.example)
+// ملاحظة أمنية: يجب تعيين رمز ParkPow API عبر متغير بيئي
+const PARKPOW_API_TOKEN = process.env.PARKPOW_API_TOKEN;
 const PARKPOW_API_URL = 'https://app.parkpow.com/api/v1';
+
+// تحذير إذا لم يتم تعيين رمز API
+if (!PARKPOW_API_TOKEN) {
+  console.warn('⚠️  WARNING: PARKPOW_API_TOKEN is not set. ParkPow integration will not work.');
+  console.warn('⚠️  تحذير: لم يتم تعيين PARKPOW_API_TOKEN. لن يعمل تكامل ParkPow.');
+  console.warn('    Set it in .env file or as environment variable.');
+  console.warn('    قم بتعيينه في ملف .env أو كمتغير بيئي.');
+}
 
 // تفعيل ضغط الملفات لتحسين الأداء
 app.use(compression());
@@ -85,6 +96,17 @@ app.get('/', (req, res) => {
 
 // التحقق من حالة الاتصال بـ ParkPow API
 app.get('/api/parkpow/status', async (req, res) => {
+  // Check if API token is configured
+  if (!PARKPOW_API_TOKEN) {
+    return res.json({
+      success: false,
+      configured: false,
+      connected: false,
+      message: 'PARKPOW_API_TOKEN غير مُعرّف. يرجى تعيينه في ملف .env',
+      error: 'PARKPOW_API_TOKEN is not configured. Please set it in .env file'
+    });
+  }
+
   try {
     const response = await fetch(`${PARKPOW_API_URL}/user/`, {
       method: 'GET',
@@ -108,21 +130,32 @@ app.get('/api/parkpow/status', async (req, res) => {
         success: false,
         configured: true,
         connected: false,
-        message: 'فشل الاتصال بـ ParkPow API'
+        message: 'فشل الاتصال بـ ParkPow API',
+        error: `HTTP ${response.status}: ${response.statusText}`
       });
     }
   } catch (error) {
     res.json({
       success: false,
-      configured: !!PARKPOW_API_TOKEN,
+      configured: true,
       connected: false,
-      message: error.message
+      message: 'خطأ في الاتصال بـ ParkPow API',
+      error: error.message
     });
   }
 });
 
 // التعرف على اللوحات من خلال ParkPow
 app.post('/api/parkpow/recognize', async (req, res) => {
+  // Check if API token is configured
+  if (!PARKPOW_API_TOKEN) {
+    return res.status(503).json({
+      success: false,
+      error: 'PARKPOW_API_TOKEN غير مُعرّف. يرجى تعيينه في ملف .env',
+      message: 'ParkPow API is not configured'
+    });
+  }
+
   try {
     const { image, regions = 'sa' } = req.body;
     
