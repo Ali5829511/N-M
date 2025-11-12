@@ -53,6 +53,17 @@ app.use(compression());
 // تفعيل CORS للسماح بالطلبات من أي مصدر
 app.use(cors());
 
+// إضافة Security Headers لتحسين الأمان
+app.use((req, res, next) => {
+  // منع تحميل الموقع في iframe (Clickjacking protection)
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  // منع MIME type sniffing
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  // تفعيل XSS Protection في المتصفحات القديمة
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
 // تفعيل JSON parsing للـ API requests
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -88,6 +99,18 @@ app.use(express.static(path.join(__dirname), {
 // معالجة الصفحة الرئيسية
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// نقطة فحص صحة الخادم - Health Check Endpoint
+// يستخدم للتحقق من حالة الخادم في بيئات الإنتاج
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    version: '1.4.0',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    parkpow_configured: !!PARKPOW_API_TOKEN
+  });
 });
 
 // ============================================
