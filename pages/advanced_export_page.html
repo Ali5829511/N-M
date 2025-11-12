@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التصدير المتقدم - وحدة إسكان هيئة التدريس</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #8B6F47;
+            --primary-dark: #6B5537;
+            --secondary-color: #A0826D;
+            --accent-color: #C9B896;
+            --light-bg: #f8f5f0;
+            --success-color: #51cf66;
+            --white: #ffffff;
+            --shadow-md: 0 8px 24px rgba(139, 111, 71, 0.15);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f8f5f0 0%, #e8e4dc 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .export-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .export-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .export-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(139, 111, 71, 0.2);
+        }
+
+        .export-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+        }
+
+        .export-card h3 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .export-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(139, 111, 71, 0.3);
+        }
+
+        .export-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .features-list {
+            text-align: right;
+            margin: 20px 0;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .features-list i {
+            color: var(--success-color);
+            margin-left: 10px;
+        }
+
+        .back-btn {
+            background: var(--white);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, #4dabf7, #339af0);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .info-banner i {
+            font-size: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .export-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="unified_dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-right"></i>
+            العودة للوحة التحكم
+        </a>
+
+        <div class="header">
+            <h1>
+                <i class="fas fa-file-export"></i>
+                التصدير المتقدم للتقارير
+            </h1>
+            <p>اختر صيغة التصدير المناسبة لاحتياجاتك</p>
+        </div>
+
+        <div class="info-banner">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>ملاحظة:</strong> جميع التقارير تتضمن الصور المصغرة للسيارات وبيانات مفصلة عن كل مركبة
+            </div>
+        </div>
+
+        <div class="export-grid">
+            <!-- تصدير Excel -->
+            <div class="export-card">
+                <div class="export-icon">
+                    <i class="fas fa-file-excel"></i>
+                </div>
+                <h3>تصدير Excel</h3>
+                <p>تصدير البيانات بصيغة Excel مع الصور المصغرة والجداول المنسقة</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> جداول منسقة بشكل احترافي</li>
+                    <li><i class="fas fa-check-circle"></i> صور مصغرة مدمجة</li>
+                    <li><i class="fas fa-check-circle"></i> سهولة التعديل والتحليل</li>
+                    <li><i class="fas fa-check-circle"></i> متوافق مع Microsoft Excel</li>
+                </ul>
+                <button class="export-btn" onclick="exportToExcel()">
+                    <i class="fas fa-download"></i>
+                    تصدير Excel
+                </button>
+            </div>
+
+            <!-- تصدير PDF -->
+            <div class="export-card">
+                <div class="export-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <h3>تصدير PDF</h3>
+                <p>إنشاء تقرير PDF احترافي جاهز للطباعة والمشاركة</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> تصميم احترافي للطباعة</li>
+                    <li><i class="fas fa-check-circle"></i> صور عالية الجودة</li>
+                    <li><i class="fas fa-check-circle"></i> إحصائيات ملخصة</li>
+                    <li><i class="fas fa-check-circle"></i> جاهز للأرشفة</li>
+                </ul>
+                <button class="export-btn" onclick="exportToPDF()">
+                    <i class="fas fa-print"></i>
+                    تصدير PDF
+                </button>
+            </div>
+
+            <!-- تصدير HTML -->
+            <div class="export-card">
+                <div class="export-icon">
+                    <i class="fas fa-file-code"></i>
+                </div>
+                <h3>تصدير HTML</h3>
+                <p>صفحة ويب تفاعلية يمكن فتحها في أي متصفح</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> تصميم تفاعلي حديث</li>
+                    <li><i class="fas fa-check-circle"></i> صور قابلة للتكبير</li>
+                    <li><i class="fas fa-check-circle"></i> إحصائيات ديناميكية</li>
+                    <li><i class="fas fa-check-circle"></i> سهولة المشاركة</li>
+                </ul>
+                <button class="export-btn" onclick="exportToHTML()">
+                    <i class="fas fa-code"></i>
+                    تصدير HTML
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/advanced_export.js"></script>
+    <script>
+        // التحقق من تسجيل الدخول
+        if (!authManager || !authManager.isAuthenticated()) {
+            window.location.href = '../index.html';
+        }
+
+        // جلب البيانات من localStorage
+        function getExportData() {
+            const vehicles = JSON.parse(localStorage.getItem('vehicles') || '[]');
+            const violations = JSON.parse(localStorage.getItem('violations') || '[]');
+            
+            // دمج البيانات
+            const exportData = vehicles.map(vehicle => {
+                const vehicleViolations = violations.filter(v => v.plateNumber === vehicle.plateNumber);
+                return {
+                    plateNumber: vehicle.plateNumber,
+                    vehicleType: vehicle.vehicleType || 'غير محدد',
+                    color: vehicle.color || 'غير محدد',
+                    confidence: vehicle.confidence || 'N/A',
+                    repeatCount: vehicle.repeatCount || 1,
+                    timestamp: vehicle.timestamp || new Date().toISOString(),
+                    violationsCount: vehicleViolations.length
+                };
+            });
+
+            return exportData;
+        }
+
+        // تصدير Excel
+        async function exportToExcel() {
+            const data = getExportData();
+            
+            if (data.length === 0) {
+                alert('لا توجد بيانات للتصدير. يرجى تحليل بعض الصور أولاً.');
+                return;
+            }
+
+            advancedExporter.title = 'تقرير شامل للسيارات - وحدة إسكان هيئة التدريس';
+            advancedExporter.setData(data, []);
+            
+            const success = await advancedExporter.exportToExcel();
+            if (success) {
+                alert('تم تصدير التقرير بنجاح!');
+            } else {
+                alert('حدث خطأ أثناء التصدير');
+            }
+        }
+
+        // تصدير PDF
+        async function exportToPDF() {
+            const data = getExportData();
+            
+            if (data.length === 0) {
+                alert('لا توجد بيانات للتصدير. يرجى تحليل بعض الصور أولاً.');
+                return;
+            }
+
+            advancedExporter.title = 'تقرير شامل للسيارات - وحدة إسكان هيئة التدريس';
+            advancedExporter.setData(data, []);
+            
+            const success = await advancedExporter.exportToPDF();
+            if (success) {
+                alert('تم فتح نافذة الطباعة. يمكنك حفظ التقرير كـ PDF');
+            } else {
+                alert('حدث خطأ أثناء التصدير');
+            }
+        }
+
+        // تصدير HTML
+        async function exportToHTML() {
+            const data = getExportData();
+            
+            if (data.length === 0) {
+                alert('لا توجد بيانات للتصدير. يرجى تحليل بعض الصور أولاً.');
+                return;
+            }
+
+            advancedExporter.title = 'تقرير شامل للسيارات - وحدة إسكان هيئة التدريس';
+            advancedExporter.setData(data, []);
+            
+            const success = await advancedExporter.exportToHTML();
+            if (success) {
+                alert('تم تصدير التقرير بنجاح!');
+            } else {
+                alert('حدث خطأ أثناء التصدير');
+            }
+        }
+    </script>
+</body>
+</html>

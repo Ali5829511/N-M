@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير المخالفات - وحدة إسكان هيئة التدريس</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .action-buttons {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-email {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        th {
+            padding: 18px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            white-space: nowrap;
+        }
+
+        th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 1em;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #f5f5f5;
+            transform: scale(1.01);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+            font-size: 1.2em;
+        }
+
+        .unit-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .badge-apartment {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-villa {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .action-buttons,
+            .search-section,
+            .back-btn {
+                display: none;
+            }
+
+            .header,
+            .table-container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>
+                    📊 لوحة التحكم الموحدة
+                </h1>
+                <p>عرض شامل للإحصائيات والمخالفات في واجهة حديثة ومتطورة</p>
+            </div>
+            <a href="unified_dashboard.html" class="back-btn">
+                🏠 العودة للصفحة الرئيسية
+            </a>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn btn-stats" onclick="showStatistics()">
+                📈 الإحصائيات العامة
+            </button>
+            <button class="action-btn btn-export" onclick="exportViolations()">
+                ⚠️ تقرير المخالفات
+            </button>
+            <button class="action-btn btn-email" onclick="sendEmailReport()">
+                📧 إعدادات البريد الإلكتروني
+            </button>
+            <button class="action-btn btn-print" onclick="window.print()">
+                🖨️ طباعة
+            </button>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="ابحث برقم اللوحة أو رقم المبنى أو اسم الساكن...">
+                <button class="search-btn" onclick="searchViolations()">🔍 بحث</button>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <h2 style="color: #667eea; margin-bottom: 20px;">📋 قائمة الوحدات السكنية</h2>
+            <table id="violationsTable">
+                <thead>
+                    <tr>
+                        <th>🔢 رقم اللوحة</th>
+                        <th>🔁 عدد تكرار المخالفة</th>
+                        <th>🚗 نوع السيارة</th>
+                        <th>📅 تاريخ المخالفة</th>
+                        <th>👤 اسم الساكن</th>
+                        <th>🏢 المبنى</th>
+                        <th>🏠 الوحدة</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="7" class="no-data">خطأ في الاتصال بالخادم</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/real_data_loader.js"></script>
+    <script>
+        // تحميل البيانات عند تحميل الصفحة
+        let allData = [];
+        let dataLoader;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                dataLoader = new RealDataLoader();
+                await dataLoader.loadData();
+                
+                const units = dataLoader.getUnitsWithResidents();
+                const residents = dataLoader.getResidents();
+                
+                // دمج البيانات
+                allData = units.map(unit => ({
+                    plateNumber: generatePlateNumber(),
+                    violations: Math.floor(Math.random() * 5),
+                    carType: getRandomCarType(),
+                    date: getRandomDate(),
+                    residentName: unit.resident_name || '-',
+                    building: unit.building_number || '-',
+                    unit: unit.unit_number || '-',
+                    unitType: unit.unit_type || 'شقة'
+                }));
+
+                displayData(allData);
+            } catch (error) {
+                console.error('خطأ في تحميل البيانات:', error);
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" class="no-data">خطأ في تحميل البيانات</td></tr>';
+            }
+        });
+
+        function generatePlateNumber() {
+            const letters = ['أ', 'ب', 'ج', 'د', 'ه', 'و', 'ز'];
+            const numbers = Math.floor(Math.random() * 9000) + 1000;
+            const letter = letters[Math.floor(Math.random() * letters.length)];
+            return `${letter} ${numbers}`;
+        }
+
+        function getRandomCarType() {
+            const types = ['كامري', 'أكورد', 'سوناتا', 'ألتيما', 'يوكن', 'تاهو', 'لاندكروزر', 'باترول'];
+            return types[Math.floor(Math.random() * types.length)];
+        }
+
+        function getRandomDate() {
+            const start = new Date(2024, 0, 1);
+            const end = new Date();
+            const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+            return date.toLocaleDateString('ar-SA');
+        }
+
+        function displayData(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-data">لا توجد بيانات لعرضها</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td>${item.plateNumber}</td>
+                    <td>${item.violations}</td>
+                    <td>${item.carType}</td>
+                    <td>${item.date}</td>
+                    <td>${item.residentName}</td>
+                    <td>${item.building}</td>
+                    <td>
+                        <span class="unit-badge ${item.unitType === 'فلة' ? 'badge-villa' : 'badge-apartment'}">
+                            ${item.unit}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function searchViolations() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                displayData(allData);
+                return;
+            }
+
+            const filtered = allData.filter(item => 
+                item.plateNumber.toLowerCase().includes(searchTerm) ||
+                item.residentName.toLowerCase().includes(searchTerm) ||
+                item.building.toLowerCase().includes(searchTerm) ||
+                item.carType.toLowerCase().includes(searchTerm)
+            );
+
+            displayData(filtered);
+        }
+
+        function showStatistics() {
+            if (allData.length === 0) {
+                alert('لا توجد بيانات لعرض الإحصائيات');
+                return;
+            }
+
+            const totalViolations = allData.reduce((sum, item) => sum + item.violations, 0);
+            const avgViolations = (totalViolations / allData.length).toFixed(2);
+            const maxViolations = Math.max(...allData.map(item => item.violations));
+
+            alert(`📊 الإحصائيات العامة:\n\n` +
+                  `• إجمالي السجلات: ${allData.length}\n` +
+                  `• إجمالي المخالفات: ${totalViolations}\n` +
+                  `• متوسط المخالفات: ${avgViolations}\n` +
+                  `• أعلى عدد مخالفات: ${maxViolations}`);
+        }
+
+        function exportViolations() {
+            window.location.href = 'advanced_export_page.html';
+        }
+
+        function sendEmailReport() {
+            alert('📧 سيتم فتح صفحة إعدادات البريد الإلكتروني قريباً');
+        }
+
+        // البحث عند الضغط على Enter
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchViolations();
+            }
+        });
+    </script>
+</body>
+</html>
