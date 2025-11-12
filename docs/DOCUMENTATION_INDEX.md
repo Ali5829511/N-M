@@ -36,7 +36,10 @@
 
 | الملف | الوصف | الأهمية |
 |------|-------|---------|
+| **[COMPREHENSIVE_SYSTEM_REVIEW.md](COMPREHENSIVE_SYSTEM_REVIEW.md)** | المراجعة الشاملة للنظام (15KB) | 🔴 عالية جداً |
+| **[SYSTEM_REVIEW_SUMMARY.md](SYSTEM_REVIEW_SUMMARY.md)** | ملخص مراجعة النظام | 🔴 عالية جداً |
 | **[SECURITY.md](SECURITY.md)** | إرشادات الأمان والثغرات | 🔴 عالية جداً |
+| **[SECURITY_SUMMARY.md](SECURITY_SUMMARY.md)** | ملخص تحليل الأمان | 🔴 عالية جداً |
 | **[PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)** | قائمة تحقق من جاهزية الإنتاج | 🔴 عالية جداً |
 | **[SSH_KEY_SETUP_GUIDE.md](SSH_KEY_SETUP_GUIDE.md)** | دليل إعداد SSH Keys للنشر | 🟡 متوسطة |
 
