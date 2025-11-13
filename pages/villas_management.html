@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة الشقق - إسكان أعضاء هيئة التدريس</title>
+    <title>إدارة الفلل - إسكان أعضاء هيئة التدريس</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -295,8 +295,8 @@
         <div class="header">
             <div class="header-content">
                 <div>
-                    <h1 class="header-title">🏢 إدارة الشقق</h1>
-                    <p class="header-subtitle">نظام إدارة إسكان أعضاء هيئة التدريس - الشقق السكنية</p>
+                    <h1 class="header-title">🏡 إدارة الفلل</h1>
+                    <p class="header-subtitle">نظام إدارة إسكان أعضاء هيئة التدريس - منطقة الفلل</p>
                 </div>
                 <a href="../pages/unified_dashboard.html" class="back-button">
                     🏠 العودة للوحة التحكم
@@ -305,28 +305,24 @@
         </div>
 
         <div class="main-content">
-            <h2 class="section-title">📊 إحصائيات الشقق</h2>
+            <h2 class="section-title">📊 إحصائيات الفلل</h2>
             
             <div class="stats-grid">
                 <div class="stat-card purple">
-                    <div class="stat-value" id="total-apartments">-</div>
-                    <div class="stat-label">إجمالي الشقق</div>
+                    <div class="stat-value" id="total-villas">-</div>
+                    <div class="stat-label">إجمالي الفلل</div>
                 </div>
                 <div class="stat-card green">
-                    <div class="stat-value" id="occupied-apartments">-</div>
-                    <div class="stat-label">الشقق المشغولة</div>
+                    <div class="stat-value" id="occupied-villas">-</div>
+                    <div class="stat-label">الفلل المشغولة</div>
                 </div>
                 <div class="stat-card orange">
-                    <div class="stat-value" id="vacant-apartments">-</div>
-                    <div class="stat-label">الشقق الشاغرة</div>
-                </div>
-                <div class="stat-card brown" style="background: linear-gradient(135deg, #8b7355, #a0826d);">
-                    <div class="stat-value" id="old-buildings">-</div>
-                    <div class="stat-label">المباني القديمة</div>
+                    <div class="stat-value" id="vacant-villas">-</div>
+                    <div class="stat-label">الفلل الشاغرة</div>
                 </div>
                 <div class="stat-card blue">
-                    <div class="stat-value" id="new-buildings">-</div>
-                    <div class="stat-label">المباني الجديدة</div>
+                    <div class="stat-value" id="occupancy-rate">-</div>
+                    <div class="stat-label">نسبة الإشغال</div>
                 </div>
             </div>
 
@@ -336,10 +332,10 @@
                 <div class="search-grid">
                     <div class="form-group">
                         <label>البحث</label>
-                        <input type="text" id="search-input" placeholder="البحث بالاسم أو رقم الشقة أو المبنى...">
+                        <input type="text" id="search-input" placeholder="البحث بالاسم أو رقم الفلة...">
                     </div>
                     <div class="form-group">
-                        <label>حالة الشقة</label>
+                        <label>حالة الفلة</label>
                         <select id="status-filter">
                             <option value="">جميع الحالات</option>
                             <option value="مشغولة">مشغولة</option>
@@ -350,22 +346,21 @@
                 </div>
             </div>
 
-            <h2 class="section-title">🏢 قائمة الشقق</h2>
+            <h2 class="section-title">🏡 قائمة الفلل</h2>
             
             <div class="table-container">
-                <table id="apartments-table">
+                <table id="villas-table">
                     <thead>
                         <tr>
-                            <th>رقم الشقة</th>
-                            <th>رقم المبنى</th>
+                            <th>رقم الفلة</th>
                             <th>اسم الساكن</th>
                             <th>رقم الهاتف</th>
-                            <th>حالة الشقة</th>
-                            <th>نوع المبنى</th>
+                            <th>حالة الفلة</th>
+                            <th>الوصف</th>
                         </tr>
                     </thead>
-                    <tbody id="apartments-table-body">
-                        <tr><td colspan="6" class="no-data">جاري تحميل البيانات...</td></tr>
+                    <tbody id="villas-table-body">
+                        <tr><td colspan="5" class="no-data">جاري تحميل البيانات...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -377,13 +372,13 @@
     </div>
 
     <script>
-        let apartmentsData = [];
+        let villasData = [];
         let filteredData = [];
 
         // تحميل البيانات
-        async function loadApartmentsData() {
+        async function loadVillasData() {
             try {
-                console.log('بدء تحميل بيانات الشقق...');
+                console.log('بدء تحميل بيانات الفلل...');
                 const response = await fetch('../data/real_data.json');
                 
                 if (!response.ok) {
@@ -393,52 +388,49 @@
                 const data = await response.json();
                 console.log('تم تحميل البيانات بنجاح');
                 
-                // تصفية الشقق فقط (استثناء الفلل)
-                const apartments = data.units.filter(unit => unit.unit_type === 'شقة');
-                console.log(`عدد الشقق: ${apartments.length}`);
+                // تصفية الفلل فقط
+                const villas = data.units.filter(unit => unit.unit_type === 'فلة');
+                console.log(`عدد الفلل: ${villas.length}`);
                 
-                // دمج بيانات السكان مع الشقق
-                apartmentsData = apartments.map(apt => {
+                // دمج بيانات السكان مع الفلل
+                villasData = villas.map(villa => {
                     const resident = data.residents.find(r => 
-                        r.unit_name === apt.name || 
-                        (r.building_type === apt.building_number && r.unit_number === apt.unit_number)
+                        r.unit_name === villa.name || 
+                        (r.building_type === villa.building_number && r.unit_number === villa.unit_number)
                     );
                     
                     return {
-                        'رقم الشقة': apt.unit_number,
-                        'رقم المبنى': apt.building_number,
-                        'نوع المبنى': apt.description,
+                        'رقم الفلة': villa.building_number,
+                        'الوصف': villa.description,
                         'اسم_الساكن': resident ? resident.name : 'شاغرة',
-                        'حالة الشقة': resident ? 'مشغولة' : 'شاغرة',
+                        'حالة الفلة': resident ? 'مشغولة' : 'شاغرة',
                         'رقم الهاتف': resident ? resident.phone : '-'
                     };
                 });
                 
-                console.log(`تم معالجة ${apartmentsData.length} شقة`);
-                filteredData = [...apartmentsData];
+                console.log(`تم معالجة ${villasData.length} فلة`);
+                filteredData = [...villasData];
                 
                 updateStats();
                 updateTable();
             } catch (error) {
                 console.error('خطأ في تحميل البيانات:', error);
-                document.getElementById('apartments-table-body').innerHTML = 
-                    `<tr><td colspan="6" class="no-data">خطأ في تحميل البيانات: ${error.message}</td></tr>`;
+                document.getElementById('villas-table-body').innerHTML = 
+                    `<tr><td colspan="5" class="no-data">خطأ في تحميل البيانات: ${error.message}</td></tr>`;
             }
         }
 
         // تحديث الإحصائيات
         function updateStats() {
-            const totalApartments = apartmentsData.length;
-            const occupiedApartments = apartmentsData.filter(a => a['حالة الشقة'] === 'مشغولة').length;
-            const vacantApartments = apartmentsData.filter(a => a['حالة الشقة'] === 'شاغرة').length;
-            const oldBuildings = apartmentsData.filter(a => a['نوع المبنى'].includes('قديم')).length;
-            const newBuildings = apartmentsData.filter(a => a['نوع المبنى'].includes('جديد')).length;
+            const totalVillas = villasData.length;
+            const occupiedVillas = villasData.filter(v => v['حالة الفلة'] === 'مشغولة').length;
+            const vacantVillas = villasData.filter(v => v['حالة الفلة'] === 'شاغرة').length;
+            const occupancyRate = totalVillas > 0 ? Math.round((occupiedVillas / totalVillas) * 100) : 0;
 
-            document.getElementById('total-apartments').textContent = totalApartments.toLocaleString();
-            document.getElementById('occupied-apartments').textContent = occupiedApartments.toLocaleString();
-            document.getElementById('vacant-apartments').textContent = vacantApartments.toLocaleString();
-            document.getElementById('old-buildings').textContent = oldBuildings.toLocaleString();
-            document.getElementById('new-buildings').textContent = newBuildings.toLocaleString();
+            document.getElementById('total-villas').textContent = totalVillas.toLocaleString();
+            document.getElementById('occupied-villas').textContent = occupiedVillas.toLocaleString();
+            document.getElementById('vacant-villas').textContent = vacantVillas.toLocaleString();
+            document.getElementById('occupancy-rate').textContent = occupancyRate + '%';
         }
 
         // تحديث الجدول
@@ -446,13 +438,12 @@
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
             const statusFilter = document.getElementById('status-filter').value;
             
-            filteredData = apartmentsData.filter(apt => {
+            filteredData = villasData.filter(villa => {
                 const matchesSearch = !searchTerm || 
-                    apt['اسم_الساكن'].toLowerCase().includes(searchTerm) ||
-                    apt['رقم الشقة'].includes(searchTerm) ||
-                    apt['رقم المبنى'].includes(searchTerm);
+                    villa['اسم_الساكن'].toLowerCase().includes(searchTerm) ||
+                    villa['رقم الفلة'].includes(searchTerm);
                 
-                const matchesStatus = !statusFilter || apt['حالة الشقة'] === statusFilter;
+                const matchesStatus = !statusFilter || villa['حالة الفلة'] === statusFilter;
                 
                 return matchesSearch && matchesStatus;
             });
@@ -462,24 +453,23 @@
 
         // عرض الجدول
         function renderTable() {
-            const tbody = document.getElementById('apartments-table-body');
+            const tbody = document.getElementById('villas-table-body');
             
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="no-data">لا توجد بيانات مطابقة للبحث</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="no-data">لا توجد بيانات مطابقة للبحث</td></tr>';
                 return;
             }
 
-            const rows = filteredData.map(apt => {
-                const statusClass = apt['حالة الشقة'] === 'مشغولة' ? 'status-occupied' : 'status-vacant';
+            const rows = filteredData.map(villa => {
+                const statusClass = villa['حالة الفلة'] === 'مشغولة' ? 'status-occupied' : 'status-vacant';
                 
                 return `
                     <tr>
-                        <td><strong>${apt['رقم الشقة']}</strong></td>
-                        <td>${apt['رقم المبنى']}</td>
-                        <td>${apt['اسم_الساكن']}</td>
-                        <td>${apt['رقم الهاتف']}</td>
-                        <td><span class="status-badge ${statusClass}">${apt['حالة الشقة']}</span></td>
-                        <td>${apt['نوع المبنى']}</td>
+                        <td><strong>${villa['رقم الفلة']}</strong></td>
+                        <td>${villa['اسم_الساكن']}</td>
+                        <td>${villa['رقم الهاتف']}</td>
+                        <td><span class="status-badge ${statusClass}">${villa['حالة الفلة']}</span></td>
+                        <td>${villa['الوصف']}</td>
                     </tr>
                 `;
             }).join('');
@@ -493,8 +483,8 @@
 
         // تحميل البيانات عند تحميل الصفحة
         window.addEventListener('DOMContentLoaded', function() {
-            console.log('الصفحة جاهزة، بدء تحميل بيانات الشقق...');
-            loadApartmentsData();
+            console.log('الصفحة جاهزة، بدء تحميل بيانات الفلل...');
+            loadVillasData();
         });
     </script>
 </body>
