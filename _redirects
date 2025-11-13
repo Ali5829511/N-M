@@ -1,0 +1,7 @@
+# Netlify Redirects
+
+# Redirect root to index
+/ /index.html 200
+
+# SPA fallback
+/* /index.html 200
