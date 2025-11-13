@@ -408,16 +408,31 @@
     </div>
 
     <div class="container">
-        <!-- API Status -->
+        <!-- API Configuration -->
         <div class="status-card" id="statusCard">
             <div class="status-header">
                 <div class="status-icon status-unconfigured" id="statusIcon">
-                    <i class="fas fa-spinner fa-spin"></i>
+                    <i class="fas fa-key"></i>
                 </div>
-                <div>
-                    <h3 id="statusTitle">جارٍ التحقق من حالة الاتصال...</h3>
-                    <p id="statusMessage">Checking API connection...</p>
+                <div style="flex: 1;">
+                    <h3 id="statusTitle">إعداد Plate Recognizer API</h3>
+                    <p id="statusMessage">أدخل رمز API الخاص بك للبدء</p>
                 </div>
+            </div>
+            <div id="apiConfigForm" style="margin-top: 20px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="apiTokenInput" placeholder="أدخل رمز Plate Recognizer API" 
+                           style="flex: 1; padding: 12px 15px; border: 2px solid #8B6F47; border-radius: 8px; font-size: 1em; font-family: 'Tajawal', Arial;">
+                    <button onclick="saveAPIToken()" 
+                            style="background: #8B6F47; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; transition: all 0.3s;">
+                        <i class="fas fa-save"></i> حفظ
+                    </button>
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #856404;">
+                    <i class="fas fa-info-circle"></i> 
+                    يمكنك الحصول على رمز API مجاني من 
+                    <a href="https://platerecognizer.com/" target="_blank" style="color: #8B6F47; text-decoration: underline;">platerecognizer.com</a>
+                </p>
             </div>
         </div>
 
@@ -488,42 +503,72 @@
 
     <script>
         let selectedFiles = [];
+        let apiToken = null;
 
-        // Check API status on load
+        // Load API token on page load
         window.addEventListener('load', function() {
-            checkAPIStatus();
+            loadAPIToken();
             loadHistory();
         });
 
-        async function checkAPIStatus() {
-            try {
-                const response = await fetch('/api/plate-recognizer/status', {
-                    credentials: 'include'
-                });
-                const data = await response.json();
+        function loadAPIToken() {
+            apiToken = localStorage.getItem('plateRecognizerAPIToken');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusMessage = document.getElementById('statusMessage');
+            const apiConfigForm = document.getElementById('apiConfigForm');
+            const apiTokenInput = document.getElementById('apiTokenInput');
 
-                const statusIcon = document.getElementById('statusIcon');
-                const statusTitle = document.getElementById('statusTitle');
-                const statusMessage = document.getElementById('statusMessage');
+            if (apiToken) {
+                statusIcon.className = 'status-icon status-connected';
+                statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                statusTitle.textContent = 'رمز API محفوظ وجاهز للاستخدام';
+                statusMessage.textContent = 'API Token Configured';
+                apiConfigForm.style.display = 'none';
+                
+                // Add reset button
+                const resetBtn = document.createElement('button');
+                resetBtn.innerHTML = '<i class="fas fa-redo"></i> تغيير رمز API';
+                resetBtn.style.cssText = 'background: #856404; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9em; margin-top: 10px;';
+                resetBtn.onclick = resetAPIToken;
+                document.querySelector('.status-header').appendChild(resetBtn);
+            } else {
+                apiTokenInput.value = '';
+            }
+        }
 
-                if (data.configured && data.connected) {
-                    statusIcon.className = 'status-icon status-connected';
-                    statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
-                    statusTitle.textContent = 'الخدمة متصلة ومفعلة';
-                    statusMessage.textContent = 'Plate Recognizer API Connected';
-                } else if (data.configured && !data.connected) {
-                    statusIcon.className = 'status-icon status-disconnected';
-                    statusIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
-                    statusTitle.textContent = 'خطأ في الاتصال بالخدمة';
-                    statusMessage.textContent = data.message || 'Connection Error';
-                } else {
-                    statusIcon.className = 'status-icon status-unconfigured';
-                    statusIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
-                    statusTitle.textContent = 'الخدمة غير مفعلة';
-                    statusMessage.textContent = 'API not configured. Please set PLATE_RECOGNIZER_API_TOKEN';
-                }
-            } catch (error) {
-                console.error('Error checking API status:', error);
+        function saveAPIToken() {
+            const input = document.getElementById('apiTokenInput');
+            const token = input.value.trim();
+            
+            if (!token) {
+                alert('الرجاء إدخال رمز API');
+                return;
+            }
+            
+            localStorage.setItem('plateRecognizerAPIToken', token);
+            apiToken = token;
+            
+            const statusIcon = document.getElementById('statusIcon');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusMessage = document.getElementById('statusMessage');
+            const apiConfigForm = document.getElementById('apiConfigForm');
+            
+            statusIcon.className = 'status-icon status-connected';
+            statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            statusTitle.textContent = 'تم حفظ رمز API بنجاح!';
+            statusMessage.textContent = 'API Token Saved Successfully';
+            apiConfigForm.style.display = 'none';
+            
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+
+        function resetAPIToken() {
+            if (confirm('هل أنت متأكد من حذف رمز API الحالي؟')) {
+                localStorage.removeItem('plateRecognizerAPIToken');
+                location.reload();
             }
         }
 
@@ -616,6 +661,11 @@
         }
 
         async function recognizePlate() {
+            if (!apiToken) {
+                alert('الرجاء إدخال رمز API أولاً\nPlease enter API token first');
+                return;
+            }
+
             if (!selectedFiles || selectedFiles.length === 0) {
                 alert('يرجى اختيار صورة أولاً\nPlease select an image first');
                 return;
@@ -651,21 +701,25 @@
                     `;
 
                     const formData = new FormData();
-                    formData.append('image', file);
+                    formData.append('upload', file);
                     formData.append('regions', 'sa');
 
                     try {
-                        const response = await fetch('/api/plate-recognizer/recognize', {
+                        const response = await fetch('https://api.platerecognizer.com/v1/plate-reader/', {
                             method: 'POST',
-                            body: formData,
-                            credentials: 'include'
+                            headers: {
+                                'Authorization': 'Token ' + apiToken
+                            },
+                            body: formData
                         });
 
                         const data = await response.json();
 
-                        if (data.success && data.results && data.results.length > 0) {
+                        if (data.results && data.results.length > 0) {
                             data.results.forEach(result => {
                                 result.filename = file.name;
+                                result.plate = result.plate || '';
+                                result.score = result.score || 0;
                                 allResults.push(result);
                             });
                             successCount++;
