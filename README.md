@@ -1,12 +1,15 @@
 # نظام إدارة المرور - Traffic Management System
 
 [![Deploy to GitHub Pages](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml)
-[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.1-blue.svg)](UPDATES_LOG.md)
+[![Security](https://img.shields.io/badge/security-protected-green.svg)](SECURITY.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 نظام شامل لإدارة المخالفات المرورية بنظام أدوار وصلاحيات متقدم للتحكم في الوصول.
 
-**الإصدار الحالي / Current Version:** 1.4.0 | [سجل التغييرات / Changelog](CHANGELOG.md)
+**الإصدار الحالي / Current Version:** 4.1 | [سجل التحديثات / Updates Log](UPDATES_LOG.md)
+
+⚠️ **ملحوظة أمنية:** يرجى قراءة [إرشادات الأمان](SECURITY.md) قبل النشر الرسمي
 
 ## 📁 هيكل المشروع - Project Structure
 
@@ -45,6 +48,8 @@
 - 📖 [DEPLOYMENT.md](docs/DEPLOYMENT.md) - دليل النشر الكامل
 - 📖 [QUICKSTART.md](docs/QUICKSTART.md) - البدء السريع
 - 📖 [PRODUCTION_CHECKLIST.md](docs/PRODUCTION_CHECKLIST.md) - قائمة التحقق
+- 🔒 [SECURITY.md](SECURITY.md) - إرشادات الأمان (مهم!)
+- 🔑 [API_SETUP.md](API_SETUP.md) - إعداد Plate Recognizer API
 
 ---
 

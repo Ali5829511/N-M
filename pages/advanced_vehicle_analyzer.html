@@ -636,8 +636,14 @@
         }
 
         // تحميل إعدادات Plate Recognizer
-        const API_TOKEN = '22ba3cf7155a1ea730a0b64787f98ab5f9a3de94';
+        // يجب تعيين رمز API الخاص بك هنا أو من خلال متغيرات البيئة
+        const API_TOKEN = localStorage.getItem('PLATE_RECOGNIZER_API_TOKEN') || '';
         const API_URL = 'https://api.platerecognizer.com/v1/plate-reader/';
+        
+        // التحقق من وجود رمز API
+        if (!API_TOKEN) {
+            console.warn('⚠️ لم يتم تعيين رمز Plate Recognizer API. يرجى تعيينه في إعدادات النظام.');
+        }
 
         let selectedFiles = [];
         let analysisResults = [];
