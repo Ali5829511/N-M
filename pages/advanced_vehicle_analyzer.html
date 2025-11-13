@@ -624,7 +624,7 @@
 
     <script src="../js/auth.js"></script>
     <script src="../js/database.js"></script>
-    <script src="../js/advanced_export.js"></script>
+    <script src="../js/advanced_export_professional.js"></script>
     <script>
         // التحقق من تسجيل الدخول
         if (window.authManager) {
@@ -995,13 +995,13 @@
 
             // تحضير الصور المصغرة
             const images = await Promise.all(
-                selectedFiles.map(file => advancedExporter.imageToBase64(file))
+                selectedFiles.map(file => professionalExporter.imageToBase64(file))
             );
 
-            advancedExporter.title = 'تقرير تحليل السيارات - وحدة إسكان هيئة التدريس';
-            advancedExporter.setData(exportData, images);
+            professionalExporter.title = 'تقرير تحليل السيارات - وحدة إسكان هيئة التدريس';
+            professionalExporter.setData(exportData, images);
             
-            const success = await advancedExporter.exportToExcel();
+            const success = await professionalExporter.exportToExcel();
             if (success) {
                 alert('تم تصدير التقرير بنجاح!');
             } else {
@@ -1026,13 +1026,13 @@
             }));
 
             const images = await Promise.all(
-                selectedFiles.map(file => advancedExporter.imageToBase64(file))
+                selectedFiles.map(file => professionalExporter.imageToBase64(file))
             );
 
-            advancedExporter.title = 'تقرير تحليل السيارات - وحدة إسكان هيئة التدريس';
-            advancedExporter.setData(exportData, images);
+            professionalExporter.title = 'تقرير تحليل السيارات - وحدة إسكان هيئة التدريس';
+            professionalExporter.setData(exportData, images);
             
-            const success = await advancedExporter.exportToPDF();
+            const success = await professionalExporter.exportToPDF();
             if (success) {
                 alert('تم فتح نافذة الطباعة. يمكنك حفظ التقرير كـ PDF');
             } else {
@@ -1057,13 +1057,13 @@
             }));
 
             const images = await Promise.all(
-                selectedFiles.map(file => advancedExporter.imageToBase64(file))
+                selectedFiles.map(file => professionalExporter.imageToBase64(file))
             );
 
-            advancedExporter.title = 'تقرير تحليل السيارات - وحدة إسكان هيئة التدريس';
-            advancedExporter.setData(exportData, images);
+            professionalExporter.title = 'تقرير تحليل السيارات - وحدة إسكان هيئة التدريس';
+            professionalExporter.setData(exportData, images);
             
-            const success = await advancedExporter.exportToHTML();
+            const success = await professionalExporter.exportToHTML();
             if (success) {
                 alert('تم تصدير التقرير بنجاح!');
             } else {
