@@ -234,8 +234,7 @@ class ProfessionalExporter {
                                 <th>رقم اللوحة</th>
                                 <th>نوع المركبة</th>
                                 <th>اللون</th>
-                                <th>الدقة</th>
-                                <th>عدد الصور</th>
+                                <th>عدد التكرار</th>
                                 <th>التاريخ</th>
                             </tr>
                         </thead>
@@ -247,14 +246,13 @@ class ProfessionalExporter {
                 const imageData = this.images[index] || '';
                 html += `
                     <tr>
-                        <td>${index + 1}</td>
-                        <td>${imageData ? `<img src="${imageData}" />` : 'لا توجد صورة'}</td>
-                        <td class="plate-number">${item.plateNumber || '-'}</td>
-                        <td>${item.vehicleType || '-'}</td>
-                        <td>${item.color || '-'}</td>
-                        <td>${item.confidence || '-'}%</td>
-                        <td><span class="image-count-badge">${item.imageCount || 1} صورة</span></td>
-                        <td>${new Date(item.timestamp || Date.now()).toLocaleDateString('ar-SA')}</td>
+                        <td style="text-align: center;">${index + 1}</td>
+                        <td style="text-align: center; padding: 5px;">${imageData ? `<img src="${imageData}" style="width: 120px; height: 90px; object-fit: cover; border-radius: 5px; border: 2px solid #1a5f3f;" />` : 'لا توجد صورة'}</td>
+                        <td class="plate-number" style="font-size: 18px; font-weight: bold;">${item.plateNumber || '-'}</td>
+                        <td style="font-size: 14px;">${item.vehicleType || '-'}</td>
+                        <td style="font-size: 14px;">${item.color || '-'}</td>
+                        <td style="text-align: center;"><span class="image-count-badge">${item.imageCount || 1}</span></td>
+                        <td style="text-align: center;">${new Date(item.timestamp || Date.now()).toLocaleDateString('ar-SA')}</td>
                     </tr>
                 `;
             });
@@ -544,12 +542,11 @@ class ProfessionalExporter {
                         <thead>
                             <tr>
                                 <th style="width: 40px;">م</th>
-                                <th style="width: 90px;">الصورة</th>
+                                <th style="width: 100px;">الصورة</th>
                                 <th>رقم اللوحة</th>
                                 <th>نوع المركبة</th>
                                 <th>اللون</th>
-                                <th style="width: 70px;">الدقة</th>
-                                <th style="width: 90px;">عدد الصور</th>
+                                <th style="width: 90px;">عدد التكرار</th>
                                 <th style="width: 100px;">التاريخ</th>
                             </tr>
                         </thead>
@@ -562,13 +559,12 @@ class ProfessionalExporter {
                 html += `
                     <tr>
                         <td style="text-align: center;">${index + 1}</td>
-                        <td style="text-align: center;">
-                            ${imageData ? `<img class="thumbnail" src="${imageData}" />` : '-'}
+                        <td style="text-align: center; padding: 5px;">
+                            ${imageData ? `<img src="${imageData}" style="width: 90px; height: 67px; object-fit: cover; border-radius: 5px; border: 2px solid #1a5f3f;" />` : '-'}
                         </td>
                         <td class="plate-number">${item.plateNumber || '-'}</td>
                         <td>${item.vehicleType || '-'}</td>
                         <td>${item.color || '-'}</td>
-                        <td style="text-align: center;">${item.confidence || '-'}%</td>
                         <td style="text-align: center;">
                             <span class="image-count-badge">${item.imageCount || 1}</span>
                         </td>
@@ -702,8 +698,7 @@ class ProfessionalExporter {
                                     <th>رقم اللوحة</th>
                                     <th>نوع المركبة</th>
                                     <th>اللون</th>
-                                    <th style="width: 80px;">الدقة</th>
-                                    <th style="width: 100px;">عدد الصور</th>
+                                    <th style="width: 100px;">عدد التكرار</th>
                                     <th style="width: 120px;">التاريخ</th>
                                 </tr>
                             </thead>
@@ -715,13 +710,12 @@ class ProfessionalExporter {
                 html += `
                     <tr>
                         <td style="text-align: center;">${index + 1}</td>
-                        <td style="text-align: center;">
-                            ${imageData ? `<img class="thumbnail" src="${imageData}" />` : '-'}
+                        <td style="text-align: center; padding: 5px;">
+                            ${imageData ? `<img src="${imageData}" style="width: 90px; height: 67px; object-fit: cover; border-radius: 5px; border: 2px solid #1a5f3f;" />` : '-'}
                         </td>
                         <td class="plate-number">${item.plateNumber || '-'}</td>
                         <td>${item.vehicleType || '-'}</td>
                         <td>${item.color || '-'}</td>
-                        <td style="text-align: center;">${item.confidence || '-'}%</td>
                         <td style="text-align: center;">
                             <span class="image-count-badge">${item.imageCount || 1}</span>
                         </td>
