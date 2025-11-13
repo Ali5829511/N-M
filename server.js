@@ -114,6 +114,83 @@ app.get('/health', (req, res) => {
 });
 
 // ============================================
+// Statistics and Violations Report API Endpoints
+// ============================================
+
+// نقطة API للإحصائيات العامة - General Statistics Endpoint
+app.get('/api/statistics', async (req, res) => {
+  try {
+    // في بيئة الإنتاج، يجب جلب هذه البيانات من قاعدة البيانات
+    // In production, this data should be fetched from the database
+    const statistics = {
+      total_residents: 1057,
+      total_buildings: 165,
+      total_stickers: 2382,
+      total_units: 1134,
+      total_parking: 1308,
+      active_violations: 12
+    };
+    
+    res.json({
+      success: true,
+      data: statistics,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting statistics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'حدث خطأ في جلب الإحصائيات',
+      message: error.message
+    });
+  }
+});
+
+// نقطة API لتقرير المخالفات - Violations Report Endpoint
+app.get('/api/violation-report', async (req, res) => {
+  try {
+    // في بيئة الإنتاج، يجب جلب هذه البيانات من قاعدة البيانات
+    // In production, this data should be fetched from the database
+    
+    // بيانات تجريبية للتقرير - Sample data for the report
+    const violationsReport = [
+      {
+        plateNumber: 'و 2309',
+        violationCount: 3,
+        vehicleType: 'كامري',
+        processingDate: '1447/4/5',
+        residentName: 'يحيى بن علي بن يحيى العمري',
+        buildingNumber: '1',
+        unitNumber: '0'
+      },
+      {
+        plateNumber: 'ز 3477',
+        violationCount: 2,
+        vehicleType: 'يوكن',
+        processingDate: '1447/2/17',
+        residentName: 'مثقب بن سعيد بن طويفير الفحماني',
+        buildingNumber: '2',
+        unitNumber: '0'
+      }
+    ];
+    
+    res.json({
+      success: true,
+      data: violationsReport,
+      timestamp: new Date().toISOString(),
+      count: violationsReport.length
+    });
+  } catch (error) {
+    console.error('Error getting violation report:', error);
+    res.status(500).json({
+      success: false,
+      error: 'حدث خطأ في جلب تقرير المخالفات',
+      message: error.message
+    });
+  }
+});
+
+// ============================================
 // ParkPow API Endpoints
 // ============================================
 
