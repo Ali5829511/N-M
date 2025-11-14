@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-نظام استخراج بيانات السيارات من ParkPow
-ParkPow Vehicle Data Extraction System
+نظام استخراج بيانات السيارات والمخالفات من ParkPow
+ParkPow Vehicle Database and Violations Extraction System
 
-هذا السكريبت يقوم باستخراج بيانات السيارات من ParkPow API
-لإنشاء قاعدة بيانات محلية للسيارات
+الأهداف الرئيسية:
+1. إنشاء قاعدة بيانات شاملة للسيارات
+2. تسجيل المخالفات المرورية تلقائياً
+3. تحديد وتتبع السيارات المخالفة المتكررة
 
-This script extracts vehicle data from ParkPow API
-to create a local vehicle database
+Main Objectives:
+1. Create comprehensive vehicle database
+2. Automatically register traffic violations
+3. Identify and track repeat offender vehicles
 """
 
 import os
@@ -502,6 +506,179 @@ class ParkPowVehicleFetcher:
             print(f"❌ Error saving data: {str(e)}")
             import traceback
             print(traceback.format_exc())
+    
+    def process_violations(self, vehicles: List[Dict]) -> Dict:
+        """
+        معالجة المخالفات وتحديد المخالفين المتكررين
+        Process violations and identify repeat offenders
+        
+        Args:
+            vehicles: قائمة السيارات
+            
+        Returns:
+            قاموس يحتوي على المخالفات والمخالفين المتكررين
+        """
+        print("\n" + "=" * 60)
+        print("🚨 معالجة المخالفات المرورية")
+        print("🚨 Processing Traffic Violations")
+        print("=" * 60 + "\n")
+        
+        violations = []
+        vehicle_violations_count = {}
+        repeat_offenders = []
+        
+        # معالجة كل سيارة
+        for vehicle in vehicles:
+            plate = vehicle['plateNumber']
+            
+            # إنشاء مخالفة لكل ظهور للسيارة
+            violation = {
+                'id': f"violation_{vehicle['id']}",
+                'plateNumber': plate,
+                'vehicleType': vehicle['vehicleType'],
+                'color': vehicle['color'],
+                'violationType': self._detect_violation_type(vehicle),
+                'violationDate': vehicle['timestamp'],
+                'location': {
+                    'latitude': vehicle.get('latitude', ''),
+                    'longitude': vehicle.get('longitude', ''),
+                    'region': vehicle.get('regionName', vehicle.get('region', '')),
+                    'cameraId': vehicle.get('cameraId', '')
+                },
+                'confidence': vehicle['confidence'],
+                'imageUrl': vehicle.get('imageUrl', ''),
+                'status': 'pending',
+                'reviewed': vehicle.get('reviewed', False),
+                'notes': f"تم الرصد بواسطة كاميرا {vehicle.get('cameraId', 'غير محدد')}"
+            }
+            
+            violations.append(violation)
+            
+            # حساب عدد المخالفات لكل سيارة
+            if plate not in vehicle_violations_count:
+                vehicle_violations_count[plate] = {
+                    'count': 0,
+                    'vehicle': vehicle,
+                    'violations': []
+                }
+            
+            vehicle_violations_count[plate]['count'] += 1
+            vehicle_violations_count[plate]['violations'].append(violation)
+        
+        # تحديد المخالفين المتكررين (أكثر من مخالفة واحدة)
+        print("🔍 تحليل المخالفين المتكررين...")
+        print("🔍 Analyzing repeat offenders...\n")
+        
+        for plate, data in vehicle_violations_count.items():
+            if data['count'] > 1:
+                offender = {
+                    'plateNumber': plate,
+                    'vehicleType': data['vehicle']['vehicleType'],
+                    'color': data['vehicle']['color'],
+                    'make': data['vehicle'].get('make', ''),
+                    'model': data['vehicle'].get('model', ''),
+                    'violationCount': data['count'],
+                    'violations': data['violations'],
+                    'firstViolation': data['violations'][0]['violationDate'],
+                    'lastViolation': data['violations'][-1]['violationDate'],
+                    'riskLevel': self._calculate_risk_level(data['count']),
+                    'status': 'repeat_offender'
+                }
+                repeat_offenders.append(offender)
+        
+        # ترتيب المخالفين حسب عدد المخالفات (الأكثر أولاً)
+        repeat_offenders.sort(key=lambda x: x['violationCount'], reverse=True)
+        
+        # طباعة الإحصائيات
+        print("=" * 60)
+        print("📊 إحصائيات المخالفات")
+        print("📊 Violations Statistics")
+        print("=" * 60)
+        print(f"• إجمالي المخالفات / Total violations: {len(violations)}")
+        print(f"• عدد السيارات المخالفة / Violating vehicles: {len(vehicle_violations_count)}")
+        print(f"• المخالفين المتكررين / Repeat offenders: {len(repeat_offenders)}")
+        
+        if repeat_offenders:
+            print(f"\n🚨 أكثر 5 مخالفين تكراراً:")
+            print(f"🚨 Top 5 repeat offenders:")
+            for i, offender in enumerate(repeat_offenders[:5], 1):
+                risk_emoji = "🔴" if offender['riskLevel'] == 'high' else "🟡" if offender['riskLevel'] == 'medium' else "🟢"
+                print(f"   {i}. {risk_emoji} {offender['plateNumber']} - {offender['violationCount']} مخالفات")
+        
+        print("=" * 60 + "\n")
+        
+        return {
+            'violations': violations,
+            'repeat_offenders': repeat_offenders,
+            'statistics': {
+                'total_violations': len(violations),
+                'unique_vehicles': len(vehicle_violations_count),
+                'repeat_offenders_count': len(repeat_offenders),
+                'average_violations_per_vehicle': round(len(violations) / len(vehicle_violations_count), 2) if vehicle_violations_count else 0
+            }
+        }
+    
+    def _detect_violation_type(self, vehicle: Dict) -> str:
+        """
+        تحديد نوع المخالفة بناءً على البيانات المتاحة
+        Detect violation type based on available data
+        """
+        # يمكن تحسين هذه الدالة بناءً على البيانات الفعلية من ParkPow
+        # This function can be enhanced based on actual ParkPow data
+        
+        speed = vehicle.get('speed', '')
+        if speed:
+            try:
+                speed_val = float(speed)
+                if speed_val > 120:
+                    return 'تجاوز السرعة'
+            except:
+                pass
+        
+        # الافتراضي: مخالفة وقوف أو دخول غير مصرح
+        return 'دخول/وقوف غير مصرح'
+    
+    def _calculate_risk_level(self, violation_count: int) -> str:
+        """
+        حساب مستوى الخطورة بناءً على عدد المخالفات
+        Calculate risk level based on violation count
+        """
+        if violation_count >= 5:
+            return 'high'
+        elif violation_count >= 3:
+            return 'medium'
+        else:
+            return 'low'
+    
+    def save_violations(self, violations_data: Dict, filename: str = 'data/parkpow_violations.json'):
+        """
+        حفظ بيانات المخالفات
+        Save violations data
+        """
+        try:
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            
+            output = {
+                'metadata': {
+                    'title': 'قاعدة بيانات المخالفات المرورية',
+                    'title_en': 'Traffic Violations Database',
+                    'source': 'ParkPow API',
+                    'generated_at': datetime.now().isoformat(),
+                    'description': 'قاعدة بيانات كاملة للمخالفات المرورية مع تحديد المخالفين المتكررين'
+                },
+                'statistics': violations_data['statistics'],
+                'violations': violations_data['violations'],
+                'repeat_offenders': violations_data['repeat_offenders']
+            }
+            
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(output, f, ensure_ascii=False, indent=2)
+            
+            print(f"✅ تم حفظ بيانات المخالفات في: {filename}")
+            print(f"✅ Violations data saved to: {filename}")
+            
+        except Exception as e:
+            print(f"❌ خطأ في حفظ بيانات المخالفات: {str(e)}")
 
 
 def main():
@@ -568,14 +745,36 @@ def main():
         
         if all_items:
             # Transform to vehicle format
+            print("\n" + "=" * 60)
+            print("🔄 تحويل البيانات...")
             vehicles = fetcher.transform_to_vehicle_format(all_items)
             
-            # Save to JSON
+            # Save vehicles database
+            print("\n" + "=" * 60)
+            print("💾 حفظ قاعدة بيانات السيارات...")
             fetcher.save_to_json(vehicles)
+            
+            # Process violations and identify repeat offenders
+            print("\n" + "=" * 60)
+            print("🚨 معالجة المخالفات وتحديد المخالفين المتكررين...")
+            violations_data = fetcher.process_violations(vehicles)
+            
+            # Save violations database
+            print("\n" + "=" * 60)
+            print("💾 حفظ قاعدة بيانات المخالفات...")
+            fetcher.save_violations(violations_data)
             
             print("\n" + "=" * 60)
             print("✅ تمت العملية بنجاح!")
             print("✅ Operation completed successfully!")
+            print("=" * 60)
+            print("\n📂 الملفات المحفوظة / Saved Files:")
+            print("   1. data/parkpow_vehicles.json - قاعدة بيانات السيارات")
+            print("   2. data/parkpow_violations.json - قاعدة بيانات المخالفات")
+            print("\n📊 الإحصائيات النهائية / Final Statistics:")
+            print(f"   • السيارات / Vehicles: {len(vehicles)}")
+            print(f"   • المخالفات / Violations: {violations_data['statistics']['total_violations']}")
+            print(f"   • المخالفين المتكررين / Repeat Offenders: {violations_data['statistics']['repeat_offenders_count']}")
             print("=" * 60)
         else:
             print("\n⚠️  لم يتم العثور على أي بيانات للحفظ")

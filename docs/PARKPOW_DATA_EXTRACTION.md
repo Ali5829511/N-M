@@ -1,11 +1,33 @@
-# دليل استخراج بيانات السيارات من ParkPow
-# ParkPow Vehicle Data Extraction Guide
+# دليل استخراج بيانات السيارات والمخالفات من ParkPow
+# ParkPow Vehicle Database and Violations Extraction Guide
 
 ## نظرة عامة / Overview
 
-هذا الدليل يشرح كيفية استخدام نظام استخراج بيانات السيارات من ParkPow API.
+نظام شامل لاستخراج بيانات السيارات والمخالفات المرورية من ParkPow API.
 
-This guide explains how to use the ParkPow vehicle data extraction system.
+A comprehensive system for extracting vehicle data and traffic violations from ParkPow API.
+
+## الأهداف الرئيسية / Main Objectives
+
+### 1. قاعدة بيانات السيارات / Vehicle Database
+- بناء قاعدة بيانات كاملة ودقيقة لجميع السيارات
+- جمع معلومات شاملة (رقم اللوحة، النوع، اللون، الماركة، الموديل، إلخ)
+- Building a complete and accurate database of all vehicles
+- Collecting comprehensive information (plate number, type, color, make, model, etc.)
+
+### 2. تسجيل المخالفات المرورية / Traffic Violations Registration
+- تسجيل جميع المخالفات المرورية تلقائياً
+- تحديد نوع المخالفة، التاريخ، الموقع، والكاميرا
+- Automatically register all traffic violations
+- Identify violation type, date, location, and camera
+
+### 3. تحديد المخالفين المتكررين / Repeat Offenders Identification
+- تتبع السيارات المخالفة بشكل متكرر
+- تصنيف حسب مستوى الخطورة (عالي، متوسط، منخفض)
+- إحصائيات مفصلة لكل مخالف
+- Track repeat offender vehicles
+- Classify by risk level (high, medium, low)
+- Detailed statistics for each offender
 
 ## المتطلبات / Requirements
 
@@ -112,13 +134,22 @@ data/parkpow_vehicles.json
 
 ## تنسيق ملف الإخراج / Output File Format
 
+### 1. قاعدة بيانات السيارات / Vehicle Database
+**الملف:** `data/parkpow_vehicles.json`
+
 ```json
 {
   "metadata": {
     "source": "ParkPow API",
     "fetched_at": "2025-11-14T15:33:52.000Z",
     "total_count": 150,
-    "api_url": "https://app.parkpow.com/api/v1"
+    "accuracy": "100%"
+  },
+  "statistics": {
+    "total_vehicles": 150,
+    "vehicles_with_type": 145,
+    "vehicles_with_color": 140,
+    "avg_confidence": 95.5
   },
   "vehicles": [
     {
@@ -126,13 +157,59 @@ data/parkpow_vehicles.json
       "plateNumber": "ABC 1234",
       "vehicleType": "سيدان",
       "color": "أبيض",
+      "make": "تويوتا",
+      "model": "كامري",
+      "year": "2020",
       "region": "sa",
       "confidence": 98.5,
       "timestamp": "2025-11-14T12:00:00",
-      "source": "parkpow_api",
-      "status": "active",
-      "imageUrl": "https://...",
-      "rawData": { }
+      "latitude": "24.7136",
+      "longitude": "46.6753"
+    }
+  ]
+}
+```
+
+### 2. قاعدة بيانات المخالفات / Violations Database
+**الملف:** `data/parkpow_violations.json`
+
+```json
+{
+  "metadata": {
+    "title": "قاعدة بيانات المخالفات المرورية",
+    "source": "ParkPow API",
+    "generated_at": "2025-11-14T15:33:52.000Z"
+  },
+  "statistics": {
+    "total_violations": 150,
+    "unique_vehicles": 120,
+    "repeat_offenders_count": 25,
+    "average_violations_per_vehicle": 1.25
+  },
+  "violations": [
+    {
+      "id": "violation_123",
+      "plateNumber": "ABC 1234",
+      "violationType": "دخول/وقوف غير مصرح",
+      "violationDate": "2025-11-14T12:00:00",
+      "location": {
+        "latitude": "24.7136",
+        "longitude": "46.6753",
+        "region": "الرياض",
+        "cameraId": "CAM001"
+      },
+      "confidence": 98.5,
+      "status": "pending"
+    }
+  ],
+  "repeat_offenders": [
+    {
+      "plateNumber": "ABC 1234",
+      "violationCount": 5,
+      "riskLevel": "high",
+      "firstViolation": "2025-11-01T10:00:00",
+      "lastViolation": "2025-11-14T12:00:00",
+      "status": "repeat_offender"
     }
   ]
 }
@@ -144,22 +221,53 @@ data/parkpow_vehicles.json
 
 After fetching data, you can import it into the system in several ways:
 
-### 1. استيراد تلقائي في JavaScript / Automatic Import in JavaScript
+### 1. عرض قاعدة بيانات السيارات / View Vehicle Database
+
+افتح في المتصفح / Open in browser:
+```
+pages/parkpow_database_viewer.html
+```
+
+الميزات:
+- عرض جميع السيارات مع معلومات كاملة
+- بحث وتصفية متقدم
+- إحصائيات شاملة
+
+### 2. عرض المخالفين المتكررين / View Repeat Offenders
+
+افتح في المتصفح / Open in browser:
+```
+pages/repeat_offenders_tracker.html
+```
+
+الميزات:
+- قائمة كاملة بالمخالفين المتكررين
+- تصنيف حسب مستوى الخطورة
+- تفاصيل كل مخالفة
+- إحصائيات مفصلة
+
+### 3. الدمج التلقائي في JavaScript / Automatic Integration in JavaScript
 
 ```javascript
 // في صفحة HTML
-fetch('data/parkpow_vehicles.json')
-  .then(response => response.json())
-  .then(data => {
-    const vehicles = data.vehicles;
-    // معالجة البيانات
-    vehicles.forEach(vehicle => {
-      vehicleDatabase.addVehicle(vehicle);
-    });
+<script src="../js/parkpow_integration.js"></script>
+<script>
+  // استيراد البيانات تلقائياً
+  await importParkPowData();
+  
+  // أو استخدام API مباشرة
+  const integration = window.parkpowIntegration;
+  await integration.loadParkPowData();
+  const result = await integration.importAllVehicles({
+    skipDuplicates: true,
+    updateExisting: false
   });
+  
+  console.log('تم استيراد:', result.imported);
+</script>
 ```
 
-### 2. استخدام صفحة استيراد البيانات / Using Data Import Page
+### 4. استخدام صفحة استيراد البيانات / Using Data Import Page
 
 1. افتح `pages/bulk_vehicle_import.html`
 2. حمّل ملف `data/parkpow_vehicles.json`
