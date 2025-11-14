@@ -355,10 +355,16 @@
 </head>
 <body>
     <div class="container">
-        <a href="unified_dashboard.html" class="back-btn">
-            <i class="fas fa-arrow-right"></i>
-            <span>العودة إلى لوحة التحكم</span>
-        </a>
+        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+            <a href="unified_dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+                <span>العودة إلى لوحة التحكم</span>
+            </a>
+            <a href="violations_report.html" class="back-btn">
+                <i class="fas fa-file-alt"></i>
+                <span>العودة إلى التقرير</span>
+            </a>
+        </div>
 
         <div class="header">
             <h1>
@@ -464,10 +470,16 @@
                 <label for="testEmail">أدخل بريدك الإلكتروني لاختبار الإعدادات</label>
                 <input type="email" id="testEmail" placeholder="test@example.com">
             </div>
-            <button type="button" class="btn btn-success" id="testEmailBtn">
-                <i class="fas fa-paper-plane"></i>
-                إرسال بريد تجريبي
-            </button>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-success" id="testEmailBtn">
+                    <i class="fas fa-paper-plane"></i>
+                    إرسال بريد تجريبي
+                </button>
+                <button type="button" class="btn btn-success" id="testReportBtn">
+                    <i class="fas fa-file-export"></i>
+                    اختبار إرسال تقرير
+                </button>
+            </div>
         </div>
 
         <!-- أزرار الحفظ -->
@@ -606,6 +618,72 @@
                 showAlert('تم إرسال البريد التجريبي بنجاح! تحقق من صندوق الوارد', 'success');
             } else {
                 showAlert(result.error || 'فشل إرسال البريد التجريبي. تحقق من الإعدادات', 'error');
+            }
+        });
+
+        // اختبار إرسال تقرير
+        const testReportBtn = document.getElementById('testReportBtn');
+        testReportBtn.addEventListener('click', async () => {
+            const testEmail = testEmailInput.value.trim();
+            
+            if (!testEmail) {
+                showAlert('يرجى إدخال بريد إلكتروني للاختبار', 'error');
+                return;
+            }
+
+            // التحقق من تفعيل الخدمة
+            const status = window.emailService.getStatus();
+            if (!status.enabled || !status.configured) {
+                showAlert('يرجى تفعيل وتكوين خدمة البريد الإلكتروني أولاً', 'error');
+                return;
+            }
+
+            testReportBtn.disabled = true;
+            testReportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+            // إنشاء تقرير تجريبي
+            const reportContent = `📊 تقرير تجريبي من نظام المرور
+
+هذا تقرير تجريبي لاختبار وظيفة إرسال التقارير عبر البريد الإلكتروني.
+
+📋 بيانات تجريبية:
+• إجمالي السجلات: 15
+• إجمالي المخالفات: 45
+• متوسط المخالفات: 3.00
+
+أعلى المخالفات:
+1. رقم اللوحة: أ 1234
+   - عدد المخالفات: 5
+   - المبنى/الوحدة: A/101
+
+2. رقم اللوحة: ب 5678
+   - عدد المخالفات: 4
+   - المبنى/الوحدة: B/202
+
+تم إنشاء هذا التقرير في: ${new Date().toLocaleString('ar-SA')}
+
+للاطلاع على التقرير الكامل، يرجى تسجيل الدخول إلى النظام.`;
+
+            try {
+                const result = await window.emailService.notifySystem(
+                    testEmail,
+                    'تقرير تجريبي - نظام إدارة المرور',
+                    reportContent
+                );
+
+                testReportBtn.disabled = false;
+                testReportBtn.innerHTML = '<i class="fas fa-file-export"></i> اختبار إرسال تقرير';
+
+                if (result.success) {
+                    showAlert('✅ تم إرسال التقرير التجريبي بنجاح! تحقق من صندوق الوارد', 'success');
+                } else {
+                    showAlert(result.error || 'فشل إرسال التقرير التجريبي. تحقق من الإعدادات', 'error');
+                }
+            } catch (error) {
+                console.error('Error sending test report:', error);
+                testReportBtn.disabled = false;
+                testReportBtn.innerHTML = '<i class="fas fa-file-export"></i> اختبار إرسال تقرير';
+                showAlert('حدث خطأ أثناء إرسال التقرير: ' + error.message, 'error');
             }
         });
 

@@ -312,8 +312,11 @@
             <button class="action-btn btn-export" onclick="exportViolations()">
                 ⚠️ تقرير المخالفات
             </button>
+            <button class="action-btn btn-email" onclick="sendReportByEmail()">
+                📧 إرسال التقرير بالبريد
+            </button>
             <button class="action-btn btn-email" onclick="sendEmailReport()">
-                📧 إعدادات البريد الإلكتروني
+                ⚙️ إعدادات البريد الإلكتروني
             </button>
             <button class="action-btn btn-print" onclick="window.print()">
                 🖨️ طباعة
@@ -352,6 +355,10 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/email-service.js"></script>
     <script src="../js/real_data_loader.js"></script>
     <script>
         // تحميل البيانات عند تحميل الصفحة
@@ -469,7 +476,87 @@
         }
 
         function sendEmailReport() {
-            alert('📧 سيتم فتح صفحة إعدادات البريد الإلكتروني قريباً');
+            window.location.href = 'email_settings.html';
+        }
+
+        async function sendReportByEmail() {
+            // التحقق من تفعيل خدمة البريد الإلكتروني
+            if (!window.emailService || !window.emailService.isEmailEnabled()) {
+                const confirm = window.confirm(
+                    'خدمة البريد الإلكتروني غير مفعلة.\n\n' +
+                    'هل تريد الانتقال إلى صفحة الإعدادات لتفعيلها؟'
+                );
+                if (confirm) {
+                    window.location.href = 'email_settings.html';
+                }
+                return;
+            }
+
+            // طلب البريد الإلكتروني للمستلم
+            const recipientEmail = prompt('أدخل البريد الإلكتروني للمستلم:', '');
+            if (!recipientEmail) {
+                return;
+            }
+
+            // التحقق من صحة البريد الإلكتروني
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(recipientEmail)) {
+                alert('❌ البريد الإلكتروني غير صحيح. يرجى المحاولة مرة أخرى.');
+                return;
+            }
+
+            // إعداد محتوى التقرير
+            const totalViolations = allData.reduce((sum, item) => sum + item.violations, 0);
+            const avgViolations = (totalViolations / allData.length).toFixed(2);
+            
+            let reportContent = '📊 تقرير المخالفات المرورية\n\n';
+            reportContent += `• إجمالي السجلات: ${allData.length}\n`;
+            reportContent += `• إجمالي المخالفات: ${totalViolations}\n`;
+            reportContent += `• متوسط المخالفات: ${avgViolations}\n\n`;
+            reportContent += '📋 قائمة أعلى 10 مخالفات:\n\n';
+            
+            // ترتيب البيانات حسب عدد المخالفات
+            const sortedData = [...allData].sort((a, b) => b.violations - a.violations).slice(0, 10);
+            
+            sortedData.forEach((item, index) => {
+                reportContent += `${index + 1}. رقم اللوحة: ${item.plateNumber}\n`;
+                reportContent += `   - عدد المخالفات: ${item.violations}\n`;
+                reportContent += `   - الساكن: ${item.residentName}\n`;
+                reportContent += `   - المبنى/الوحدة: ${item.building}/${item.unit}\n\n`;
+            });
+
+            // إضافة رابط للنظام
+            reportContent += `\nللاطلاع على التقرير الكامل، يرجى زيارة:\n${window.location.href}`;
+
+            // إرسال البريد الإلكتروني
+            try {
+                const button = event.target;
+                button.disabled = true;
+                button.innerHTML = '⏳ جاري الإرسال...';
+
+                const result = await window.emailService.notifySystem(
+                    recipientEmail,
+                    'تقرير المخالفات المرورية - نظام إدارة المرور',
+                    reportContent
+                );
+
+                button.disabled = false;
+                button.innerHTML = '📧 إرسال التقرير بالبريد';
+
+                if (result.success) {
+                    alert('✅ تم إرسال التقرير بنجاح إلى: ' + recipientEmail);
+                } else {
+                    alert('❌ فشل إرسال التقرير. يرجى التحقق من إعدادات البريد الإلكتروني والمحاولة مرة أخرى.\n\n' + 
+                          'الخطأ: ' + (result.error || 'خطأ غير معروف'));
+                }
+            } catch (error) {
+                console.error('Error sending email report:', error);
+                alert('❌ حدث خطأ أثناء إرسال التقرير: ' + error.message);
+                
+                const button = event.target;
+                button.disabled = false;
+                button.innerHTML = '📧 إرسال التقرير بالبريد';
+            }
         }
 
         // البحث عند الضغط على Enter
