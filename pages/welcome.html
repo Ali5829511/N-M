@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرحباً بك - نظام إدارة المرور</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #8B6F47;
+            --primary-dark: #6B5537;
+            --secondary-color: #A0826D;
+            --accent-color: #C9B896;
+            --light-bg: #f8f5f0;
+            --success-color: #51cf66;
+            --error-color: #ff6b6b;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(139, 111, 71, 0.08);
+            --shadow-md: 0 8px 24px rgba(139, 111, 71, 0.15);
+            --shadow-lg: 0 20px 60px rgba(139, 111, 71, 0.25);
+        }
+
+        body {
+            font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #003c50 0%, #00566f 50%, #003c50 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* خلفية متحركة */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 111, 71, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(107, 85, 54, 0.1) 0%, transparent 50%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 25px;
+            background: white;
+            border-radius: 25px;
+            padding: 15px;
+            box-shadow: 
+                0 10px 40px rgba(0,0,0,0.3),
+                0 0 0 4px rgba(139, 111, 71, 0.2),
+                0 0 0 8px rgba(255,255,255,0.1);
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .welcome-header h1 {
+            color: white;
+            font-size: 2.8em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .welcome-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 35px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 45px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 80px rgba(139, 111, 71, 0.35);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 25px rgba(139, 111, 71, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .card-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .card-icon i {
+            font-size: 2.5em;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.9em;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .card-description {
+            color: var(--text-light);
+            text-align: center;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .card-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .card-features li {
+            padding: 12px 0;
+            color: var(--text-dark);
+            font-size: 1.05em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-features li i {
+            color: var(--success-color);
+            font-size: 1.2em;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(139, 111, 71, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(139, 111, 71, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn i {
+            font-size: 1.1em;
+        }
+
+        /* بطاقة الاستعلام */
+        .inquiry-card {
+            animation: fadeInLeft 0.8s ease;
+        }
+
+        .inquiry-card .card-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .inquiry-card .btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        /* بطاقة تسجيل الدخول */
+        .login-card {
+            animation: fadeInRight 0.8s ease;
+        }
+
+        .login-card .card-icon {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .login-card .btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        /* الفورم داخل بطاقة الدخول */
+        .login-form {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.05em;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-note {
+            background: #f0f9ff;
+            border-right: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #1e40af;
+            font-size: 0.95em;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1em;
+            animation: fadeIn 1s ease 0.5s both;
+        }
+
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        /* الرسوم المتحركة */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+                margin: 40px auto 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-header h1 {
+                font-size: 2em;
+            }
+
+            .welcome-header p {
+                font-size: 1.1em;
+            }
+
+            .card {
+                padding: 30px;
+            }
+
+            .card-title {
+                font-size: 1.6em;
+            }
+        }
+
+        /* رسالة النجاح/الخطأ */
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            color: #065f46;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            color: #991b1b;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- الترويسة -->
+        <div class="welcome-header">
+            <div class="logo-container">
+                <img src="../assets/university_logo.png" alt="شعار الجامعة" onerror="this.style.display='none'">
+            </div>
+            <h1>مرحباً بك في نظام إدارة المرور</h1>
+            <p>وحدة إسكان أعضاء هيئة التدريس - جامعة الإمام محمد بن سعود الإسلامية</p>
+        </div>
+
+        <!-- البطاقات -->
+        <div class="cards-container">
+            <!-- بطاقة الاستعلام -->
+            <div class="card inquiry-card">
+                <div class="card-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h2 class="card-title">الاستعلام عن المخالفات</h2>
+                <p class="card-description">
+                    استعلم عن المخالفات المرورية بسهولة باستخدام رقم اللوحة أو رقم الملصق
+                </p>
+                <ul class="card-features">
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>استعلام فوري وسريع</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>لا يتطلب تسجيل دخول</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>معلومات دقيقة ومحدثة</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>خدمة متاحة على مدار الساعة</span>
+                    </li>
+                </ul>
+                <button class="btn" onclick="goToInquiry()">
+                    <i class="fas fa-search"></i>
+                    <span>ابدأ الاستعلام الآن</span>
+                </button>
+            </div>
+
+            <!-- بطاقة تسجيل الدخول -->
+            <div class="card login-card">
+                <div class="card-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h2 class="card-title">دخول المشاهدين والاستعلام</h2>
+                <p class="card-description">
+                    تسجيل الدخول للمستخدمين المصرح لهم للاطلاع على التقارير والإحصائيات
+                </p>
+
+                <!-- رسالة -->
+                <div id="loginMessage" class="message"></div>
+
+                <!-- فورم تسجيل الدخول -->
+                <form class="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="username">
+                            <i class="fas fa-user"></i> اسم المستخدم
+                        </label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            placeholder="أدخل اسم المستخدم"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i> كلمة المرور
+                        </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="أدخل كلمة المرور"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>تسجيل الدخول</span>
+                    </button>
+                </form>
+
+                <div class="form-note">
+                    <i class="fas fa-info-circle"></i>
+                    هذا الدخول مخصص لمستخدمي الاستعلام والمشاهدة فقط. للحصول على صلاحيات الوصول، يرجى التواصل مع مدير النظام.
+                </div>
+            </div>
+        </div>
+
+        <!-- التذييل -->
+        <div class="footer">
+            <p>© 2025 جامعة الإمام محمد بن سعود الإسلامية - جميع الحقوق محفوظة</p>
+            <p style="margin-top: 10px;">
+                للدعم الفني: <a href="mailto:support@imamu.edu.sa">support@imamu.edu.sa</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script>
+        // الانتقال إلى صفحة الاستعلام
+        function goToInquiry() {
+            window.location.href = 'inquiry_violations.html';
+        }
+
+        // معالجة تسجيل الدخول
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('loginMessage');
+
+            // إخفاء الرسالة السابقة
+            messageDiv.style.display = 'none';
+            messageDiv.className = 'message';
+
+            try {
+                // محاولة تسجيل الدخول باستخدام نظام المصادقة
+                const authManager = new AuthManager();
+                const result = await authManager.login(username, password);
+
+                if (result.success) {
+                    // التحقق من أن المستخدم لديه صلاحية الاستعلام
+                    const user = result.user;
+                    
+                    if (user.role === 'inquiry' || user.role === 'admin') {
+                        // نجاح تسجيل الدخول
+                        messageDiv.textContent = 'تم تسجيل الدخول بنجاح! جاري التحويل...';
+                        messageDiv.className = 'message success';
+                        messageDiv.style.display = 'block';
+
+                        // الانتقال إلى صفحة الاستعلام بعد ثانية
+                        setTimeout(() => {
+                            window.location.href = 'inquiry_violations.html';
+                        }, 1000);
+                    } else {
+                        // المستخدم ليس لديه صلاحية الاستعلام
+                        messageDiv.textContent = 'هذا الحساب غير مصرح له بالدخول من هذه الصفحة. يرجى استخدام صفحة تسجيل الدخول الرئيسية.';
+                        messageDiv.className = 'message error';
+                        messageDiv.style.display = 'block';
+                        
+                        // تسجيل الخروج التلقائي
+                        authManager.logout();
+                    }
+                } else {
+                    // فشل تسجيل الدخول
+                    messageDiv.textContent = result.message || 'اسم المستخدم أو كلمة المرور غير صحيحة';
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('خطأ في تسجيل الدخول:', error);
+                messageDiv.textContent = 'حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+            }
+        }
+
+        // التحقق من الجلسة الحالية عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            const sessionData = localStorage.getItem('userSession');
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(sessionData);
+                    const user = session.user;
+                    
+                    // إذا كان المستخدم مسجل دخول وله صلاحية استعلام
+                    if (user && (user.role === 'inquiry' || user.role === 'admin')) {
+                        // عرض رسالة وإعادة توجيه
+                        const messageDiv = document.getElementById('loginMessage');
+                        messageDiv.textContent = `مرحباً ${user.username}، أنت مسجل دخول بالفعل. جاري التحويل...`;
+                        messageDiv.className = 'message success';
+                        messageDiv.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            window.location.href = 'inquiry_violations.html';
+                        }, 1500);
+                    }
+                } catch (error) {
+                    console.error('Error checking session:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
