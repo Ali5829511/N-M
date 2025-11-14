@@ -1,7 +1,7 @@
 {
   "name": "n-m-traffic-management-system",
   "version": "1.4.0",
-  "description": "نظام إدارة المرور - Traffic Management System",
+  "description": "نظام المرور - Traffic Management System",
   "main": "index.html",
   "scripts": {
     "start": "node server.js",

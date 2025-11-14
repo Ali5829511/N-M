@@ -1,4 +1,4 @@
-# نظام إدارة المرور - Traffic Management System
+# نظام المرور - Traffic Management System
 
 [![Deploy to GitHub Pages](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ali5829511/N-M/actions/workflows/deploy.yml)
 [![Version](https://img.shields.io/badge/version-4.1-blue.svg)](UPDATES_LOG.md)

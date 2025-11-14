@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * نظام إدارة المرور - خادم محلي عالي الجودة
- * Traffic Management System - High-Quality Local Server
+ * نظام المرور - خادم محلي عالي الجودة
+ * Traffic System - High-Quality Local Server
  * 
  * ⚠️ للتطوير والاختبار المحلي فقط / For local development and testing only
  * 
@@ -413,7 +413,7 @@ app.use((err, req, res, next) => {
 // بدء الخادم
 app.listen(PORT, HOST, () => {
   console.log('\n' + '='.repeat(60));
-  console.log('🚀 نظام إدارة المرور - خادم محلي عالي الجودة');
+  console.log('🚀 نظام المرور - خادم محلي عالي الجودة');
   console.log('🚀 Traffic Management System - High-Quality Server');
   console.log('='.repeat(60));
   console.log(`\n✅ الخادم يعمل الآن / Server is running!`);
@@ -448,6 +448,6 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   console.log('\n\n⏹️  تم إيقاف الخادم بنجاح / Server stopped successfully');
-  console.log('👋 شكراً لاستخدامك نظام إدارة المرور / Thank you for using the system\n');
+  console.log('👋 شكراً لاستخدامك نظام المرور / Thank you for using the system\n');
   process.exit(0);
 });
