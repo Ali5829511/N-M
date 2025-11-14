@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير الإحصائيات العامة - وحدة إسكان هيئة التدريس</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .stat-card.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+        }
+
+        .stat-card.info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .section-title {
+            color: #667eea;
+            font-size: 1.8em;
+            margin: 30px 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-violators {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .violator-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .violator-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .violator-rank {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .violator-info {
+            flex: 1;
+        }
+
+        .violator-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .violator-details {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .violator-count {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.btn-success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .action-btn.btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .action-buttons,
+            .back-btn {
+                display: none;
+            }
+
+            .header,
+            .stats-container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .violator-item {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>📊 تقرير الإحصائيات العامة</h1>
+                <p>عرض شامل للإحصائيات والمخالفات في واجهة حديثة ومتطورة</p>
+            </div>
+            <a href="unified_dashboard.html" class="back-btn">
+                🏠 العودة للصفحة الرئيسية
+            </a>
+        </div>
+
+        <div class="stats-container">
+            <h2 class="section-title">📊 الإحصائيات العامة</h2>
+            <div class="stats-grid" id="statsGrid">
+                <!-- Will be populated dynamically -->
+            </div>
+
+            <h2 class="section-title">🏆 أعلى 10 مخالفات</h2>
+            <div class="top-violators" id="topViolators">
+                <!-- Will be populated dynamically -->
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn btn-success" onclick="exportStatisticsReport()">
+                    📥 تصدير التقرير
+                </button>
+                <button class="action-btn btn-primary" onclick="printStatisticsReport()">
+                    🖨️ طباعة التقرير
+                </button>
+                <button class="action-btn" onclick="location.href='violations_report.html'">
+                    ⚠️ عرض تقرير المخالفات
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../database/database.js"></script>
+    <script>
+        let allData = [];
+
+        async function loadData() {
+            try {
+                const db = window.database;
+                if (db && typeof db.getAllResidentViolations === 'function') {
+                    allData = await db.getAllResidentViolations();
+                } else {
+                    console.warn('Database not available, using sample data');
+                    allData = generateSampleData();
+                }
+
+                if (allData.length === 0) {
+                    allData = generateSampleData();
+                }
+
+                displayStatistics();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                allData = generateSampleData();
+                displayStatistics();
+            }
+        }
+
+        function generateSampleData() {
+            const buildings = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            const names = ['أحمد محمد', 'علي حسن', 'محمد سعيد', 'خالد عبدالله', 'سعيد ناصر'];
+            const sampleData = [];
+
+            for (let i = 0; i < 50; i++) {
+                sampleData.push({
+                    plateNumber: `${Math.floor(Math.random() * 9000) + 1000}`,
+                    residentName: names[Math.floor(Math.random() * names.length)],
+                    building: buildings[Math.floor(Math.random() * buildings.length)],
+                    unit: `${Math.floor(Math.random() * 20) + 1}`,
+                    violations: Math.floor(Math.random() * 15) + 1,
+                    date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ar-SA')
+                });
+            }
+
+            return sampleData;
+        }
+
+        function displayStatistics() {
+            if (allData.length === 0) {
+                document.getElementById('statsGrid').innerHTML = '<p style="text-align: center; color: #666;">لا توجد بيانات لعرض الإحصائيات</p>';
+                return;
+            }
+
+            // Calculate statistics
+            const totalViolations = allData.reduce((sum, item) => sum + item.violations, 0);
+            const avgViolations = (totalViolations / allData.length).toFixed(2);
+            const maxViolations = Math.max(...allData.map(item => item.violations));
+            const minViolations = Math.min(...allData.map(item => item.violations));
+
+            // Get top 10 violators
+            const topViolators = [...allData]
+                .sort((a, b) => b.violations - a.violations)
+                .slice(0, 10);
+
+            // Count by building
+            const buildingCounts = {};
+            allData.forEach(item => {
+                buildingCounts[item.building] = (buildingCounts[item.building] || 0) + 1;
+            });
+            const totalBuildings = Object.keys(buildingCounts).length;
+
+            // Populate stats grid
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card primary">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-value">${allData.length}</div>
+                    <div class="stat-label">إجمالي السجلات</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-value">${totalViolations}</div>
+                    <div class="stat-label">إجمالي المخالفات</div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value">${avgViolations}</div>
+                    <div class="stat-label">متوسط المخالفات</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon">🏢</div>
+                    <div class="stat-value">${totalBuildings}</div>
+                    <div class="stat-label">عدد المباني</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                    <div class="stat-icon">🔝</div>
+                    <div class="stat-value">${maxViolations}</div>
+                    <div class="stat-label">أعلى مخالفات</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+                    <div class="stat-icon">🔻</div>
+                    <div class="stat-value">${minViolations}</div>
+                    <div class="stat-label">أقل مخالفات</div>
+                </div>
+            `;
+
+            // Populate top violators
+            const topViolatorsDiv = document.getElementById('topViolators');
+            topViolatorsDiv.innerHTML = topViolators.map((item, index) => `
+                <div class="violator-item">
+                    <div class="violator-rank">${index + 1}</div>
+                    <div class="violator-info">
+                        <div class="violator-name">🚗 ${item.plateNumber}</div>
+                        <div class="violator-details">
+                            👤 ${item.residentName} | 🏢 ${item.building} | 🏠 ${item.unit} | 📅 ${item.date}
+                        </div>
+                    </div>
+                    <div class="violator-count">${item.violations} مخالفة</div>
+                </div>
+            `).join('');
+        }
+
+        function exportStatisticsReport() {
+            if (!allData || allData.length === 0) {
+                alert('❌ لا توجد بيانات للتصدير.');
+                return;
+            }
+
+            // Calculate statistics
+            const totalViolations = allData.reduce((sum, item) => sum + item.violations, 0);
+            const avgViolations = (totalViolations / allData.length).toFixed(2);
+            const maxViolations = Math.max(...allData.map(item => item.violations));
+            const minViolations = Math.min(...allData.map(item => item.violations));
+
+            // Get top 10 violators
+            const topViolators = [...allData]
+                .sort((a, b) => b.violations - a.violations)
+                .slice(0, 10);
+
+            // Create report content
+            let reportContent = '\uFEFF'; // BOM for Arabic
+            reportContent += '📊 تقرير الإحصائيات العامة - وحدة إسكان هيئة التدريس\n';
+            reportContent += `تاريخ التقرير: ${new Date().toLocaleString('ar-SA')}\n\n`;
+            reportContent += '═══════════════════════════════════════\n\n';
+            
+            reportContent += '📋 الإحصائيات العامة:\n';
+            reportContent += `• إجمالي السجلات: ${allData.length}\n`;
+            reportContent += `• إجمالي المخالفات: ${totalViolations}\n`;
+            reportContent += `• متوسط المخالفات: ${avgViolations}\n`;
+            reportContent += `• أعلى عدد مخالفات: ${maxViolations}\n`;
+            reportContent += `• أقل عدد مخالفات: ${minViolations}\n\n`;
+            
+            reportContent += '═══════════════════════════════════════\n\n';
+            reportContent += '🏆 أعلى 10 مخالفات:\n\n';
+            
+            topViolators.forEach((item, index) => {
+                reportContent += `${index + 1}. رقم اللوحة: ${item.plateNumber}\n`;
+                reportContent += `   الساكن: ${item.residentName}\n`;
+                reportContent += `   المبنى: ${item.building} | الوحدة: ${item.unit}\n`;
+                reportContent += `   عدد المخالفات: ${item.violations}\n`;
+                reportContent += `   التاريخ: ${item.date}\n\n`;
+            });
+
+            reportContent += '═══════════════════════════════════════\n';
+            reportContent += `تم إنشاء التقرير بواسطة: نظام إدارة المخالفات\n`;
+            reportContent += `التاريخ والوقت: ${new Date().toLocaleString('ar-SA')}\n`;
+
+            // Download as text file
+            const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `تقرير_الإحصائيات_العامة_${new Date().getTime()}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            alert('✅ تم تصدير التقرير بنجاح!');
+        }
+
+        function printStatisticsReport() {
+            window.print();
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

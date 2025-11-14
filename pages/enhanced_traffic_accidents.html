@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام الحوادث المرورية - جامعة الإمام محمد بن سعود الإسلامية</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .header {
+      background-color: #6B5536;
+      color: white;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .logo {
+      max-width: 80px;
+      margin-left: 15px;
+    }
+    .form-container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    .form-label {
+      font-weight: bold;
+    }
+    .btn-primary {
+      background-color: #6B5536;
+      border-color: #6B5536;
+    }
+    .btn-primary:hover {
+      background-color: #154360;
+      border-color: #154360;
+    }
+    .footer {
+      background-color: #6B5536;
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      margin-top: 30px;
+    }
+    .nav-tabs .nav-link.active {
+      background-color: #6B5536;
+      color: white;
+      border-color: #6B5536;
+    }
+    .nav-tabs .nav-link {
+      color: #6B5536;
+    }
+    .back-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      color: white;
+    }
+    .accident-severity {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .severity-option {
+      flex: 1;
+      min-width: 150px;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .severity-option:hover {
+      border-color: #6B5536;
+      background-color: #f8f9fa;
+    }
+    .severity-option.selected {
+      border-color: #6B5536;
+      background-color: #6B5536;
+      color: white;
+    }
+    .severity-option input[type="radio"] {
+      display: none;
+    }
+    .table-responsive {
+      margin-top: 20px;
+    }
+    .accident-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: white;
+      transition: all 0.3s ease;
+    }
+    .accident-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    .severity-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+    .severity-بسيط { background-color: #d4edda; color: #155724; }
+    .severity-متوسط { background-color: #fff3cd; color: #856404; }
+    .severity-خطير { background-color: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <img src="../assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="logo">
+          <h1>نظام الحوادث المرورية</h1>
+        </div>
+        <a href="unified_dashboard.html" class="back-btn">
+          <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="true">تسجيل حادث جديد</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab" aria-controls="search" aria-selected="false">البحث عن حادث</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab" aria-controls="reports" aria-selected="false">التقارير</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+      <!-- تبويب تسجيل حادث جديد -->
+      <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+        <div class="form-container">
+          <h3 class="mb-4"><i class="fas fa-car-crash text-danger"></i> تسجيل بيانات حادث مروري جديد</h3>
+          <form id="accidentForm">
+            
+            <!-- معلومات الحادث الأساسية -->
+            <h5 class="text-primary mb-3"><i class="fas fa-info-circle"></i> معلومات الحادث الأساسية</h5>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="accidentDate" class="form-label">تاريخ الحادث:</label>
+                <input type="date" class="form-control" id="accidentDate" required>
+              </div>
+              <div class="col-md-6">
+                <label for="accidentTime" class="form-label">وقت الحادث:</label>
+                <input type="time" class="form-control" id="accidentTime" required>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="accidentLocation" class="form-label"><i class="fas fa-map-marker-alt"></i> موقع الحادث:</label>
+                <select class="form-select" id="accidentLocation" required>
+                  <option value="" selected disabled>اختر موقع الحادث</option>
+                  <option value="شارع أ">شارع أ</option>
+                  <option value="شارع ب">شارع ب</option>
+                  <option value="شارع ج">شارع ج</option>
+                  <option value="شارع 10">شارع 10</option>
+                  <option value="موقف المباني القديمة">موقف المباني القديمة</option>
+                  <option value="موقف المباني الجديدة">موقف المباني الجديدة</option>
+                  <option value="المدخل الرئيسي">المدخل الرئيسي</option>
+                  <option value="المدخل الفرعي">المدخل الفرعي</option>
+                  <option value="أخرى">أخرى</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">درجة خطورة الحادث:</label>
+              <div class="accident-severity">
+                <label class="severity-option">
+                  <input type="radio" name="severity" value="بسيط" required>
+                  <i class="fas fa-check-circle fa-2x mb-2" style="color: #28a745;"></i>
+                  <div><strong>بسيط</strong></div>
+                  <small>أضرار مادية بسيطة</small>
+                </label>
+                <label class="severity-option">
+                  <input type="radio" name="severity" value="متوسط" required>
+                  <i class="fas fa-exclamation-circle fa-2x mb-2" style="color: #ffc107;"></i>
+                  <div><strong>متوسط</strong></div>
+                  <small>أضرار مادية متوسطة</small>
+                </label>
+                <label class="severity-option">
+                  <input type="radio" name="severity" value="خطير" required>
+                  <i class="fas fa-times-circle fa-2x mb-2" style="color: #dc3545;"></i>
+                  <div><strong>خطير</strong></div>
+                  <small>إصابات أو أضرار جسيمة</small>
+                </label>
+              </div>
+            </div>
+
+            <!-- معلومات المركبة الأولى -->
+            <h5 class="text-primary mb-3 mt-4"><i class="fas fa-car"></i> معلومات المركبة الأولى</h5>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="plateNumber1" class="form-label">رقم اللوحة:</label>
+                <input type="text" class="form-control" id="plateNumber1" required>
+              </div>
+              <div class="col-md-6">
+                <label for="vehicleType1" class="form-label">نوع المركبة:</label>
+                <select class="form-select" id="vehicleType1" required>
+                  <option value="" selected disabled>اختر نوع المركبة</option>
+                  <option value="سيارة خاصة">سيارة خاصة</option>
+                  <option value="سيارة نقل">سيارة نقل</option>
+                  <option value="دراجة نارية">دراجة نارية</option>
+                  <option value="حافلة">حافلة</option>
+                  <option value="أخرى">أخرى</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="driverName1" class="form-label">اسم السائق:</label>
+                <input type="text" class="form-control" id="driverName1" required>
+              </div>
+              <div class="col-md-6">
+                <label for="driverPhone1" class="form-label"><i class="fas fa-phone"></i> رقم الجوال:</label>
+                <input type="tel" class="form-control" id="driverPhone1" required>
+              </div>
+            </div>
+
+            <!-- معلومات المركبة الثانية -->
+            <h5 class="text-primary mb-3 mt-4"><i class="fas fa-car"></i> معلومات المركبة الثانية (إن وجدت)</h5>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="plateNumber2" class="form-label">رقم اللوحة:</label>
+                <input type="text" class="form-control" id="plateNumber2">
+              </div>
+              <div class="col-md-6">
+                <label for="vehicleType2" class="form-label">نوع المركبة:</label>
+                <select class="form-select" id="vehicleType2">
+                  <option value="" selected>لا يوجد</option>
+                  <option value="سيارة خاصة">سيارة خاصة</option>
+                  <option value="سيارة نقل">سيارة نقل</option>
+                  <option value="دراجة نارية">دراجة نارية</option>
+                  <option value="حافلة">حافلة</option>
+                  <option value="أخرى">أخرى</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="driverName2" class="form-label">اسم السائق:</label>
+                <input type="text" class="form-control" id="driverName2">
+              </div>
+              <div class="col-md-6">
+                <label for="driverPhone2" class="form-label"><i class="fas fa-phone"></i> رقم الجوال:</label>
+                <input type="tel" class="form-control" id="driverPhone2">
+              </div>
+            </div>
+
+            <!-- تفاصيل الحادث -->
+            <h5 class="text-primary mb-3 mt-4"><i class="fas fa-clipboard"></i> تفاصيل الحادث</h5>
+            <div class="mb-3">
+              <label for="accidentType" class="form-label">نوع الحادث:</label>
+              <select class="form-select" id="accidentType" required>
+                <option value="" selected disabled>اختر نوع الحادث</option>
+                <option value="تصادم">تصادم</option>
+                <option value="انقلاب">انقلاب</option>
+                <option value="دهس">دهس</option>
+                <option value="اصطدام بجسم ثابت">اصطدام بجسم ثابت</option>
+                <option value="حريق">حريق</option>
+                <option value="أخرى">أخرى</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="accidentCause" class="form-label">سبب الحادث:</label>
+              <select class="form-select" id="accidentCause" required>
+                <option value="" selected disabled>اختر سبب الحادث</option>
+                <option value="سرعة زائدة">سرعة زائدة</option>
+                <option value="عدم الانتباه">عدم الانتباه</option>
+                <option value="عدم الالتزام بالمسار">عدم الالتزام بالمسار</option>
+                <option value="ظروف جوية">ظروف جوية</option>
+                <option value="عطل فني">عطل فني</option>
+                <option value="أخرى">أخرى</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="accidentDescription" class="form-label"><i class="fas fa-file-alt"></i> وصف تفصيلي للحادث:</label>
+              <textarea class="form-control" id="accidentDescription" rows="4" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="injuries" class="form-label"><i class="fas fa-user-injured"></i> الإصابات (إن وجدت):</label>
+              <textarea class="form-control" id="injuries" rows="2" placeholder="اذكر الإصابات إن وجدت"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="damages" class="form-label"><i class="fas fa-tools"></i> الأضرار المادية:</label>
+              <textarea class="form-control" id="damages" rows="2" required></textarea>
+            </div>
+
+            <!-- معلومات المسجل -->
+            <h5 class="text-primary mb-3 mt-4"><i class="fas fa-user"></i> معلومات المسجل</h5>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="reporterName" class="form-label">اسم المسجل:</label>
+                <input type="text" class="form-control" id="reporterName" required>
+              </div>
+              <div class="col-md-6">
+                <label for="reporterPosition" class="form-label">الصفة:</label>
+                <input type="text" class="form-control" id="reporterPosition" required>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-save"></i> تسجيل الحادث
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- تبويب البحث -->
+      <div class="tab-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
+        <div class="form-container">
+          <h3 class="mb-4"><i class="fas fa-search"></i> البحث عن حادث</h3>
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label for="searchPlate" class="form-label">رقم اللوحة:</label>
+              <input type="text" class="form-control" id="searchPlate" placeholder="ابحث برقم اللوحة">
+            </div>
+            <div class="col-md-4">
+              <label for="searchDate" class="form-label">التاريخ:</label>
+              <input type="date" class="form-control" id="searchDate">
+            </div>
+            <div class="col-md-4">
+              <label for="searchLocation" class="form-label">الموقع:</label>
+              <input type="text" class="form-control" id="searchLocation" placeholder="ابحث بالموقع">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="searchAccidents()">
+            <i class="fas fa-search"></i> بحث
+          </button>
+        </div>
+
+        <div id="searchResults" class="mt-4"></div>
+      </div>
+
+      <!-- تبويب التقارير -->
+      <div class="tab-pane fade" id="reports" role="tabpanel" aria-labelledby="reports-tab">
+        <div class="form-container">
+          <h3 class="mb-4"><i class="fas fa-chart-bar"></i> تقارير الحوادث</h3>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="card text-center">
+                <div class="card-body">
+                  <i class="fas fa-car-crash fa-3x text-danger mb-3"></i>
+                  <h5 class="card-title">إجمالي الحوادث</h5>
+                  <h2 class="text-primary" id="totalAccidents">0</h2>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card text-center">
+                <div class="card-body">
+                  <i class="fas fa-calendar-week fa-3x text-info mb-3"></i>
+                  <h5 class="card-title">حوادث هذا الشهر</h5>
+                  <h2 class="text-primary" id="monthlyAccidents">0</h2>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card text-center">
+                <div class="card-body">
+                  <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                  <h5 class="card-title">حوادث خطيرة</h5>
+                  <h2 class="text-primary" id="severeAccidents">0</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <button class="btn btn-success me-2" onclick="exportAccidentsReport()">
+              <i class="fas fa-file-excel"></i> تصدير تقرير Excel
+            </button>
+            <button class="btn btn-info" onclick="printAccidentsReport()">
+              <i class="fas fa-print"></i> طباعة التقرير
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p class="mb-0">جميع الحقوق محفوظة © جامعة الإمام محمد بن سعود الإسلامية 2025</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../database/database.js"></script>
+  <script>
+    // Handle severity selection
+    document.querySelectorAll('.severity-option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.severity-option').forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+        this.querySelector('input[type="radio"]').checked = true;
+      });
+    });
+
+    // Form submission
+    document.getElementById('accidentForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const accidentData = {
+        date: document.getElementById('accidentDate').value,
+        time: document.getElementById('accidentTime').value,
+        location: document.getElementById('accidentLocation').value,
+        severity: document.querySelector('input[name="severity"]:checked').value,
+        vehicle1: {
+          plateNumber: document.getElementById('plateNumber1').value,
+          type: document.getElementById('vehicleType1').value,
+          driverName: document.getElementById('driverName1').value,
+          driverPhone: document.getElementById('driverPhone1').value
+        },
+        vehicle2: {
+          plateNumber: document.getElementById('plateNumber2').value || 'لا يوجد',
+          type: document.getElementById('vehicleType2').value || 'لا يوجد',
+          driverName: document.getElementById('driverName2').value || 'لا يوجد',
+          driverPhone: document.getElementById('driverPhone2').value || 'لا يوجد'
+        },
+        type: document.getElementById('accidentType').value,
+        cause: document.getElementById('accidentCause').value,
+        description: document.getElementById('accidentDescription').value,
+        injuries: document.getElementById('injuries').value || 'لا يوجد',
+        damages: document.getElementById('damages').value,
+        reporter: {
+          name: document.getElementById('reporterName').value,
+          position: document.getElementById('reporterPosition').value
+        },
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        // Save to database
+        const db = window.database;
+        if (db && typeof db.addTrafficAccident === 'function') {
+          await db.addTrafficAccident(accidentData);
+        } else {
+          // Save to localStorage as fallback
+          let accidents = JSON.parse(localStorage.getItem('trafficAccidents') || '[]');
+          accidents.push(accidentData);
+          localStorage.setItem('trafficAccidents', JSON.stringify(accidents));
+        }
+
+        alert('✅ تم تسجيل الحادث بنجاح!');
+        this.reset();
+        document.querySelectorAll('.severity-option').forEach(opt => opt.classList.remove('selected'));
+        updateStatistics();
+      } catch (error) {
+        console.error('Error saving accident:', error);
+        alert('❌ حدث خطأ أثناء حفظ البيانات. الرجاء المحاولة مرة أخرى.');
+      }
+    });
+
+    // Search function
+    function searchAccidents() {
+      const plate = document.getElementById('searchPlate').value.toLowerCase();
+      const date = document.getElementById('searchDate').value;
+      const location = document.getElementById('searchLocation').value.toLowerCase();
+
+      let accidents = JSON.parse(localStorage.getItem('trafficAccidents') || '[]');
+
+      const results = accidents.filter(acc => {
+        return (!plate || acc.vehicle1.plateNumber.toLowerCase().includes(plate) || 
+                acc.vehicle2.plateNumber.toLowerCase().includes(plate)) &&
+               (!date || acc.date === date) &&
+               (!location || acc.location.toLowerCase().includes(location));
+      });
+
+      displaySearchResults(results);
+    }
+
+    function displaySearchResults(results) {
+      const resultsDiv = document.getElementById('searchResults');
+      
+      if (results.length === 0) {
+        resultsDiv.innerHTML = '<div class="alert alert-info">لم يتم العثور على نتائج</div>';
+        return;
+      }
+
+      let html = '<h4 class="mb-3">نتائج البحث (' + results.length + ' حادث)</h4>';
+      
+      results.forEach((acc, index) => {
+        html += `
+          <div class="accident-card">
+            <div class="row">
+              <div class="col-md-8">
+                <h5><i class="fas fa-car-crash text-danger"></i> حادث رقم ${index + 1}</h5>
+                <p><strong>التاريخ:</strong> ${acc.date} | <strong>الوقت:</strong> ${acc.time}</p>
+                <p><strong>الموقع:</strong> ${acc.location}</p>
+                <p><strong>النوع:</strong> ${acc.type} | <strong>السبب:</strong> ${acc.cause}</p>
+                <p><strong>المركبة الأولى:</strong> ${acc.vehicle1.plateNumber} - ${acc.vehicle1.driverName}</p>
+                <p><strong>المركبة الثانية:</strong> ${acc.vehicle2.plateNumber}</p>
+              </div>
+              <div class="col-md-4 text-end">
+                <span class="severity-badge severity-${acc.severity}">${acc.severity}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      resultsDiv.innerHTML = html;
+    }
+
+    // Update statistics
+    function updateStatistics() {
+      const accidents = JSON.parse(localStorage.getItem('trafficAccidents') || '[]');
+      
+      document.getElementById('totalAccidents').textContent = accidents.length;
+      
+      const now = new Date();
+      const thisMonth = now.getMonth();
+      const thisYear = now.getFullYear();
+      const monthlyCount = accidents.filter(acc => {
+        const accDate = new Date(acc.date);
+        return accDate.getMonth() === thisMonth && accDate.getFullYear() === thisYear;
+      }).length;
+      document.getElementById('monthlyAccidents').textContent = monthlyCount;
+      
+      const severeCount = accidents.filter(acc => acc.severity === 'خطير').length;
+      document.getElementById('severeAccidents').textContent = severeCount;
+    }
+
+    // Export report
+    function exportAccidentsReport() {
+      const accidents = JSON.parse(localStorage.getItem('trafficAccidents') || '[]');
+      
+      if (accidents.length === 0) {
+        alert('لا توجد بيانات للتصدير');
+        return;
+      }
+
+      let csv = '\uFEFF'; // BOM for Arabic
+      csv += 'التاريخ,الوقت,الموقع,درجة الخطورة,النوع,السبب,المركبة 1,السائق 1,المركبة 2,السائق 2,الأضرار\n';
+      
+      accidents.forEach(acc => {
+        csv += `"${acc.date}","${acc.time}","${acc.location}","${acc.severity}","${acc.type}","${acc.cause}","${acc.vehicle1.plateNumber}","${acc.vehicle1.driverName}","${acc.vehicle2.plateNumber}","${acc.vehicle2.driverName}","${acc.damages}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `تقرير_الحوادث_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    function printAccidentsReport() {
+      window.print();
+    }
+
+    // Initialize statistics on page load
+    document.addEventListener('DOMContentLoaded', updateStatistics);
+  </script>
+</body>
+</html>
