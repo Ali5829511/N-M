@@ -3,11 +3,9 @@
  * تدعم التصدير إلى Excel, PDF, HTML مع تصميم رسمي احترافي
  */
 
-class ProfessionalExporter {
+class ProfessionalExporter extends BaseExporter {
     constructor() {
-        this.data = [];
-        this.images = [];
-        this.title = 'تقرير تحليل السيارات';
+        super();
         this.reportNumber = this.generateReportNumber();
         this.organizationName = 'جامعة الإمام محمد بن سعود الإسلامية';
         this.departmentName = 'وحدة إسكان هيئة التدريس';
@@ -24,14 +22,6 @@ class ProfessionalExporter {
         const day = String(date.getDate()).padStart(2, '0');
         const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
         return `TR-${year}${month}${day}-${random}`;
-    }
-
-    /**
-     * تعيين البيانات للتصدير
-     */
-    setData(data, images = []) {
-        this.data = data;
-        this.images = images;
     }
 
     /**
@@ -747,32 +737,6 @@ class ProfessionalExporter {
             console.error('Error exporting to HTML:', error);
             return false;
         }
-    }
-
-    /**
-     * تحويل صورة إلى Base64
-     */
-    async imageToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    /**
-     * تحميل ملف
-     */
-    downloadFile(blob, filename) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
     }
 }
 

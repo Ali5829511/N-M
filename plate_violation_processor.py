@@ -20,43 +20,23 @@ This script:
 """
 
 import os
-import sqlite3
 from datetime import datetime
-import json
 
-# Check for required dependencies
-try:
-    import requests
-except ImportError:
-    print("❌ خطأ: المكتبة 'requests' غير مثبتة")
-    print("   Error: 'requests' library not installed")
-    print("   يرجى تشغيل: pip install -r requirements.txt")
-    print("   Please run: pip install -r requirements.txt")
-    exit(1)
+# استيراد الأدوات المشتركة
+from plate_recognition_utils import (
+    DatabaseManager,
+    PlateRecognizerAPI,
+    FileManager,
+    print_banner,
+    print_summary
+)
 
+# Check for required dependencies for reports
 try:
     from fpdf import FPDF
-except ImportError:
-    print("❌ خطأ: المكتبة 'fpdf' غير مثبتة")
-    print("   Error: 'fpdf' library not installed")
-    print("   يرجى تشغيل: pip install -r requirements.txt")
-    print("   Please run: pip install -r requirements.txt")
-    exit(1)
-
-try:
     import pandas as pd
-except ImportError:
-    print("❌ خطأ: المكتبة 'pandas' غير مثبتة")
-    print("   Error: 'pandas' library not installed")
-    print("   يرجى تشغيل: pip install -r requirements.txt")
-    print("   Please run: pip install -r requirements.txt")
-    exit(1)
-
-try:
-    from PIL import Image
-except ImportError:
-    print("❌ خطأ: المكتبة 'Pillow' غير مثبتة")
-    print("   Error: 'Pillow' library not installed")
+except ImportError as e:
+    print(f"❌ خطأ: المكتبة غير مثبتة - {e}")
     print("   يرجى تشغيل: pip install -r requirements.txt")
     print("   Please run: pip install -r requirements.txt")
     exit(1)
@@ -71,146 +51,6 @@ db_path = 'vehicles.db'
 # Plate Recognizer API settings
 PLATE_RECOGNIZER_API_KEY = os.environ.get('PLATE_RECOGNIZER_API_KEY', 'YOUR_API_KEY')
 PLATE_RECOGNIZER_API_URL = 'https://api.platerecognizer.com/v1/plate-reader/'
-
-def init_database():
-    """
-    تهيئة قاعدة البيانات وإنشاء الجداول
-    Initialize database and create tables
-    """
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    
-    # إنشاء جدول المركبات
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS vehicles (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            plate TEXT UNIQUE NOT NULL,
-            owner_name TEXT,
-            unit_number TEXT,
-            vehicle_type TEXT,
-            make TEXT,
-            model TEXT,
-            year INTEGER,
-            color TEXT,
-            sticker_number TEXT,
-            registration_date TEXT
-        )
-    """)
-    
-    # إنشاء جدول المخالفات
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS violations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            plate TEXT NOT NULL,
-            image_path TEXT,
-            violation_date TEXT,
-            violation_type TEXT DEFAULT 'دخول موقف خاص بدون تصريح',
-            processed INTEGER DEFAULT 0,
-            FOREIGN KEY (plate) REFERENCES vehicles(plate)
-        )
-    """)
-    
-    conn.commit()
-    conn.close()
-    print("✓ تم تهيئة قاعدة البيانات / Database initialized")
-
-def analyze_image(image_path):
-    """
-    تحليل صورة واستخراج لوحة السيارة باستخدام Plate Recognizer API
-    Analyze image and extract license plate using Plate Recognizer API
-    
-    Args:
-        image_path: مسار الصورة / Path to image
-        
-    Returns:
-        dict: معلومات اللوحة أو None / Plate information or None
-    """
-    try:
-        with open(image_path, 'rb') as img_file:
-            response = requests.post(
-                PLATE_RECOGNIZER_API_URL,
-                files={'upload': img_file},
-                headers={'Authorization': f'Token {PLATE_RECOGNIZER_API_KEY}'},
-                data={'regions': 'sa'}  # Saudi Arabia region
-            )
-        
-        if response.status_code == 200:
-            data = response.json()
-            if data.get('results'):
-                result = data['results'][0]
-                return {
-                    'plate': result['plate'],
-                    'confidence': result.get('score', 0),
-                    'vehicle': result.get('vehicle', {}),
-                    'timestamp': data.get('timestamp', datetime.now().isoformat())
-                }
-        else:
-            print(f"⚠️  خطأ في API: {response.status_code} - {response.text}")
-            
-    except Exception as e:
-        print(f"⚠️  خطأ في معالجة الصورة {image_path}: {e}")
-    
-    return None
-
-def check_vehicle(plate):
-    """
-    التحقق من السيارة في قاعدة البيانات
-    Check vehicle in database
-    
-    Args:
-        plate: رقم اللوحة / Plate number
-        
-    Returns:
-        tuple: بيانات السيارة أو None / Vehicle data or None
-    """
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM vehicles WHERE plate=?", (plate,))
-    result = cursor.fetchone()
-    conn.close()
-    return result
-
-def log_violation(plate, image_path, violation_type='دخول موقف خاص بدون تصريح'):
-    """
-    تسجيل مخالفة
-    Log violation
-    
-    Args:
-        plate: رقم اللوحة / Plate number
-        image_path: مسار الصورة الأصلية / Original image path
-        violation_type: نوع المخالفة / Violation type
-        
-    Returns:
-        str: مسار الصورة المحفوظة / Saved image path
-    """
-    # إنشاء مجلد الإخراج إذا لم يكن موجوداً
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-    
-    # نسخ الصورة إلى مجلد الإخراج (نسخ بدلاً من نقل للحفاظ على الصورة الأصلية)
-    image_name = os.path.basename(image_path)
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    new_image_name = f"{timestamp}_{plate.replace(' ', '_')}_{image_name}"
-    saved_path = os.path.join(output_folder, new_image_name)
-    
-    try:
-        import shutil
-        shutil.copy2(image_path, saved_path)
-    except Exception as e:
-        print(f"⚠️  خطأ في نسخ الصورة: {e}")
-        saved_path = image_path
-    
-    # تسجيل المخالفة في قاعدة البيانات
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO violations (plate, image_path, violation_date, violation_type) VALUES (?, ?, ?, ?)",
-        (plate, saved_path, datetime.now().isoformat(), violation_type)
-    )
-    conn.commit()
-    conn.close()
-    
-    return saved_path
 
 class PDFReport(FPDF):
     """
@@ -284,19 +124,17 @@ def main():
     الدالة الرئيسية لمعالجة الصور وتوليد التقارير
     Main function to process images and generate reports
     """
-    print("\n" + "="*60)
-    print("🚗 نظام معالجة المخالفات - Violation Processing System")
-    print("="*60 + "\n")
+    print_banner("نظام معالجة المخالفات - Violation Processing System")
     
     # تهيئة قاعدة البيانات
-    init_database()
+    db_manager = DatabaseManager(db_path)
+    if not db_manager.connect():
+        print("❌ فشل الاتصال بقاعدة البيانات")
+        return
+    db_manager.setup_tables()
     
     # التحقق من وجود مجلد الإدخال
-    if not os.path.exists(input_folder):
-        os.makedirs(input_folder)
-        print(f"⚠️  تم إنشاء مجلد الإدخال: {input_folder}")
-        print(f"   يرجى وضع الصور في هذا المجلد")
-        return
+    FileManager.create_directories(input_folder, output_folder)
     
     # التحقق من API Key
     if PLATE_RECOGNIZER_API_KEY == 'YOUR_API_KEY':
@@ -304,14 +142,16 @@ def main():
         print("   Warning: Please set PLATE_RECOGNIZER_API_KEY environment variable")
         return
     
+    # إعداد واجهة API
+    api = PlateRecognizerAPI(PLATE_RECOGNIZER_API_KEY, PLATE_RECOGNIZER_API_URL)
+    
     violations = []
     processed_count = 0
     found_count = 0
     not_found_count = 0
     
     # معالجة جميع الصور في مجلد الإدخال
-    image_files = [f for f in os.listdir(input_folder) 
-                   if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+    image_files = FileManager.get_image_files(input_folder)
     
     if not image_files:
         print(f"⚠️  لا توجد صور في مجلد الإدخال: {input_folder}")
@@ -324,36 +164,45 @@ def main():
         print(f"🔍 معالجة: {filename}")
         
         # تحليل الصورة
-        result = analyze_image(image_path)
+        result = api.process_image(image_path)
         
         if result:
-            plate = result['plate']
-            confidence = result['confidence']
-            print(f"   ✓ تم التعرف على اللوحة: {plate} (دقة: {confidence*100:.1f}%)")
-            
-            # التحقق من وجود السيارة في قاعدة البيانات
-            vehicle = check_vehicle(plate)
-            
-            if vehicle:
-                found_count += 1
-                owner_name = vehicle[2] if len(vehicle) > 2 else ''
-                print(f"   ✓ السيارة موجودة في القاعدة - المالك: {owner_name}")
+            plate_info = api.extract_plate_info(result)
+            if plate_info:
+                plate = plate_info['plate']
+                confidence = plate_info['confidence']
+                print(f"   ✓ تم التعرف على اللوحة: {plate} (دقة: {confidence*100:.1f}%)")
                 
-                # تسجيل المخالفة
-                saved_path = log_violation(plate, image_path)
-                violations.append((
-                    plate,
-                    owner_name,
-                    saved_path,
-                    result['timestamp'],
-                    'دخول موقف خاص بدون تصريح'
-                ))
-                print(f"   ✓ تم تسجيل المخالفة وحفظ الصورة")
-            else:
-                not_found_count += 1
-                print(f"   ⚠️  السيارة غير موجودة في قاعدة البيانات")
-            
-            processed_count += 1
+                # التحقق من وجود السيارة في قاعدة البيانات
+                vehicle = db_manager.get_vehicle(plate)
+                
+                if vehicle:
+                    found_count += 1
+                    owner_name = vehicle[2] if len(vehicle) > 2 else ''
+                    print(f"   ✓ السيارة موجودة في القاعدة - المالك: {owner_name}")
+                    
+                    # تسجيل المخالفة وحفظ الصورة
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    new_image_name = f"{timestamp}_{plate.replace(' ', '_')}_{filename}"
+                    saved_path = FileManager.copy_image(image_path, output_folder, new_image_name)
+                    
+                    if saved_path and db_manager.add_violation(
+                        vehicle[0], plate, 'دخول موقف خاص بدون تصريح',
+                        plate_info['timestamp'], 0, 'النظام', saved_path
+                    ):
+                        violations.append((
+                            plate,
+                            owner_name,
+                            saved_path,
+                            plate_info['timestamp'],
+                            'دخول موقف خاص بدون تصريح'
+                        ))
+                        print(f"   ✓ تم تسجيل المخالفة وحفظ الصورة")
+                else:
+                    not_found_count += 1
+                    print(f"   ⚠️  السيارة غير موجودة في قاعدة البيانات")
+                
+                processed_count += 1
         else:
             print(f"   ✗ فشل التعرف على اللوحة")
         
@@ -361,9 +210,7 @@ def main():
     
     # توليد التقارير إذا وجدت مخالفات
     if violations:
-        print("\n" + "="*60)
-        print("📊 توليد التقارير / Generating Reports")
-        print("="*60 + "\n")
+        print_banner("توليد التقارير / Generating Reports")
         
         # تقرير PDF
         pdf = PDFReport()
@@ -379,19 +226,18 @@ def main():
         generate_excel_report(violations, excel_output)
     
     # ملخص النتائج
-    print("\n" + "="*60)
-    print("📈 ملخص النتائج / Summary")
-    print("="*60)
-    print(f"📸 إجمالي الصور: {len(image_files)}")
-    print(f"✓ تم التعرف عليها: {processed_count}")
+    print_summary(processed_count, len(image_files) - processed_count, len(image_files))
     print(f"✓ مخالفات مسجلة: {found_count}")
     print(f"⚠️  سيارات غير مسجلة: {not_found_count}")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
     
     if violations:
         print(f"✅ تم توليد التقارير بنجاح في المجلد: {output_folder}")
     else:
         print("⚠️  لا توجد مخالفات لتوليد التقارير")
+    
+    # إغلاق قاعدة البيانات
+    db_manager.close()
 
 if __name__ == '__main__':
     try:

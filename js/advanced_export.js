@@ -3,19 +3,9 @@
  * تدعم التصدير إلى Excel, PDF, HTML مع الصور المصغرة
  */
 
-class AdvancedExporter {
+class AdvancedExporter extends BaseExporter {
     constructor() {
-        this.data = [];
-        this.images = [];
-        this.title = 'تقرير تحليل السيارات';
-    }
-
-    /**
-     * تعيين البيانات للتصدير
-     */
-    setData(data, images = []) {
-        this.data = data;
-        this.images = images;
+        super();
     }
 
     /**
@@ -242,20 +232,11 @@ class AdvancedExporter {
                         <p>وحدة إسكان هيئة التدريس - جامعة الإمام محمد بن سعود الإسلامية</p>
                     </div>
                     
-                    <div class="summary">
-                        <div class="summary-item">
-                            <div class="summary-value">${this.data.length}</div>
-                            <div class="summary-label">إجمالي السيارات</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-value">${new Set(this.data.map(d => d.plateNumber)).size}</div>
-                            <div class="summary-label">سيارات فريدة</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-value">${this.data.filter(d => d.repeatCount > 1).length}</div>
-                            <div class="summary-label">سيارات متكررة</div>
-                        </div>
-                    </div>
+                    ${this.buildSummary(
+                        this.data.length,
+                        new Set(this.data.map(d => d.plateNumber)).size,
+                        this.data.filter(d => d.repeatCount > 1).length
+                    )}
                     
                     <table>
                         <thead>
@@ -581,37 +562,6 @@ class AdvancedExporter {
         }
     }
 
-    /**
-     * تحميل الملف
-     */
-    downloadFile(blob, filename) {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(link.href);
-    }
-
-    /**
-     * تحويل الصورة إلى Base64
-     */
-    async imageToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    /**
-     * تحويل عنصر Canvas إلى Base64
-     */
-    canvasToBase64(canvas) {
-        return canvas.toDataURL('image/jpeg', 0.7);
-    }
 }
 
 // إنشاء نسخة عامة
