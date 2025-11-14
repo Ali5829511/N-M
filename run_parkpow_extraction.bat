@@ -1,0 +1,94 @@
+@echo off
+REM سكريبت تشغيل سريع لاستخراج بيانات السيارات من ParkPow
+REM Quick start script for ParkPow vehicle data extraction
+
+echo ======================================================
+echo 🚗 نظام استخراج بيانات السيارات من ParkPow
+echo 🚗 ParkPow Vehicle Data Extraction System
+echo ======================================================
+echo.
+
+REM التحقق من وجود Python
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ خطأ: Python غير مثبت
+    echo ❌ Error: Python is not installed
+    pause
+    exit /b 1
+)
+
+echo ✅ Python متوفر
+echo.
+
+REM التحقق من وجود المتطلبات
+echo 🔍 التحقق من المكتبات المطلوبة...
+echo 🔍 Checking required libraries...
+
+python -c "import requests" >nul 2>&1
+if errorlevel 1 (
+    echo ⚠️  تثبيت المكتبات المطلوبة...
+    echo ⚠️  Installing required libraries...
+    pip install -r requirements.txt
+)
+
+echo ✅ جميع المكتبات متوفرة
+echo.
+
+REM التحقق من ملف .env
+if not exist .env (
+    echo ⚠️  ملف .env غير موجود
+    echo ⚠️  .env file not found
+    echo 📝 إنشاء من .env.example...
+    echo 📝 Creating from .env.example...
+    copy .env.example .env >nul
+    echo.
+    echo ⚠️  يرجى تعديل ملف .env وإضافة PARKPOW_API_TOKEN الخاص بك
+    echo ⚠️  Please edit .env file and add your PARKPOW_API_TOKEN
+    echo.
+    pause
+)
+
+echo.
+echo ======================================================
+echo 🚀 بدء استخراج البيانات...
+echo 🚀 Starting data extraction...
+echo ======================================================
+echo.
+
+REM تشغيل السكريبت
+python fetch_parkpow_vehicles.py
+
+REM التحقق من النتيجة
+if errorlevel 1 (
+    echo.
+    echo ======================================================
+    echo ❌ حدث خطأ أثناء الاستخراج
+    echo ❌ An error occurred during extraction
+    echo ======================================================
+    echo.
+    echo 📖 راجع الوثائق للمساعدة:
+    echo 📖 Check documentation for help:
+    echo    docs\PARKPOW_DATA_EXTRACTION.md
+    echo.
+    pause
+    exit /b 1
+) else (
+    echo.
+    echo ======================================================
+    echo ✅ تمت العملية بنجاح!
+    echo ✅ Operation completed successfully!
+    echo ======================================================
+    echo.
+    echo 📁 تم حفظ البيانات في: data\parkpow_vehicles.json
+    echo 📁 Data saved to: data\parkpow_vehicles.json
+    echo.
+    echo 🌐 لعرض البيانات، افتح:
+    echo 🌐 To view data, open:
+    echo    pages\parkpow_database_viewer.html
+    echo.
+    echo 📖 للمزيد من المعلومات، راجع:
+    echo 📖 For more information, see:
+    echo    docs\PARKPOW_DATA_EXTRACTION.md
+    echo.
+    pause
+)
