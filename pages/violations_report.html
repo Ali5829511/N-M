@@ -312,7 +312,10 @@
             <button class="action-btn btn-export" onclick="exportViolations()">
                 ⚠️ تقرير المخالفات
             </button>
-            <button class="action-btn btn-email" onclick="sendReportByEmail()">
+            <button class="action-btn btn-export" onclick="exportToCSV()">
+                📥 تصدير CSV
+            </button>
+            <button class="action-btn btn-email" onclick="sendReportByEmail(event)">
                 📧 إرسال التقرير بالبريد
             </button>
             <button class="action-btn btn-email" onclick="sendEmailReport()">
@@ -479,7 +482,40 @@
             window.location.href = 'email_settings.html';
         }
 
-        async function sendReportByEmail() {
+        function exportToCSV() {
+            if (!allData || allData.length === 0) {
+                alert('❌ لا توجد بيانات للتصدير.');
+                return;
+            }
+
+            // إنشاء محتوى CSV
+            let csvContent = '\uFEFF'; // BOM للدعم العربي
+            
+            // إضافة العناوين
+            csvContent += 'رقم اللوحة,الساكن,المبنى,الوحدة,عدد المخالفات\n';
+            
+            // إضافة البيانات
+            allData.forEach(item => {
+                csvContent += `"${item.plateNumber}","${item.residentName}","${item.building}","${item.unit}","${item.violations}"\n`;
+            });
+
+            // إنشاء ملف للتحميل
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `violations_report_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('✅ تم تصدير التقرير بنجاح!');
+        }
+
+        async function sendReportByEmail(event) {
             // التحقق من تفعيل خدمة البريد الإلكتروني
             if (!window.emailService || !window.emailService.isEmailEnabled()) {
                 const confirm = window.confirm(
@@ -502,6 +538,12 @@
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(recipientEmail)) {
                 alert('❌ البريد الإلكتروني غير صحيح. يرجى المحاولة مرة أخرى.');
+                return;
+            }
+
+            // التحقق من وجود بيانات
+            if (!allData || allData.length === 0) {
+                alert('❌ لا توجد بيانات لإرسالها في التقرير.');
                 return;
             }
 
