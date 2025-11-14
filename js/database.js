@@ -293,56 +293,69 @@ class DatabaseManager {
     /**
      * إنشاء بيانات الملصقات الافتراضية
      */
-    initializeDefaultStickers() {
-        const defaultStickers = [
-            {
-                id: 1,
-                idNumber: '1234567890',
-                residentName: 'د. أحمد محمد علي',
-                status: 'فعال',
-                issueDate: '2025-01-15',
-                plateNumber: 'ر ق ل 1234',
-                vehicleType: 'سيدان',
-                unitType: 'V',
-                building: '15',
-                apartment: '25',
+    /**
+     * تحميل ملصقات السيارات من ملف stickers_data.json
+     * يتم تحميل البيانات الحقيقية من ملف ملصقات السيارات
+     * الملف يحتوي على صفحتين: فعال وملغي
+     */
+    async initializeDefaultStickers() {
+        try {
+            // محاولة تحميل البيانات من ملف stickers_data.json
+            const response = await fetch('pages/stickers_data.json');
+            const stickersData = await response.json();
+            
+            // تحويل البيانات إلى التنسيق المتوافق مع النظام
+            const formattedStickers = stickersData.map((item, index) => ({
+                id: index + 1,
+                idNumber: item['رقم الهوية'],
+                residentName: item['اسم الساكن'],
+                status: item['حالة'], // فعال أو ملغي
+                issueDate: item['تاريخ الملصق'],
+                plateNumber: item['رقم لوحة السيارة'],
+                vehicleType: item['نوع المركبة'],
+                unitType: item['نوع الوحدة'],
+                building: item['المبنى'],
+                apartment: item['شقة'],
                 deliveryImage: '',
-                notes: 'ملصق جديد',
-                createdDate: new Date().toISOString()
-            },
-            {
-                id: 2,
-                idNumber: '9876543210',
-                residentName: 'د. فاطمة أحمد',
-                status: 'فعال',
-                issueDate: '2025-01-20',
-                plateNumber: 'ر ق ل 5678',
-                vehicleType: 'SUV',
-                unitType: 'A',
-                building: '8',
-                apartment: '45',
-                deliveryImage: '',
-                notes: 'تجديد ملصق',
-                createdDate: new Date().toISOString()
-            },
-            {
-                id: 3,
-                idNumber: '5555555555',
-                residentName: 'د. محمد سعد',
-                status: 'غير فعال',
-                issueDate: '2024-12-01',
-                plateNumber: 'ر ق ل 9999',
-                vehicleType: 'هاتشباك',
-                unitType: 'V',
-                building: '12',
-                apartment: '10',
-                deliveryImage: '',
-                notes: 'منتهي الصلاحية',
-                createdDate: new Date().toISOString()
-            }
-        ];
-        
-        localStorage.setItem('stickers', JSON.stringify(defaultStickers));
+                notes: item['ملاحظات'] || '',
+                createdDate: new Date().toISOString(),
+                source: 'excel_import', // مصدر البيانات
+                sheetType: item['حالة'] === 'فعال' ? 'active' : 'cancelled' // نوع الصفحة
+            }));
+            
+            localStorage.setItem('stickers', JSON.stringify(formattedStickers));
+            console.log(`✓ تم تحميل ${formattedStickers.length} ملصق من ملف البيانات`);
+            console.log(`  - فعال: ${formattedStickers.filter(s => s.status === 'فعال').length}`);
+            console.log(`  - ملغي: ${formattedStickers.filter(s => s.status === 'ملغي').length}`);
+            
+            return formattedStickers;
+        } catch (error) {
+            console.error('خطأ في تحميل بيانات الملصقات من الملف:', error);
+            console.log('سيتم استخدام بيانات افتراضية مؤقتة');
+            
+            // في حالة الفشل، استخدام بيانات افتراضية
+            const fallbackStickers = [
+                {
+                    id: 1,
+                    idNumber: '1049763921',
+                    residentName: 'ناصر مبارك فهيد البقعاوي',
+                    status: 'فعال',
+                    issueDate: '2022-05-24',
+                    plateNumber: 'د هـ ك 8466',
+                    vehicleType: 'هونداي كحلي 2018',
+                    unitType: 'A',
+                    building: '25',
+                    apartment: '21',
+                    deliveryImage: '',
+                    notes: '',
+                    createdDate: new Date().toISOString(),
+                    source: 'fallback'
+                }
+            ];
+            
+            localStorage.setItem('stickers', JSON.stringify(fallbackStickers));
+            return fallbackStickers;
+        }
     }
 
     /**
