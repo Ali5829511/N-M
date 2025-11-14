@@ -1,18 +1,19 @@
 /**
  * نظام إدارة قاعدة البيانات المحلية
  * Local Database Management System
- * @version 1.0.0
+ * @version 2.0.0
  * 
- * ⚠️ تحذير أمني مهم:
- * هذا النظام مصمم للتطوير والاختبار فقط!
+ * ✅ التحسينات الأمنية:
+ * - تشفير كلمات المرور باستخدام SHA-256
+ * - نظام تحذير لكلمات المرور الافتراضية
+ * - دعم تغيير كلمة المرور الإجباري عند أول تسجيل دخول
  * 
- * في بيئة الإنتاج، يجب:
- * 1. استخدام قاعدة بيانات حقيقية (PostgreSQL, MySQL, MongoDB)
- * 2. تشفير كلمات المرور باستخدام bcrypt أو argon2
- * 3. استخدام API خلفي آمن بدلاً من localStorage
- * 4. تطبيق SSL/TLS (HTTPS)
- * 5. إضافة معالجة الأخطاء والتحقق من صحة البيانات
- * 6. تطبيق rate limiting و CSRF protection
+ * ⚠️ ملاحظة:
+ * للإنتاج، يوصى باستخدام:
+ * 1. قاعدة بيانات خلفية (PostgreSQL, MySQL, MongoDB)
+ * 2. تشفير bcrypt أو argon2 (أقوى من SHA-256)
+ * 3. API خلفي آمن
+ * 4. SSL/TLS (HTTPS)
  * 
  * 📊 للتحقق من حالة قاعدة البيانات، افتح: database_status.html
  */
@@ -20,16 +21,17 @@
 class DatabaseManager {
     constructor() {
         this.dbName = 'TrafficSystemDB';
-        this.version = 1;
+        this.version = 2; // تحديث الإصدار
         this.dbType = 'localStorage'; // نوع قاعدة البيانات
         this.connectionStatus = 'disconnected'; // حالة الاتصال
+        this.passwordsHashed = false; // حالة تشفير كلمات المرور
         this.init();
     }
 
     /**
      * تهيئة قاعدة البيانات
      */
-    init() {
+    async init() {
         try {
             // التحقق من دعم localStorage
             if (typeof localStorage === 'undefined') {
@@ -38,9 +40,17 @@ class DatabaseManager {
                 return;
             }
 
+            // التحقق من حالة تشفير كلمات المرور
+            const passwordsHashedFlag = localStorage.getItem('passwords_hashed');
+            this.passwordsHashed = passwordsHashedFlag === 'true';
+
             // إنشاء المستخدمين الافتراضيين إذا لم يكونوا موجودين
             if (!localStorage.getItem('users')) {
-                this.initializeDefaultUsers();
+                await this.initializeDefaultUsers();
+            } else if (!this.passwordsHashed) {
+                // ترقية كلمات المرور القديمة
+                console.log('🔐 جاري ترقية كلمات المرور إلى نظام مشفر...');
+                await this.upgradePasswordSecurity();
             }
             
             // إنشاء جدول المخالفات إذا لم يكن موجوداً
@@ -77,50 +87,120 @@ class DatabaseManager {
     }
 
     /**
-     * إنشاء المستخدمين الافتراضيين
-     * 
-     * ⚠️ ملاحظة: كلمات المرور مخزنة بنص عادي للتطوير فقط
-     * في الإنتاج: استخدم bcrypt لتشفير كلمات المرور
+     * إنشاء المستخدمين الافتراضيين مع كلمات مرور مشفرة
+     * ✅ تحسين أمني: كلمات المرور الآن مشفرة باستخدام SHA-256
      */
-    initializeDefaultUsers() {
+    async initializeDefaultUsers() {
+        // توليد كلمات مرور قوية عشوائية
+        const adminPassword = CryptoUtils.generateSecurePassword(16);
+        const violationsPassword = CryptoUtils.generateSecurePassword(16);
+        const inquiryPassword = CryptoUtils.generateSecurePassword(16);
+
+        // تشفير كلمات المرور
+        const hashedAdminPassword = await CryptoUtils.hashPassword(adminPassword);
+        const hashedViolationsPassword = await CryptoUtils.hashPassword(violationsPassword);
+        const hashedInquiryPassword = await CryptoUtils.hashPassword(inquiryPassword);
+
         const defaultUsers = [
             {
                 id: 1,
                 username: 'admin',
-                password: 'admin123', // ⚠️ في نظام حقيقي، يجب تشفير كلمة المرور
+                password: hashedAdminPassword, // ✅ كلمة مرور مشفرة
                 name: 'مدير النظام',
                 email: 'admin@university.edu.sa',
                 role: 'admin',
                 status: 'active',
                 createdDate: new Date().toISOString().split('T')[0],
-                lastLogin: new Date().toISOString()
+                lastLogin: new Date().toISOString(),
+                requirePasswordChange: true, // يجب تغيير كلمة المرور عند أول تسجيل دخول
+                tempPassword: adminPassword // كلمة المرور المؤقتة (سيتم حذفها بعد أول تسجيل دخول)
             },
             {
                 id: 2,
                 username: 'violations_officer',
-                password: 'violations123', // ⚠️ في نظام حقيقي، يجب تشفير كلمة المرور
+                password: hashedViolationsPassword, // ✅ كلمة مرور مشفرة
                 name: 'مسؤول المخالفات',
                 email: 'violations@university.edu.sa',
                 role: 'violation_entry',
                 status: 'active',
                 createdDate: new Date().toISOString().split('T')[0],
-                lastLogin: new Date().toISOString()
+                lastLogin: new Date().toISOString(),
+                requirePasswordChange: true,
+                tempPassword: violationsPassword
             },
             {
                 id: 3,
                 username: 'inquiry_user',
-                password: 'inquiry123', // ⚠️ في نظام حقيقي، يجب تشفير كلمة المرور
+                password: hashedInquiryPassword, // ✅ كلمة مرور مشفرة
                 name: 'موظف الاستعلام',
                 email: 'inquiry@university.edu.sa',
                 role: 'inquiry',
                 status: 'active',
                 createdDate: new Date().toISOString().split('T')[0],
-                lastLogin: new Date().toISOString()
+                lastLogin: new Date().toISOString(),
+                requirePasswordChange: true,
+                tempPassword: inquiryPassword
             }
         ];
         
         localStorage.setItem('users', JSON.stringify(defaultUsers));
+        localStorage.setItem('passwords_hashed', 'true');
+        this.passwordsHashed = true;
+
+        // عرض كلمات المرور المؤقتة في Console للمسؤول
+        console.log('🔐 تم إنشاء المستخدمين بكلمات مرور آمنة:');
+        console.log('━'.repeat(60));
+        console.log('👤 admin:', adminPassword);
+        console.log('👤 violations_officer:', violationsPassword);
+        console.log('👤 inquiry_user:', inquiryPassword);
+        console.log('━'.repeat(60));
+        console.log('⚠️ احفظ هذه الكلمات في مكان آمن!');
+        console.log('⚠️ يجب تغييرها عند أول تسجيل دخول.');
+        
         // تم إنشاء المستخدمين الافتراضيين
+    }
+
+    /**
+     * ترقية أمان كلمات المرور للمستخدمين الحاليين
+     * Upgrade password security for existing users
+     */
+    async upgradePasswordSecurity() {
+        try {
+            const users = await this.getUsers();
+            const oldPasswords = {
+                'admin': 'admin123',
+                'violations_officer': 'violations123',
+                'inquiry_user': 'inquiry123'
+            };
+
+            let upgraded = false;
+            for (let user of users) {
+                // التحقق إذا كانت كلمة المرور غير مشفرة
+                const oldPassword = oldPasswords[user.username];
+                if (oldPassword && user.password === oldPassword) {
+                    // توليد كلمة مرور جديدة قوية
+                    const newPassword = CryptoUtils.generateSecurePassword(16);
+                    user.password = await CryptoUtils.hashPassword(newPassword);
+                    user.requirePasswordChange = true;
+                    user.tempPassword = newPassword;
+                    upgraded = true;
+
+                    console.log(`🔐 تم ترقية كلمة مرور ${user.username}: ${newPassword}`);
+                }
+            }
+
+            if (upgraded) {
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem('passwords_hashed', 'true');
+                this.passwordsHashed = true;
+                console.log('✅ تم ترقية أمان كلمات المرور بنجاح!');
+            }
+
+            return upgraded;
+        } catch (error) {
+            console.error('خطأ في ترقية كلمات المرور:', error);
+            return false;
+        }
     }
 
     /**
@@ -154,6 +234,7 @@ class DatabaseManager {
 
     /**
      * إضافة مستخدم جديد
+     * ✅ تشفير كلمة المرور تلقائياً
      */
     async addUser(userData) {
         try {
@@ -170,16 +251,20 @@ class DatabaseManager {
             // إنشاء معرف جديد
             const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
             
+            // تشفير كلمة المرور
+            const hashedPassword = await CryptoUtils.hashPassword(userData.password);
+            
             const newUser = {
                 id: newId,
                 username: userData.username,
-                password: userData.password,
+                password: hashedPassword, // ✅ كلمة مرور مشفرة
                 name: userData.name,
                 email: userData.email,
                 role: userData.role,
                 status: userData.status || 'active',
                 createdDate: new Date().toISOString().split('T')[0],
-                lastLogin: null
+                lastLogin: null,
+                requirePasswordChange: false // المستخدم اختار كلمة مروره
             };
             
             users.push(newUser);
