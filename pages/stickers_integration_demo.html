@@ -257,6 +257,31 @@
             </div>
         </div>
 
+        <div class="stats-grid">
+            <div class="stat-card" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
+                <div class="stat-label">قيد الانتظار للتفعيل</div>
+                <div class="stat-value" id="pending-activation">-</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);">
+                <div class="stat-label">الملصقات المفعلة</div>
+                <div class="stat-value" id="activated-stickers">-</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                <div class="stat-label">مخالفات الاستخدام</div>
+                <div class="stat-value" id="misuse-violations">-</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                <div class="stat-label">معدل التفعيل</div>
+                <div class="stat-value" id="activation-rate-display">-</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="stickers_tracking.html" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); color: white; text-decoration: none; border-radius: 10px; font-size: 1.2em; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                📋 إدارة التسليم والتفعيل والمخالفات
+            </a>
+        </div>
+
         <div class="search-section">
             <h2 style="margin-bottom: 20px;">🔍 البحث في النظام المتكامل</h2>
             
@@ -302,6 +327,12 @@
             document.getElementById('linked-vehicles').textContent = stats.dataLinks.stickersLinkedToVehicles.toLocaleString('ar-EG');
             document.getElementById('total-violations').textContent = stats.violations.total.toLocaleString('ar-EG');
             document.getElementById('link-percentage').textContent = stats.dataLinks.completeDataIntegrity;
+            
+            // إحصائيات التسليم والتفعيل
+            document.getElementById('pending-activation').textContent = stats.deliveryTracking.deliveredNotActivated.toLocaleString('ar-EG');
+            document.getElementById('activated-stickers').textContent = stats.deliveryTracking.activatedStickers.toLocaleString('ar-EG');
+            document.getElementById('misuse-violations').textContent = stats.misuseTracking.totalMisuses.toLocaleString('ar-EG');
+            document.getElementById('activation-rate-display').textContent = stats.deliveryTracking.activationRate + '%';
         }
 
         function searchByPlate() {

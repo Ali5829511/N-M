@@ -14,6 +14,8 @@ class StickersIntegration {
         this.stickers = [];
         this.vehicles = [];
         this.violations = [];
+        this.stickerDeliveries = []; // تتبع تسليم الملصقات
+        this.stickerMisuse = []; // تتبع المخالفات في استخدام الملصقات
         this.initialized = false;
     }
 
@@ -31,6 +33,12 @@ class StickersIntegration {
             // تحميل المخالفات المرورية
             this.violations = JSON.parse(localStorage.getItem('violations') || '[]');
             
+            // تحميل سجلات تسليم الملصقات
+            this.stickerDeliveries = JSON.parse(localStorage.getItem('stickerDeliveries') || '[]');
+            
+            // تحميل سجلات مخالفات استخدام الملصقات
+            this.stickerMisuse = JSON.parse(localStorage.getItem('stickerMisuse') || '[]');
+            
             // ربط البيانات
             await this.linkData();
             
@@ -39,6 +47,8 @@ class StickersIntegration {
             console.log(`  - ملصقات: ${this.stickers.length}`);
             console.log(`  - سيارات: ${this.vehicles.length}`);
             console.log(`  - مخالفات: ${this.violations.length}`);
+            console.log(`  - تسليمات قيد الانتظار: ${this.stickerDeliveries.length}`);
+            console.log(`  - مخالفات استخدام: ${this.stickerMisuse.length}`);
             
             return { success: true };
         } catch (error) {
@@ -245,6 +255,15 @@ class StickersIntegration {
             .slice(0, 10)
             .map(([name, count]) => ({ name, violations: count }));
 
+        // إحصائيات التسليم والتفعيل
+        const deliveredNotActivated = this.stickerDeliveries.filter(d => d.status === 'delivered_not_activated').length;
+        const activatedStickers = this.stickerDeliveries.filter(d => d.status === 'activated').length;
+        
+        // إحصائيات مخالفات الاستخدام
+        const reportedMisuses = this.stickerMisuse.filter(m => m.status === 'reported').length;
+        const confirmedMisuses = this.stickerMisuse.filter(m => m.status === 'confirmed').length;
+        const resolvedMisuses = this.stickerMisuse.filter(m => m.status === 'resolved').length;
+
         return {
             stickers: {
                 total: this.stickers.length,
@@ -263,6 +282,24 @@ class StickersIntegration {
                 withStickers: violationsWithStickers,
                 withoutStickers: violationsWithoutStickers,
                 stickerCoverage: ((violationsWithStickers / this.violations.length) * 100).toFixed(2)
+            },
+            // إحصائيات التسليم والتفعيل
+            deliveryTracking: {
+                totalDeliveries: this.stickerDeliveries.length,
+                deliveredNotActivated: deliveredNotActivated,
+                activatedStickers: activatedStickers,
+                activationRate: this.stickerDeliveries.length > 0 ? 
+                    ((activatedStickers / this.stickerDeliveries.length) * 100).toFixed(2) : '0.00'
+            },
+            // إحصائيات مخالفات الاستخدام
+            misuseTracking: {
+                totalMisuses: this.stickerMisuse.length,
+                reported: reportedMisuses,
+                confirmed: confirmedMisuses,
+                resolved: resolvedMisuses,
+                pending: reportedMisuses + confirmedMisuses,
+                resolutionRate: this.stickerMisuse.length > 0 ? 
+                    ((resolvedMisuses / this.stickerMisuse.length) * 100).toFixed(2) : '0.00'
             },
             topViolators: topViolators,
             dataLinks: {
@@ -350,6 +387,170 @@ class StickersIntegration {
     }
 
     /**
+     * تسجيل تسليم ملصق قبل التفعيل
+     * Register sticker delivery before activation
+     */
+    registerStickerDelivery(deliveryData) {
+        const delivery = {
+            id: Date.now() + Math.random(),
+            stickerNumber: deliveryData.stickerNumber || deliveryData['رقم الهوية'],
+            residentName: deliveryData.residentName || deliveryData['اسم الساكن'],
+            plateNumber: deliveryData.plateNumber || deliveryData['رقم لوحة السيارة'],
+            deliveryDate: deliveryData.deliveryDate || new Date().toISOString().split('T')[0],
+            deliveredBy: deliveryData.deliveredBy || 'النظام',
+            status: 'delivered_not_activated', // تم التسليم ولم يتم التفعيل
+            activationDate: null,
+            building: deliveryData.building || deliveryData['المبنى'],
+            apartment: deliveryData.apartment || deliveryData['شقة'],
+            notes: deliveryData.notes || '',
+            createdDate: new Date().toISOString()
+        };
+
+        this.stickerDeliveries.push(delivery);
+        this.saveStickerDeliveries();
+        
+        return {
+            success: true,
+            delivery: delivery
+        };
+    }
+
+    /**
+     * تفعيل ملصق تم تسليمه
+     * Activate a delivered sticker
+     */
+    activateDeliveredSticker(stickerNumber) {
+        const delivery = this.stickerDeliveries.find(d => 
+            d.stickerNumber === stickerNumber && d.status === 'delivered_not_activated'
+        );
+
+        if (!delivery) {
+            return {
+                success: false,
+                error: 'لم يتم العثور على سجل تسليم لهذا الملصق'
+            };
+        }
+
+        delivery.status = 'activated';
+        delivery.activationDate = new Date().toISOString().split('T')[0];
+        this.saveStickerDeliveries();
+
+        return {
+            success: true,
+            message: 'تم تفعيل الملصق بنجاح',
+            delivery: delivery
+        };
+    }
+
+    /**
+     * تسجيل مخالفة استخدام ملصق
+     * Register sticker misuse (used by relatives or others)
+     */
+    registerStickerMisuse(misuseData) {
+        const misuse = {
+            id: Date.now() + Math.random(),
+            stickerNumber: misuseData.stickerNumber || misuseData['رقم الهوية'],
+            originalOwner: misuseData.originalOwner || misuseData['اسم الساكن'],
+            registeredPlate: misuseData.registeredPlate || misuseData['رقم لوحة السيارة المسجلة'],
+            actualPlate: misuseData.actualPlate || misuseData['رقم اللوحة الفعلية'],
+            misuseType: misuseData.misuseType || 'استخدام من قبل أقارب', // نوع المخالفة
+            detectedDate: misuseData.detectedDate || new Date().toISOString().split('T')[0],
+            detectedBy: misuseData.detectedBy || 'النظام',
+            actualUser: misuseData.actualUser || 'غير محدد',
+            relationToOwner: misuseData.relationToOwner || 'قريب',
+            status: 'reported', // reported, under_investigation, confirmed, resolved
+            resolution: null,
+            resolutionDate: null,
+            notes: misuseData.notes || '',
+            createdDate: new Date().toISOString()
+        };
+
+        this.stickerMisuse.push(misuse);
+        this.saveStickerMisuse();
+
+        // تحديث حالة الملصق في قاعدة البيانات
+        const sticker = this.stickers.find(s => s['رقم الهوية'] === misuse.stickerNumber);
+        if (sticker) {
+            sticker._misused = true;
+            sticker._misuseDetails = misuse;
+        }
+
+        return {
+            success: true,
+            misuse: misuse
+        };
+    }
+
+    /**
+     * حل/معالجة مخالفة استخدام ملصق
+     * Resolve sticker misuse case
+     */
+    resolveStickerMisuse(misuseId, resolution) {
+        const misuse = this.stickerMisuse.find(m => m.id === misuseId);
+
+        if (!misuse) {
+            return {
+                success: false,
+                error: 'لم يتم العثور على سجل المخالفة'
+            };
+        }
+
+        misuse.status = 'resolved';
+        misuse.resolution = resolution;
+        misuse.resolutionDate = new Date().toISOString().split('T')[0];
+        this.saveStickerMisuse();
+
+        return {
+            success: true,
+            message: 'تم حل المخالفة',
+            misuse: misuse
+        };
+    }
+
+    /**
+     * الحصول على جميع الملصقات التي لم يتم تفعيلها بعد التسليم
+     */
+    getUnactivatedStickers() {
+        return this.stickerDeliveries.filter(d => d.status === 'delivered_not_activated');
+    }
+
+    /**
+     * الحصول على جميع مخالفات استخدام الملصقات
+     */
+    getAllStickerMisuses(statusFilter = null) {
+        if (statusFilter) {
+            return this.stickerMisuse.filter(m => m.status === statusFilter);
+        }
+        return this.stickerMisuse;
+    }
+
+    /**
+     * حفظ سجلات تسليم الملصقات
+     */
+    saveStickerDeliveries() {
+        try {
+            localStorage.setItem('stickerDeliveries', JSON.stringify(this.stickerDeliveries));
+            return { success: true };
+        } catch (error) {
+            console.error('خطأ في حفظ سجلات التسليم:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * حفظ سجلات مخالفات الاستخدام
+     */
+    saveStickerMisuse() {
+        try {
+            localStorage.setItem('stickerMisuse', JSON.stringify(this.stickerMisuse));
+            return { success: true };
+        } catch (error) {
+            console.error('خطأ في حفظ سجلات المخالفات:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
      * تصدير البيانات المرتبطة
      */
     exportLinkedData() {
@@ -359,7 +560,9 @@ class StickersIntegration {
             data: {
                 stickers: this.stickers,
                 vehicles: this.vehicles,
-                violations: this.violations
+                violations: this.violations,
+                deliveries: this.stickerDeliveries,
+                misuses: this.stickerMisuse
             }
         };
     }
