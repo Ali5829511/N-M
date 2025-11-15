@@ -31,7 +31,17 @@ try {
 app.use(cors());
 app.use(compression());
 app.use(express.json());
-app.use(express.static('.'));
+
+// Serve static files - only serve public directories
+app.use(express.static('pages'));
+app.use('/js', express.static('js'));
+app.use('/assets', express.static('assets'));
+app.use('/css', express.static('css'));
+
+// Serve index.html at root
+app.get('/', (req, res) => {
+    res.sendFile(join(__dirname, 'index.html'));
+});
 
 // Request logging
 app.use((req, res, next) => {
