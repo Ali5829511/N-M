@@ -107,7 +107,7 @@ class DatabaseManager {
                 username: 'admin',
                 password: hashedAdminPassword, // ✅ كلمة مرور مشفرة
                 name: 'مدير النظام',
-                email: 'admin@university.edu.sa',
+                email: 'aliayashi522@gmail.com',
                 role: 'admin',
                 status: 'active',
                 createdDate: new Date().toISOString().split('T')[0],

@@ -62,7 +62,7 @@ class EmailService {
             notifyOnUserCreation: true,
             notifyOnViolation: true,
             notifyOnPasswordReset: true,
-            adminEmail: 'admin@university.edu.sa'
+            adminEmail: 'aliayashi522@gmail.com'
         };
     }
 
