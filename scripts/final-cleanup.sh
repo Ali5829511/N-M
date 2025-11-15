@@ -153,7 +153,7 @@ delete_branch "copilot/update-visual-identity-system"
 echo ""
 
 # Category 4: Install branches
-echo "📁 Category 4: Install Branches (4)"
+echo "📁 Category 4: Install Branches (2)"
 delete_branch "copilot/install-dependencies-for-project"
 delete_branch "copilot/install-npm-dependencies"
 echo ""
@@ -185,7 +185,7 @@ delete_branch "copilot/connect-database-and-deploy"
 echo ""
 
 # Category 8: Other branches
-echo "📁 Category 8: Other Branches (15)"
+echo "📁 Category 8: Other Branches (17)"
 delete_branch "copilot/check-stickers-data-existence"
 delete_branch "copilot/check-vehicle-sticker-page"
 delete_branch "copilot/cleanup-unrelated-files"
