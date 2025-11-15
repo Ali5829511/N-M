@@ -7,6 +7,21 @@
 
 A comprehensive system for extracting and managing vehicle data and traffic violations from ParkPow API.
 
+### ✅ نقاط النهاية المدعومة / Supported Endpoints
+
+النظام يجلب البيانات من عدة نقاط نهاية:
+
+The system fetches data from multiple endpoints:
+
+1. ✅ `/review/` - المراجعات
+2. ✅ `/plate-reader/` - قارئ اللوحات
+3. ✅ `/results/` - النتائج
+4. ✅ **`/vehicles/`** - **السيارات** (مضافة ✓)
+
+**تأكيد:** تم إضافة جلب البيانات من `https://app.parkpow.com/vehicles/` بشكل كامل.
+
+**Confirmation:** Data fetching from `https://app.parkpow.com/vehicles/` has been fully added.
+
 ## 🎯 الأهداف الرئيسية / Main Objectives
 
 ### ✅ 1. قاعدة بيانات السيارات
