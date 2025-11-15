@@ -345,6 +345,87 @@ class AuthManager {
         }
         return PERMISSIONS[this.currentUser.role] || {};
     }
+
+    /**
+     * طلب إعادة تعيين كلمة المرور
+     * @param {string} identifier - اسم المستخدم أو البريد الإلكتروني
+     */
+    async requestPasswordReset(identifier) {
+        try {
+            // البحث عن المستخدم
+            const users = await window.db.getUsers();
+            const user = users.find(u => 
+                u.username === identifier || 
+                u.email === identifier
+            );
+
+            if (!user) {
+                return {
+                    success: false,
+                    error: 'المستخدم غير موجود. يرجى التحقق من البيانات المدخلة.'
+                };
+            }
+
+            if (user.status !== 'active') {
+                return {
+                    success: false,
+                    error: 'هذا الحساب غير نشط. يرجى التواصل مع المسؤول.'
+                };
+            }
+
+            // توليد كلمة مرور مؤقتة جديدة
+            const tempPassword = CryptoUtils.generateSecurePassword(16);
+            const hashedPassword = await CryptoUtils.hashPassword(tempPassword);
+
+            // تحديث المستخدم
+            user.password = hashedPassword;
+            user.tempPassword = tempPassword;
+            user.requirePasswordChange = true;
+            user.passwordResetDate = new Date().toISOString();
+
+            // حفظ التغييرات
+            const updatedUsers = users.map(u => u.id === user.id ? user : u);
+            localStorage.setItem('users', JSON.stringify(updatedUsers));
+
+            // محاولة إرسال البريد الإلكتروني
+            let emailSent = false;
+            if (window.emailService && window.emailService.isEmailEnabled()) {
+                const emailResult = await window.emailService.sendPasswordResetEmail(
+                    user.email,
+                    user.username,
+                    tempPassword
+                );
+                emailSent = emailResult.success;
+            }
+
+            // عرض كلمة المرور في الكونسول للأمان المؤقت
+            console.log('━'.repeat(60));
+            console.log('🔐 تم إنشاء كلمة مرور جديدة للمستخدم:', user.username);
+            console.log('📧 البريد الإلكتروني:', user.email);
+            console.log('🔑 كلمة المرور المؤقتة:', tempPassword);
+            console.log('━'.repeat(60));
+            console.log('⚠️ احفظ هذه الكلمة في مكان آمن!');
+            console.log('⚠️ يجب تغييرها عند أول تسجيل دخول.');
+
+            if (emailSent) {
+                return {
+                    success: true,
+                    message: `تم إرسال كلمة المرور المؤقتة إلى البريد الإلكتروني: ${user.email}`
+                };
+            } else {
+                return {
+                    success: true,
+                    message: `تم إنشاء كلمة مرور جديدة. يرجى مراجعة Console في المتصفح (F12) للحصول على كلمة المرور المؤقتة. (البريد الإلكتروني غير مفعل)`
+                };
+            }
+        } catch (error) {
+            console.error('Password reset error:', error);
+            return {
+                success: false,
+                error: 'حدث خطأ أثناء إعادة تعيين كلمة المرور'
+            };
+        }
+    }
 }
 
 // إنشاء نسخة عامة من AuthManager
