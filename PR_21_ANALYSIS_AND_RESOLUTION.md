@@ -21,7 +21,7 @@ PR #21 was created to fix 404 errors on Render.com deployment by changing `rende
 
 ### Current State Analysis
 
-**Important Finding**: The core fix from PR #21 has ALREADY been incorporated into the main branch:
+**Important Finding**: The core fix from PR #21 has already been incorporated into the main branch:
 - Main branch's `render.yaml` already has `env: node` and `startCommand: npm start`
 - Main branch even has additional improvements (`envVars` section with NODE_ENV=production)
 
@@ -84,13 +84,13 @@ Since the core fix (Node.js configuration) is already in main, PR #21 could be c
 
 ## Technical Details
 
-### Merge Command Used
+### Merge Commands Used
 ```bash
 git checkout copilot/fix-404-error-on-website
 git merge main --allow-unrelated-histories
 # Resolved conflicts by accepting main's version for core files
 # Kept PR #21's unique documentation files
-git commit
+git commit -m "Merge main into copilot/fix-404-error-on-website - resolve conflicts and sync with latest main branch"
 ```
 
 ### Files Modified in Merge
@@ -100,7 +100,7 @@ git commit
 
 ## Conclusion
 
-The "404 error on Render deployment" issue that PR #21 was meant to fix **has already been resolved** in the main branch. The PR was experiencing merge conflicts because both branches had evolved independently. 
+The 404 error on Render deployment issue that PR #21 was meant to fix **has already been resolved** in the main branch. The PR experienced merge conflicts because both branches evolved independently. 
 
 The merge has been completed locally on the PR #21 branch, resolving all conflicts and bringing it up to date with main. The PR can now be merged if the additional Render documentation is desired, or it can be closed since the core fix is already incorporated.
 
