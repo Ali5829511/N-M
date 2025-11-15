@@ -1,40 +1,52 @@
-# 🚀 دليل التشغيل السريع - Quick Start
+# 🚀 ابدأ من هنا - START HERE
 
-## التشغيل بخطوة واحدة / One-Step Start
+## النشر الآن! - Publish Now!
 
-### Windows:
-انقر مرتين على ملف:
+### المشروع جاهز 100% ✅
+
+**فقط 3 خطوات (3 دقائق):**
+
+#### 1. دمج PR
 ```
-start-server.bat
-```
-
-### Linux / Mac:
-شغّل في الطرفية:
-```bash
-./start-server.sh
+github.com/Ali5829511/N-M/pulls
+→ Merge pull request
 ```
 
----
+#### 2. تفعيل Pages
+```
+github.com/Ali5829511/N-M/settings/pages
+→ Source: GitHub Actions
+```
 
-## أو استخدم npm مباشرة / Or use npm directly:
-
-```bash
-# تثبيت المتطلبات (مرة واحدة)
-npm install
-
-# تشغيل الخادم
-npm start
+#### 3. انتظر
+```
+github.com/Ali5829511/N-M/actions
+→ انتظر ✅
 ```
 
 ---
 
-## العنوان / Address:
-بعد التشغيل افتح:
+## 🌐 رابط الموقع
+
 ```
-http://localhost:8080
+https://ali5829511.github.io/N-M/
 ```
 
 ---
 
-## 📚 لمزيد من التفاصيل / For more details:
-راجع / See: [SERVER_SETUP_AR.md](SERVER_SETUP_AR.md)
+## 📖 التفاصيل
+
+- [HOW_TO_PUBLISH.md](HOW_TO_PUBLISH.md) - شرح سريع
+- [DEPLOYMENT_STEPS_AR.md](DEPLOYMENT_STEPS_AR.md) - شرح تفصيلي
+
+---
+
+## ⚠️ مهم
+
+**بعد النشر:**
+1. غير كلمات المرور (admin/admin123)
+2. راجع [SECURITY.md](SECURITY.md)
+
+---
+
+✅ **كل شيء جاهز للنشر الآن!**

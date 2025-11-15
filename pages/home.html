@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة الرئيسية - وحدة إسكان أعضاء هيئة التدريس</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tajawal:700,400&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 50%, #e0e7ef 100%);
+            direction: rtl;
+            min-height: 100vh;
+            padding: 0;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 111, 71, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(107, 85, 54, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #2d3748 100%);
+            color: white;
+            padding: 35px 40px;
+            border-radius: 0 0 30px 30px;
+            margin: -20px -20px 40px -20px;
+            box-shadow: 
+                0 10px 40px rgba(0,0,0,0.2),
+                0 0 0 1px rgba(255,255,255,0.1) inset;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.15) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 85px;
+            height: 85px;
+            background: white;
+            border-radius: 20px;
+            padding: 8px;
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.3),
+                0 0 0 3px rgba(139, 111, 71, 0.2),
+                0 0 0 6px rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .header h1 {
+            font-size: 2.4em;
+            margin-bottom: 8px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            font-size: 1.15em;
+            opacity: 0.95;
+            font-weight: 400;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #c53030 0%, #9b2c2c 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.95em;
+            box-shadow: 0 4px 12px rgba(197, 48, 48, 0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #9b2c2c 0%, #742a2a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(197, 48, 48, 0.5);
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+            padding: 35px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 
+                0 8px 30px rgba(0,0,0,0.12),
+                0 0 0 1px rgba(139, 111, 71, 0.1) inset;
+            text-align: center;
+            border: 2px solid rgba(139, 111, 71, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 111, 71, 0.03) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .welcome-section h2 {
+            color: #1a365d;
+            font-size: 2em;
+            margin-bottom: 12px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-section p {
+            color: #4a5568;
+            font-size: 1.15em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 1.75em;
+            color: #1a365d;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid transparent;
+            background: linear-gradient(90deg, #8B6F47 0%, #d4af37 50%, #8B6F47 100%) bottom / 100% 3px no-repeat;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title i {
+            background: linear-gradient(135deg, #8B6F47 0%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.1em;
+        }
+
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .page-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.08),
+                0 0 0 1px rgba(139, 111, 71, 0.08) inset;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border: 2px solid rgba(139, 111, 71, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 111, 71, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .page-card:hover::before {
+            left: 100%;
+        }
+
+        .page-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 20px 50px rgba(139, 111, 71, 0.25),
+                0 0 0 1px rgba(139, 111, 71, 0.2) inset;
+            border-color: #8B6F47;
+        }
+
+        .page-card-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #8B6F47 0%, #d4af37 50%, #8B6F47 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 26px;
+            flex-shrink: 0;
+            box-shadow: 
+                0 6px 20px rgba(139, 111, 71, 0.35),
+                0 0 0 3px rgba(255,255,255,0.9) inset;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .page-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            border-radius: 15px;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.3s ease;
+        }
+
+        .page-card:hover .page-icon::after {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        .page-card:hover .page-icon {
+            transform: rotate(5deg) scale(1.1);
+            box-shadow: 
+                0 8px 25px rgba(139, 111, 71, 0.5),
+                0 0 0 3px rgba(255,255,255,0.9) inset;
+        }
+
+        .page-card h3 {
+            color: #1a365d;
+            font-size: 1.35em;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .page-card p {
+            color: #4a5568;
+            font-size: 0.98em;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-section {
+            margin-bottom: 50px;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .category-section:nth-child(1) { animation-delay: 0.1s; }
+        .category-section:nth-child(2) { animation-delay: 0.2s; }
+        .category-section:nth-child(3) { animation-delay: 0.3s; }
+        .category-section:nth-child(4) { animation-delay: 0.4s; }
+        .category-section:nth-child(5) { animation-delay: 0.5s; }
+        .category-section:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 25px 20px;
+                margin: -15px -15px 30px -15px;
+                border-radius: 0 0 25px 25px;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            .header p {
+                font-size: 0.95em;
+            }
+
+            .logo {
+                width: 70px;
+                height: 70px;
+            }
+
+            .pages-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 18px;
+            }
+
+            .page-card {
+                padding: 22px;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+
+            .welcome-section {
+                padding: 25px;
+            }
+
+            .welcome-section h2 {
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <img src="../assets/شعار.jpg" alt="شعار الجامعة" class="logo">
+                <div>
+                    <h1>وحدة إسكان أعضاء هيئة التدريس</h1>
+                    <p>جامعة الإمام محمد بن سعود الإسلامية</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <span id="userName" style="font-weight: bold;">مرحباً</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    تسجيل الخروج
+                </button>
+            </div>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h2>مرحباً بك في النظام</h2>
+            <p>اختر الخدمة المطلوبة من القوائم أدناه</p>
+        </div>
+
+        <!-- الأقسام الرئيسية -->
+        <div class="category-section">
+            <h2 class="section-title">
+                <i class="fas fa-th-large"></i>
+                الأقسام الرئيسية
+            </h2>
+            <div class="pages-grid">
+                <!-- قسم المرور - نظام متكامل -->
+                <a href="traffic_dashboard.html" class="page-card" style="grid-column: span 2;">
+                    <div class="page-card-header">
+                        <div class="page-icon" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);"><i class="fas fa-traffic-light"></i></div>
+                        <h3>🚦 قسم المرور - نظام متكامل</h3>
+                    </div>
+                    <p>نظام شامل لالمخالفات المرورية، الحوادث، السيارات المحجوزة، التقارير، والاستعلامات</p>
+                </a>
+
+                <!-- إدارة المركبات -->
+                <a href="enhanced_stickers_management.html" class="page-card">
+                    <div class="page-card-header">
+                        <div class="page-icon"><i class="fas fa-car"></i></div>
+                        <h3>إدارة المركبات والملصقات</h3>
+                    </div>
+                    <p>إدارة ملصقات السيارات ورفع الصور</p>
+                </a>
+
+                <!-- التعرف على اللوحات -->
+                <a href="plate_recognition.html" class="page-card">
+                    <div class="page-card-header">
+                        <div class="page-icon"><i class="fas fa-camera"></i></div>
+                        <h3>أنظمة التعرف الذكي</h3>
+                    </div>
+                    <p>التعرف الآلي والذكي على لوحات السيارات (ParkPow)</p>
+                </a>
+
+                <!-- إدارة السكن -->
+                <a href="residential_units_management.html" class="page-card">
+                    <div class="page-card-header">
+                        <div class="page-icon"><i class="fas fa-building"></i></div>
+                        <h3>إدارة السكن والإسكان</h3>
+                    </div>
+                    <p>إدارة الشقق والفلل والوحدات السكنية والاستعلام عن السكان</p>
+                </a>
+
+                <!-- إدارة المستخدمين -->
+                <a href="advanced_users_management.html" class="page-card">
+                    <div class="page-card-header">
+                        <div class="page-icon"><i class="fas fa-users-cog"></i></div>
+                        <h3>إدارة المستخدمين</h3>
+                    </div>
+                    <p>إضافة وتعديل وحذف المستخدمين والصلاحيات</p>
+                </a>
+
+                <!-- التقارير العامة -->
+                <a href="comprehensive_reports_enhanced.html" class="page-card">
+                    <div class="page-card-header">
+                        <div class="page-icon"><i class="fas fa-chart-bar"></i></div>
+                        <h3>التقارير العامة</h3>
+                    </div>
+                    <p>تقارير شاملة وإحصائيات عامة للنظام</p>
+                </a>
+
+                <!-- الإعدادات -->
+                <a href="email_settings.html" class="page-card">
+                    <div class="page-card-header">
+                        <div class="page-icon"><i class="fas fa-cog"></i></div>
+                        <h3>الإعدادات والخدمات</h3>
+                    </div>
+                    <p>إعدادات النظام، البريد الإلكتروني، قاعدة البيانات، واستيراد البيانات</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- تحميل مكتبات النظام -->
+    <script src="../js/crypto-utils.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+
+    <script>
+        'use strict';
+
+        // التحقق من تسجيل الدخول
+        if (!window.authManager.isAuthenticated()) {
+            window.location.href = '../index.html';
+        }
+
+        // عرض اسم المستخدم
+        const currentUser = window.authManager.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = `مرحباً ${currentUser.name}`;
+        }
+
+        // وظيفة تسجيل الخروج
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                window.authManager.logout();
+            }
+        }
+    </script>
+</body>
+</html>

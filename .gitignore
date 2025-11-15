@@ -59,9 +59,24 @@ tests/
 .env.*.local
 config.local.js
 
+# Plate Recognition System
+plate_recognition_config.json
+images/
+processed_images/
+traffic.db
+*.db
+
 # Backup files
 *.sql
 *.db.backup
+*نسخة*
+*copy*
+*Copy*
+
+# Generated databases and output folders
+vehicles.db
+input_images/
+output_reports/
 
 # Cache
 .cache/

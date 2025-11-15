@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاستعلام عن المخالفات - نظام المرور</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f5f0 0%, #e8dcc8 100%);
+            direction: rtl;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #8B6F47;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            background: linear-gradient(135deg, #8B6F47 0%, #A0826D 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%);
+            color: white;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(81, 207, 102, 0.4);
+        }
+
+        .btn-home {
+            background: linear-gradient(135deg, #8B6F47 0%, #A0826D 100%);
+            color: white;
+        }
+
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 111, 71, 0.4);
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .search-section h2 {
+            color: #8B6F47;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e7ef;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Tajawal', Arial, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #8B6F47;
+            box-shadow: 0 0 0 3px rgba(21, 152, 149, 0.1);
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #8B6F47 0%, #8B6F47 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 95, 122, 0.4);
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .results-section h2 {
+            color: #8B6F47;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .violations-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .violations-table thead {
+            background: linear-gradient(135deg, #8B6F47 0%, #8B6F47 100%);
+            color: white;
+        }
+
+        .violations-table th,
+        .violations-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e7ef;
+        }
+
+        .violations-table tbody tr:hover {
+            background: #f8fffe;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+        }
+
+        .status-unpaid {
+            background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+            color: #2c3e50;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .violations-table {
+                font-size: 14px;
+            }
+
+            .violations-table th,
+            .violations-table td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <h1>
+                    <i class="fas fa-search"></i>
+                    الاستعلام عن المخالفات المرورية
+                </h1>
+                <div class="user-info">
+                    <i class="fas fa-user"></i>
+                    <span id="userName">مستخدم</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <a href="../index.html" class="btn btn-home">
+                    <i class="fas fa-home"></i>
+                    العودة للصفحة الرئيسية
+                </a>
+                <button class="btn btn-export" id="exportBtn">
+                    <i class="fas fa-file-export"></i>
+                    تصدير النتائج
+                </button>
+                <button class="btn btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    تسجيل الخروج
+                </button>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <h2>
+                <i class="fas fa-filter"></i>
+                البحث عن المخالفات
+            </h2>
+            <form id="searchForm" class="search-form">
+                <div class="form-group">
+                    <label for="plateNumber">رقم اللوحة</label>
+                    <input type="text" id="plateNumber" placeholder="أدخل رقم اللوحة">
+                </div>
+                <div class="form-group">
+                    <label for="violationDate">تاريخ المخالفة</label>
+                    <input type="date" id="violationDate">
+                </div>
+                <div class="form-group">
+                    <label for="violationType">نوع المخالفة</label>
+                    <select id="violationType">
+                        <option value="">الكل</option>
+                        <option value="parking">مخالفة موقف</option>
+                        <option value="speed">تجاوز السرعة</option>
+                        <option value="light">إشارة حمراء</option>
+                        <option value="other">أخرى</option>
+                    </select>
+                </div>
+                <div class="form-group" style="justify-content: flex-end;">
+                    <button type="submit" class="btn-search">
+                        <i class="fas fa-search"></i>
+                        بحث
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-section">
+            <h2>
+                <i class="fas fa-list"></i>
+                نتائج البحث
+                <span id="resultsCount" style="color: #8B6F47; font-size: 18px;"></span>
+            </h2>
+            <div id="resultsContainer">
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <p>استخدم نموذج البحث أعلاه للبحث عن المخالفات</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- تحميل مكتبات النظام -->
+    <script src="../js/crypto-utils.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        'use strict';
+
+        // حماية الصفحة - السماح فقط لمستخدمي الاستعلام والمدراء
+        if (!window.authManager.requireAuth(['inquiry', 'admin'])) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+
+        // عناصر DOM
+        const userNameElement = document.getElementById('userName');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const searchForm = document.getElementById('searchForm');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const resultsCount = document.getElementById('resultsCount');
+
+        // عرض معلومات المستخدم
+        const currentUser = window.authManager.getCurrentUser();
+        if (currentUser) {
+            userNameElement.textContent = currentUser.name;
+        }
+
+        // معالج تسجيل الخروج
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                window.authManager.logout();
+            }
+        });
+
+        // معالج البحث
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const plateNumber = document.getElementById('plateNumber').value.trim();
+            const violationDate = document.getElementById('violationDate').value;
+            const violationType = document.getElementById('violationType').value;
+
+            // الحصول على جميع المخالفات
+            let violations = await window.db.getViolations();
+
+            // تطبيق الفلاتر
+            if (plateNumber) {
+                violations = violations.filter(v => 
+                    v.plateNumber && v.plateNumber.includes(plateNumber)
+                );
+            }
+
+            if (violationDate) {
+                violations = violations.filter(v => 
+                    v.violationDate && v.violationDate.startsWith(violationDate)
+                );
+            }
+
+            if (violationType) {
+                violations = violations.filter(v => v.violationType === violationType);
+            }
+
+            // عرض النتائج
+            displayResults(violations);
+        });
+
+        // دالة عرض النتائج
+        function displayResults(violations) {
+            resultsCount.textContent = `(${violations.length})`;
+
+            if (violations.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>لم يتم العثور على أي مخالفات تطابق معايير البحث</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table class="violations-table">
+                    <thead>
+                        <tr>
+                            <th>رقم المخالفة</th>
+                            <th>رقم اللوحة</th>
+                            <th>نوع المخالفة</th>
+                            <th>تاريخ المخالفة</th>
+                            <th>المبلغ</th>
+                            <th>الحالة</th>
+                            <th>الموقع</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            violations.forEach(violation => {
+                const statusClass = violation.isPaid ? 'status-paid' : 'status-unpaid';
+                const statusText = violation.isPaid ? 'مدفوعة' : 'غير مدفوعة';
+                
+                tableHTML += `
+                    <tr>
+                        <td>${violation.id}</td>
+                        <td>${violation.plateNumber || '-'}</td>
+                        <td>${getViolationTypeName(violation.violationType)}</td>
+                        <td>${formatDate(violation.violationDate)}</td>
+                        <td>${violation.amount || '-'} ريال</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${violation.location || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            resultsContainer.innerHTML = tableHTML;
+        }
+
+        // دالة تنسيق التاريخ
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-SA');
+        }
+
+        // دالة الحصول على اسم نوع المخالفة
+        function getViolationTypeName(type) {
+            const types = {
+                'parking': 'مخالفة موقف',
+                'speed': 'تجاوز السرعة',
+                'light': 'إشارة حمراء',
+                'other': 'أخرى'
+            };
+            return types[type] || type || '-';
+        }
+
+        // معالج التصدير
+        exportBtn.addEventListener('click', async () => {
+            const violations = await window.db.getViolations();
+            
+            if (violations.length === 0) {
+                alert('لا توجد بيانات للتصدير');
+                return;
+            }
+
+            // تصدير إلى JSON
+            const dataStr = JSON.stringify(violations, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `violations_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+
+            alert('تم تصدير البيانات بنجاح');
+        });
+
+        // تحميل جميع المخالفات عند تحميل الصفحة
+        window.addEventListener('load', async () => {
+            const violations = await window.db.getViolations();
+            displayResults(violations);
+        });
+    </script>
+</body>
+</html>

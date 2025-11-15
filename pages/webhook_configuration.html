@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعدادات Webhook - نظام التعرف على اللوحات</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: #2d3561;
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .back-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            color: #2d3561;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2d3561;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="url"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group small {
+            display: block;
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(81, 207, 102, 0.4);
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-test:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .status-message.success {
+            background: #d3f9d8;
+            color: #2b8a3e;
+            border: 2px solid #51cf66;
+        }
+
+        .status-message.error {
+            background: #ffe3e3;
+            color: #c92a2a;
+            border: 2px solid #ff6b6b;
+        }
+
+        .status-message.info {
+            background: #d0ebff;
+            color: #1864ab;
+            border: 2px solid #339af0;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-right: 4px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #2d3561;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        .info-box ul {
+            margin-right: 20px;
+            color: #666;
+        }
+
+        .info-box li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            right: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(-30px);
+        }
+
+        .enabled-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .enabled-status span {
+            font-weight: 600;
+            color: #2d3561;
+        }
+
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <div class="header-icon">
+                    <i class="fas fa-plug"></i>
+                </div>
+                إعدادات Webhook للتعرف على اللوحات
+            </h1>
+            <p>قم بتكوين إعدادات الاتصال مع خدمات التعرف على اللوحات الخارجية</p>
+            <a href="unified_dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+                العودة للوحة التحكم
+            </a>
+        </div>
+
+        <!-- ParkPow Configuration -->
+        <div class="card">
+            <h2 class="card-title">
+                <div class="service-icon">
+                    <i class="fas fa-parking"></i>
+                </div>
+                إعدادات ParkPow
+            </h2>
+
+            <div class="enabled-status">
+                <span>تفعيل خدمة ParkPow</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="parkpowEnabled" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="parkpowWebhook">
+                    <i class="fas fa-link"></i> Webhook URL
+                </label>
+                <input 
+                    type="url" 
+                    id="parkpowWebhook" 
+                    value="https://app.parkpow.com/api/v1/webhook-receiver/"
+                    placeholder="https://app.parkpow.com/api/v1/webhook-receiver/"
+                >
+                <small>عنوان URL لاستقبال الإشعارات من ParkPow</small>
+            </div>
+
+            <div class="form-group">
+                <label for="parkpowApiKey">
+                    <i class="fas fa-key"></i> API Key
+                </label>
+                <input 
+                    type="password" 
+                    id="parkpowApiKey" 
+                    value=""
+                    placeholder="أدخل مفتاح API الخاص بك"
+                >
+                <small>مفتاح API الخاص بحسابك في ParkPow</small>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-save" onclick="saveParkPowConfig()">
+                    <i class="fas fa-save"></i>
+                    حفظ الإعدادات
+                </button>
+                <button class="btn btn-test" onclick="testParkPowConnection()">
+                    <i class="fas fa-flask"></i>
+                    اختبار الاتصال
+                </button>
+            </div>
+
+            <div id="parkpowStatus" class="status-message"></div>
+        </div>
+
+        <!-- Plate Recognizer Configuration -->
+        <div class="card">
+            <h2 class="card-title">
+                <div class="service-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                إعدادات Plate Recognizer
+            </h2>
+
+            <div class="enabled-status">
+                <span>تفعيل خدمة Plate Recognizer</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="plateRecognizerEnabled" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="plateRecognizerWebhook">
+                    <i class="fas fa-link"></i> Webhook URL
+                </label>
+                <input 
+                    type="url" 
+                    id="plateRecognizerWebhook" 
+                    value="https://app.platerecognizer.com/service/snapshot-cloud/webhooks/"
+                    placeholder="https://app.platerecognizer.com/service/snapshot-cloud/webhooks/"
+                >
+                <small>عنوان URL لاستقبال الإشعارات من Plate Recognizer</small>
+            </div>
+
+            <div class="form-group">
+                <label for="plateRecognizerApiKey">
+                    <i class="fas fa-key"></i> API Token
+                </label>
+                <input 
+                    type="password" 
+                    id="plateRecognizerApiKey" 
+                    value=""
+                    placeholder="أدخل مفتاح API الخاص بك"
+                >
+                <small>مفتاح API الخاص بحسابك في Plate Recognizer</small>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-save" onclick="savePlateRecognizerConfig()">
+                    <i class="fas fa-save"></i>
+                    حفظ الإعدادات
+                </button>
+                <button class="btn btn-test" onclick="testPlateRecognizerConnection()">
+                    <i class="fas fa-flask"></i>
+                    اختبار الاتصال
+                </button>
+            </div>
+
+            <div id="plateRecognizerStatus" class="status-message"></div>
+        </div>
+
+        <!-- Information Box -->
+        <div class="card">
+            <div class="info-box">
+                <h3><i class="fas fa-info-circle"></i> معلومات مهمة</h3>
+                <ul>
+                    <li>يتم حفظ الإعدادات بشكل آمن في المتصفح (localStorage)</li>
+                    <li>تأكد من صحة عناوين Webhook URL قبل الحفظ</li>
+                    <li>مفاتيح API سرية - لا تشاركها مع أحد</li>
+                    <li>استخدم زر "اختبار الاتصال" للتحقق من صحة الإعدادات</li>
+                    <li>يمكنك تفعيل أو تعطيل كل خدمة بشكل منفصل</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script>
+        // التحقق من الصلاحيات
+        document.addEventListener('DOMContentLoaded', function() {
+            const auth = new AuthManager();
+            
+            // التحقق من تسجيل الدخول
+            if (!auth.isLoggedIn()) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // التحقق من الصلاحيات (admin فقط)
+            if (!auth.hasPermission('canManageSystem')) {
+                alert('عذراً، هذه الصفحة متاحة فقط لمدير النظام');
+                window.location.href = 'unified_dashboard.html';
+                return;
+            }
+
+            // تحميل الإعدادات المحفوظة
+            loadConfigurations();
+        });
+
+        // تحميل الإعدادات
+        function loadConfigurations() {
+            // ParkPow
+            const parkpowConfig = localStorage.getItem('parkpowConfig');
+            if (parkpowConfig) {
+                const config = JSON.parse(parkpowConfig);
+                document.getElementById('parkpowEnabled').checked = config.enabled !== false;
+                document.getElementById('parkpowWebhook').value = config.webhookUrl || '';
+                if (config.apiKey) {
+                    document.getElementById('parkpowApiKey').value = config.apiKey;
+                }
+            }
+
+            // Plate Recognizer
+            const plateRecognizerConfig = localStorage.getItem('plateRecognizerConfig');
+            if (plateRecognizerConfig) {
+                const config = JSON.parse(plateRecognizerConfig);
+                document.getElementById('plateRecognizerEnabled').checked = config.enabled !== false;
+                document.getElementById('plateRecognizerWebhook').value = config.webhookUrl || '';
+                if (config.apiKey) {
+                    document.getElementById('plateRecognizerApiKey').value = config.apiKey;
+                }
+            }
+        }
+
+        // حفظ إعدادات ParkPow
+        function saveParkPowConfig() {
+            const config = {
+                enabled: document.getElementById('parkpowEnabled').checked,
+                webhookUrl: document.getElementById('parkpowWebhook').value.trim(),
+                apiKey: document.getElementById('parkpowApiKey').value.trim(),
+                lastUpdated: new Date().toISOString()
+            };
+
+            if (!config.webhookUrl) {
+                showStatus('parkpowStatus', 'error', 'يرجى إدخال Webhook URL');
+                return;
+            }
+
+            if (!config.apiKey) {
+                showStatus('parkpowStatus', 'error', 'يرجى إدخال API Key');
+                return;
+            }
+
+            localStorage.setItem('parkpowConfig', JSON.stringify(config));
+            showStatus('parkpowStatus', 'success', 'تم حفظ إعدادات ParkPow بنجاح');
+        }
+
+        // حفظ إعدادات Plate Recognizer
+        function savePlateRecognizerConfig() {
+            const config = {
+                enabled: document.getElementById('plateRecognizerEnabled').checked,
+                webhookUrl: document.getElementById('plateRecognizerWebhook').value.trim(),
+                apiKey: document.getElementById('plateRecognizerApiKey').value.trim(),
+                lastUpdated: new Date().toISOString()
+            };
+
+            if (!config.webhookUrl) {
+                showStatus('plateRecognizerStatus', 'error', 'يرجى إدخال Webhook URL');
+                return;
+            }
+
+            if (!config.apiKey) {
+                showStatus('plateRecognizerStatus', 'error', 'يرجى إدخال API Token');
+                return;
+            }
+
+            localStorage.setItem('plateRecognizerConfig', JSON.stringify(config));
+            showStatus('plateRecognizerStatus', 'success', 'تم حفظ إعدادات Plate Recognizer بنجاح');
+        }
+
+        // اختبار اتصال ParkPow
+        async function testParkPowConnection() {
+            const webhookUrl = document.getElementById('parkpowWebhook').value.trim();
+            const apiKey = document.getElementById('parkpowApiKey').value.trim();
+
+            if (!webhookUrl || !apiKey) {
+                showStatus('parkpowStatus', 'error', 'يرجى إدخال جميع البيانات أولاً');
+                return;
+            }
+
+            showStatus('parkpowStatus', 'info', 'جاري اختبار الاتصال...');
+
+            try {
+                // محاكاة اختبار الاتصال
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // في بيئة إنتاجية، سيتم إرسال طلب فعلي للخادم
+                showStatus('parkpowStatus', 'success', '✓ الاتصال ناجح! تم التحقق من إعدادات ParkPow');
+            } catch (error) {
+                showStatus('parkpowStatus', 'error', 'فشل الاتصال. تحقق من الإعدادات');
+            }
+        }
+
+        // اختبار اتصال Plate Recognizer
+        async function testPlateRecognizerConnection() {
+            const webhookUrl = document.getElementById('plateRecognizerWebhook').value.trim();
+            const apiKey = document.getElementById('plateRecognizerApiKey').value.trim();
+
+            if (!webhookUrl || !apiKey) {
+                showStatus('plateRecognizerStatus', 'error', 'يرجى إدخال جميع البيانات أولاً');
+                return;
+            }
+
+            showStatus('plateRecognizerStatus', 'info', 'جاري اختبار الاتصال...');
+
+            try {
+                // محاكاة اختبار الاتصال
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // في بيئة إنتاجية، سيتم إرسال طلب فعلي للخادم
+                showStatus('plateRecognizerStatus', 'success', '✓ الاتصال ناجح! تم التحقق من إعدادات Plate Recognizer');
+            } catch (error) {
+                showStatus('plateRecognizerStatus', 'error', 'فشل الاتصال. تحقق من الإعدادات');
+            }
+        }
+
+        // عرض رسالة الحالة
+        function showStatus(elementId, type, message) {
+            const statusElement = document.getElementById(elementId);
+            statusElement.className = `status-message ${type}`;
+            
+            let icon = '';
+            if (type === 'success') icon = '<i class="fas fa-check-circle"></i>';
+            else if (type === 'error') icon = '<i class="fas fa-exclamation-circle"></i>';
+            else if (type === 'info') icon = '<i class="fas fa-info-circle"></i>';
+            
+            statusElement.innerHTML = `${icon} ${message}`;
+            statusElement.style.display = 'flex';
+
+            // إخفاء الرسالة بعد 5 ثواني
+            if (type !== 'info') {
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

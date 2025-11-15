@@ -1,0 +1,17 @@
+{
+  "api_token": "22ba3cf7155a1ea730a0b64787f98ab5f9a3de94",
+  "parkpow_token": "7c13be422713a758a42a0bc453cf3331fbfd346",
+  "webhook_url": "https://app.parkpow.com/api/v1/webhook-receiver/",
+  "ftp_host": "ftp.platerecognizer.com",
+  "ftp_port": 21,
+  "ftp_port_ftps": 2121,
+  "ftp_port_sftp": 2022,
+  "ftp_username": "aliayashi522",
+  "ftp_password": "708c4bbfdde0",
+  "timezone": "Asia/Riyadh",
+  "api_base_url": "https://api.platerecognizer.com/v1",
+  "snapshot_endpoint": "/plate-reader/",
+  "max_calls_per_second": 8,
+  "total_api_calls": 50000,
+  "reset_date": "2025-12-01 05:38 PM"
+}

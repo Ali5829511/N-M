@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل سيارة جديدة - نظام المرور</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tajawal:700,400&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background: linear-gradient(120deg, #f8f5f0 0%, #fdfbf7 100%);
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #6B5536 60%, #8B6F47 100%);
+            color: #fff;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px #8B6F4755;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .university-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: contain;
+            background: white;
+            padding: 3px;
+        }
+
+        .header-text h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-icon {
+            font-size: 1.5em;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(15, 61, 104, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #6B5536;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #8B6F47;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            color: #6B5536;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #dc3545;
+            margin-right: 3px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: 'Tajawal', Arial, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #8B6F47;
+            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
+        }
+
+        .form-control:disabled {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-family: 'Tajawal', Arial, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #6B5536, #8B6F47);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(107, 85, 54, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .plate-preview {
+            background: #f8f9fa;
+            border: 3px solid #8B6F47;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .plate-number-display {
+            font-size: 2.5em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 3px;
+            color: #6B5536;
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #c3e6cb;
+        }
+
+        .success-message i {
+            font-size: 2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <img src="../assets/شعار.jpg" alt="شعار الجامعة" class="university-logo" onerror="this.style.display='none'">
+                <div class="header-text">
+                    <h1>تسجيل سيارة جديدة</h1>
+                    <p>Register New Vehicle</p>
+                </div>
+            </div>
+            <a href="plate_recognition.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i> العودة
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle alert-icon"></i>
+            <div>
+                <strong>سيارة غير مسجلة</strong><br>
+                تم اكتشاف رقم اللوحة أدناه ولكن لم يتم العثور على السيارة في قاعدة البيانات. يرجى إدخال بيانات السيارة لتسجيلها في النظام.
+            </div>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i>
+            <div style="font-size: 1.3em; font-weight: bold; margin-bottom: 10px;">تم تسجيل السيارة بنجاح!</div>
+            <div>تم حفظ بيانات السيارة في قاعدة البيانات</div>
+        </div>
+
+        <form id="carRegistrationForm">
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-car"></i> معلومات اللوحة
+                </h2>
+
+                <div class="plate-preview">
+                    <div class="plate-number-display" id="plateNumberDisplay">---</div>
+                    <div class="help-text">رقم اللوحة المكتشف / Detected Plate Number</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="plateNumber">
+                        <span class="required">*</span>
+                        رقم اللوحة
+                    </label>
+                    <input type="text" class="form-control" id="plateNumber" disabled required>
+                    <div class="help-text">تم التعرف على هذا الرقم تلقائياً من الصورة</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user"></i> معلومات المالك
+                </h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="ownerName">
+                            <span class="required">*</span>
+                            اسم المالك
+                        </label>
+                        <input type="text" class="form-control" id="ownerName" required placeholder="أدخل اسم المالك">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="unitNumber">
+                            رقم الوحدة السكنية
+                        </label>
+                        <input type="text" class="form-control" id="unitNumber" placeholder="مثال: A-101">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="phoneNumber">
+                            رقم الهاتف
+                        </label>
+                        <input type="tel" class="form-control" id="phoneNumber" placeholder="05xxxxxxxx">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">
+                            البريد الإلكتروني
+                        </label>
+                        <input type="email" class="form-control" id="email" placeholder="example@email.com">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i> معلومات المركبة
+                </h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="vehicleType">
+                            <span class="required">*</span>
+                            نوع المركبة
+                        </label>
+                        <select class="form-control" id="vehicleType" required>
+                            <option value="">اختر نوع المركبة</option>
+                            <option value="سيارة خاصة">سيارة خاصة</option>
+                            <option value="سيارة نقل">سيارة نقل</option>
+                            <option value="دراجة نارية">دراجة نارية</option>
+                            <option value="حافلة">حافلة</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="make">
+                            الماركة / الصانع
+                        </label>
+                        <input type="text" class="form-control" id="make" placeholder="مثال: تويوتا، هيونداي">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="model">
+                            الموديل / الطراز
+                        </label>
+                        <input type="text" class="form-control" id="model" placeholder="مثال: كامري، سوناتا">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="year">
+                            سنة الصنع
+                        </label>
+                        <input type="number" class="form-control" id="year" placeholder="مثال: 2023" min="1900" max="2030">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="color">
+                            اللون
+                        </label>
+                        <input type="text" class="form-control" id="color" placeholder="مثال: أبيض، أسود">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="stickerNumber">
+                            رقم الملصق
+                        </label>
+                        <input type="text" class="form-control" id="stickerNumber" placeholder="رقم ملصق الدخول (إن وجد)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-clipboard-list"></i> ملاحظات إضافية
+                </h2>
+
+                <div class="form-group">
+                    <label class="form-label" for="notes">
+                        ملاحظات
+                    </label>
+                    <textarea class="form-control" id="notes" rows="4" placeholder="أي ملاحظات أو معلومات إضافية عن السيارة أو المالك"></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary" id="saveBtn">
+                    <i class="fas fa-save"></i>
+                    حفظ بيانات السيارة
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                    <i class="fas fa-times"></i>
+                    إلغاء
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Get plate number from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const plateNumber = urlParams.get('plate') || '';
+        
+        // Set plate number in the form
+        if (plateNumber) {
+            document.getElementById('plateNumber').value = plateNumber;
+            document.getElementById('plateNumberDisplay').textContent = plateNumber;
+        }
+
+        // Also check for additional parameters
+        const make = urlParams.get('make') || '';
+        const model = urlParams.get('model') || '';
+        const color = urlParams.get('color') || '';
+
+        if (make) document.getElementById('make').value = make;
+        if (model) document.getElementById('model').value = model;
+        if (color) document.getElementById('color').value = color;
+
+        // Form submission handler
+        document.getElementById('carRegistrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const saveBtn = document.getElementById('saveBtn');
+            const originalText = saveBtn.innerHTML;
+            
+            // Disable button and show loading
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ الحفظ...';
+
+            try {
+                // Collect form data
+                const carData = {
+                    id: Date.now(), // Generate unique ID
+                    plate_number: document.getElementById('plateNumber').value,
+                    owner_name: document.getElementById('ownerName').value,
+                    unit_number: document.getElementById('unitNumber').value || '',
+                    phone_number: document.getElementById('phoneNumber').value || '',
+                    email: document.getElementById('email').value || '',
+                    vehicle_type: document.getElementById('vehicleType').value,
+                    make: document.getElementById('make').value || '',
+                    model: document.getElementById('model').value || '',
+                    year: document.getElementById('year').value || '',
+                    color: document.getElementById('color').value || '',
+                    sticker_number: document.getElementById('stickerNumber').value || '',
+                    notes: document.getElementById('notes').value || '',
+                    registration_date: new Date().toISOString(),
+                    registered_by: sessionStorage.getItem('username') || 'system'
+                };
+
+                // Save to localStorage
+                let cars = JSON.parse(localStorage.getItem('cars') || '[]');
+                
+                // Check if plate already exists
+                const existingCar = cars.find(c => c.plate_number === carData.plate_number);
+                if (existingCar) {
+                    alert('تحذير: رقم اللوحة مسجل بالفعل في النظام\nWarning: Plate number already registered');
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                    return;
+                }
+
+                // Add new car
+                cars.push(carData);
+                localStorage.setItem('cars', JSON.stringify(cars));
+
+                // Show success message
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('carRegistrationForm').style.display = 'none';
+
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'plate_recognition.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error saving car:', error);
+                alert('حدث خطأ أثناء حفظ البيانات\nError saving data: ' + error.message);
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
+        });
+    </script>
+</body>
+</html>

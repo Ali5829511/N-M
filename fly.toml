@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for n-m-uvnmna on 2025-11-09T00:36:22Z
+# fly.toml app configuration file generated for n-m-ugohhq on 2025-11-11T15:47:16Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'n-m-uvnmna'
+app = 'n-m-ugohhq'
 primary_region = 'iad'
 
 [build]

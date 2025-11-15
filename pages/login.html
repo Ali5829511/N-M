@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>تسجيل الدخول - وحدة إسكان هيئة التدريس</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary-color: #8B6F47;
+            --secondary-color: #A0826D;
+            --accent-color: #C9B896;
+            --light-bg: #f8f5f0;
+            --success-color: #51cf66;
+            --error-color: #ff6b6b;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --border-radius: 16px;
+            --shadow-sm: 0 2px 8px rgba(139, 111, 71, 0.08);
+            --shadow-md: 0 8px 24px rgba(139, 111, 71, 0.12);
+            --shadow-lg: 0 16px 48px rgba(139, 111, 71, 0.16);
+        }
+
+        body {
+            font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: url('assets/هوية بصرية لنافذه الدخول.jpeg') center center / cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 60, 80, 0.7);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* خلفية متحركة محسنة للجوال */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* حاوية رئيسية محسنة */
+        .main-wrapper {
+            width: 100%;
+            max-width: 480px;
+            padding: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-container {
+            background: rgba(248, 245, 240, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: 32px 24px;
+            width: 100%;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* شعار محسن للجوال */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .university-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            object-fit: contain;
+            background: white;
+            padding: 8px;
+        }
+
+        .university-logo:active {
+            transform: scale(0.95);
+        }
+
+        .university-name {
+            font-size: clamp(18px, 5vw, 22px);
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .system-title {
+            font-size: clamp(14px, 4vw, 16px);
+            color: var(--secondary-color);
+            font-weight: 500;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        /* نموذج محسن للجوال */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            font-size: 20px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 20px 16px 52px;
+            border: 2px solid #e8ecf1;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: 'Tajawal', sans-serif;
+            color: var(--text-dark);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(46, 139, 192, 0.1);
+            background: white;
+        }
+
+        .form-group input:focus + .input-icon {
+            color: var(--primary-color);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* زر تسجيل الدخول محسن */
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Tajawal', sans-serif;
+            box-shadow: var(--shadow-md);
+            touch-action: manipulation;
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        @media (hover: hover) {
+            .login-btn:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-lg);
+                background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%);
+            }
+        }
+
+        .login-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .login-btn .btn-icon {
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .login-btn:active .btn-icon {
+            transform: translateX(-4px);
+        }
+
+        /* رسائل محسنة */
+        .message {
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+            font-weight: 500;
+            font-size: 15px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
+        }
+
+        .message i {
+            margin-left: 8px;
+        }
+
+        /* تذييل محسن */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            padding: 16px 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: clamp(11px, 3vw, 13px);
+            font-weight: 500;
+        }
+
+        /* تأثيرات الرجّة */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+
+        .shake {
+            animation: shake 0.6s ease-in-out;
+        }
+
+        /* تحسينات للشاشات الصغيرة */
+        @media (max-width: 600px) {
+            .main-wrapper {
+                padding: 12px;
+            }
+
+            .login-container {
+                padding: 24px 20px;
+                border-radius: 20px;
+            }
+
+            .university-logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .university-name {
+                font-size: 18px;
+            }
+
+            .system-title {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+            }
+
+            .form-group input {
+                padding: 14px 18px 14px 48px;
+                font-size: 15px;
+            }
+
+            .input-icon {
+                left: 14px;
+                font-size: 18px;
+            }
+
+            .login-btn {
+                padding: 14px;
+                font-size: 16px;
+            }
+
+
+        }
+
+        /* للشاشات الكبيرة جداً */
+        @media (min-width: 768px) {
+            .main-wrapper {
+                max-width: 500px;
+            }
+
+            .login-container {
+                padding: 40px 32px;
+            }
+        }
+
+        /* تحسينات للأجهزة اللمسية */
+        @media (hover: none) and (pointer: coarse) {
+            .form-group input {
+                font-size: 16px; /* منع التكبير التلقائي في iOS */
+            }
+        }
+
+        /* وضع المناظر الأفقية للجوال */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                display: block;
+                padding: 20px 0;
+            }
+
+            .main-wrapper {
+                padding: 10px;
+            }
+
+            .login-container {
+                padding: 20px;
+            }
+
+            .university-logo {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 10px;
+            }
+
+            .university-name {
+                font-size: 16px;
+                margin-bottom: 4px;
+            }
+
+            .system-title {
+                font-size: 13px;
+                margin-bottom: 16px;
+            }
+
+            .form-group {
+                margin-bottom: 12px;
+            }
+
+            .footer {
+                margin-top: 16px;
+                padding: 12px 0;
+            }
+        }
+
+        /* إمكانية الوصول */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* تحميل */
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* تحسينات accessibility */
+        *:focus-visible {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .login-container {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* استجابة للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+
+            .university-name {
+                font-size: 22px;
+            }
+
+            .system-title {
+                font-size: 18px;
+            }
+
+            .university-logo {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .login-container {
+                margin: 10px;
+                padding: 25px 20px;
+            }
+
+            .university-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .university-name {
+                font-size: 20px;
+            }
+
+            .system-title {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="login-container">
+            <div class="logo-container">
+                <img src="../assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="university-logo" loading="lazy">
+                <h1 class="university-name">وحدة إسكان هيئة التدريس</h1>
+                <p class="system-title">جامعة الإمام محمد بن سعود الإسلامية</p>
+            </div>
+
+            <div class="error-message message" id="errorMessage" role="alert" aria-live="polite"></div>
+            <div class="success-message message" id="successMessage" role="status" aria-live="polite"></div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="username">اسم المستخدم</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            placeholder="أدخل اسم المستخدم" 
+                            required 
+                            autocomplete="username"
+                            autocapitalize="off"
+                            autocorrect="off"
+                            spellcheck="false"
+                            aria-required="true">
+                        <i class="fas fa-user input-icon" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="أدخل كلمة المرور" 
+                            required
+                            autocomplete="current-password"
+                            aria-required="true">
+                        <i class="fas fa-lock input-icon" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn" aria-label="تسجيل الدخول">
+                    <span class="btn-content">
+                        <i class="fas fa-sign-in-alt btn-icon" aria-hidden="true"></i>
+                        <span class="btn-text">تسجيل الدخول</span>
+                    </span>
+                </button>
+            </form>
+
+            <div class="footer">
+                <p>جميع الحقوق محفوظة © جامعة الإمام محمد بن سعود الإسلامية 2025</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- تحميل مكتبات النظام -->
+    <script src="../js/crypto-utils.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    
+    <script>
+        'use strict';
+        
+        // عناصر DOM / DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const loginContainer = document.querySelector('.login-container');
+
+        // دوال مساعدة / Helper functions
+        function showMessage(element, message, icon = '') {
+            element.innerHTML = icon ? `<i class="${icon}"></i> ${message}` : message;
+            element.style.display = 'block';
+            element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        function setButtonLoading(loading) {
+            loginBtn.disabled = loading;
+            if (loading) {
+                loginBtn.innerHTML = '<span class="loading-spinner"></span><span style="margin-right: 8px;">جاري التسجيل...</span>';
+            } else {
+                loginBtn.innerHTML = '<span class="btn-content"><i class="fas fa-sign-in-alt btn-icon"></i><span class="btn-text">تسجيل الدخول</span></span>';
+            }
+        }
+
+        function shakeContainer() {
+            loginContainer.classList.add('shake');
+            setTimeout(() => loginContainer.classList.remove('shake'), 600);
+        }
+
+        // التحقق من الجلسة الحالية عند تحميل الصفحة
+        // Check current session on page load
+        window.addEventListener('load', async () => {
+            if (window.authManager.isAuthenticated()) {
+                const user = window.authManager.getCurrentUser();
+                if (user) {
+                    const redirectMessage = user.role === 'violation_entry' 
+                        ? 'جاري التحويل إلى نموذج المخالفة...' 
+                        : 'جاري التحويل إلى لوحة التحكم...';
+                    showMessage(successMessage, `مرحباً ${user.name}! ${redirectMessage}`, 'fas fa-check-circle');
+                    
+                    setTimeout(() => {
+                        window.authManager.redirectToDefaultPage();
+                    }, 1500);
+                }
+            }
+        });
+
+        // معالج نموذج تسجيل الدخول / Login form handler
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            // التحقق من البيانات / Validate input
+            if (!username || !password) {
+                showMessage(errorMessage, 'الرجاء إدخال اسم المستخدم وكلمة المرور', 'fas fa-exclamation-circle');
+                shakeContainer();
+                return;
+            }
+            
+            hideMessages();
+            setButtonLoading(true);
+            
+            try {
+                // استخدام نظام المصادقة المحلي
+                const result = await window.authManager.login(username, password);
+                
+                if (result.success) {
+                    showMessage(successMessage, `مرحباً ${result.user.name}! ${result.message_ar}`, 'fas fa-check-circle');
+                    
+                    // تحديث وقت آخر تسجيل دخول
+                    await window.db.updateLastLogin(result.user.id);
+                    
+                    // توجيه المستخدم حسب دوره / Redirect user based on role
+                    setTimeout(() => {
+                        window.authManager.redirectToDefaultPage();
+                    }, 1500);
+                } else {
+                    showMessage(errorMessage, result.error_ar || 'فشل تسجيل الدخول', 'fas fa-exclamation-circle');
+                    shakeContainer();
+                    setButtonLoading(false);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage(errorMessage, 'حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.', 'fas fa-times-circle');
+                shakeContainer();
+                setButtonLoading(false);
+            }
+        });
+
+        // منع الإرسال المزدوج / Prevent double submission
+        loginForm.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && loginBtn.disabled) {
+                e.preventDefault();
+            }
+        });
+
+        // تحسين التركيز على الحقول / Improve field focus
+        usernameInput.addEventListener('input', () => {
+            if (errorMessage.style.display === 'block') {
+                hideMessages();
+            }
+        });
+
+        passwordInput.addEventListener('input', () => {
+            if (errorMessage.style.display === 'block') {
+                hideMessages();
+            }
+        });
+    </script>
+</body>
+</html>
+

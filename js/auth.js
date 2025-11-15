@@ -142,25 +142,33 @@ class AuthManager {
 
     /**
      * التحقق من بيانات الاعتماد
-     * 
-     * ⚠️ تحذير أمني: في بيئة الإنتاج، يجب:
-     * 1. تشفير كلمات المرور باستخدام bcrypt أو argon2
-     * 2. عدم تخزين كلمات المرور في localStorage
-     * 3. استخدام قاعدة بيانات خلفية مع API آمن
-     * 4. تطبيق HTTPS
-     * 5. إضافة توكنات JWT بدلاً من localStorage
+     * ✅ تحسين أمني: استخدام كلمات مرور مشفرة
      */
     async validateCredentials(username, password) {
-        // محاكاة التحقق من قاعدة البيانات
+        // الحصول على المستخدمين من قاعدة البيانات
         const users = await window.db.getUsers();
         
-        // ⚠️ مقارنة كلمة المرور بشكل مباشر (غير آمن في الإنتاج)
-        // في الإنتاج: استخدم bcrypt.compare(password, user.hashedPassword)
-        const user = users.find(u => u.username === username && u.password === password && u.status === 'active');
+        // البحث عن المستخدم
+        const user = users.find(u => u.username === username && u.status === 'active');
         
-        if (user) {
-            // إزالة كلمة المرور من البيانات المرتجعة
-            const { password, ...userWithoutPassword } = user;
+        if (!user) {
+            return null;
+        }
+
+        // التحقق من كلمة المرور
+        let isPasswordValid = false;
+        
+        // دعم كلمات المرور المؤقتة للمستخدمين الجدد
+        if (user.tempPassword && password === user.tempPassword) {
+            isPasswordValid = true;
+        } else {
+            // التحقق من كلمة المرور المشفرة
+            isPasswordValid = await CryptoUtils.verifyPassword(password, user.password);
+        }
+        
+        if (isPasswordValid) {
+            // إزالة كلمة المرور والبيانات الحساسة من المستخدم المرتجع
+            const { password: _, tempPassword: __, ...userWithoutPassword } = user;
             return userWithoutPassword;
         }
         
@@ -188,8 +196,11 @@ class AuthManager {
         localStorage.removeItem('currentUser');
         
         // إعادة التوجيه إلى صفحة تسجيل الدخول
-        if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
-            window.location.href = 'index.html';
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/pages/')) {
+            window.location.href = '../pages/login.html';
+        } else if (!currentPath.endsWith('login.html')) {
+            window.location.href = 'pages/login.html';
         }
     }
 
@@ -247,7 +258,7 @@ class AuthManager {
      */
     requireAuth(requiredRoles = null) {
         if (!this.isAuthenticated()) {
-            window.location.href = 'index.html';
+            window.location.href = '../index.html';
             return false;
         }
         
@@ -265,22 +276,21 @@ class AuthManager {
      */
     redirectToDefaultPage() {
         if (!this.currentUser) {
-            window.location.href = 'index.html';
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/pages/')) {
+                window.location.href = '../index.html';
+            } else {
+                window.location.href = 'index.html';
+            }
             return;
         }
         
-        switch (this.currentUser.role) {
-            case ROLES.ADMIN:
-                window.location.href = 'unified_dashboard.html';
-                break;
-            case ROLES.VIOLATION_ENTRY:
-                window.location.href = 'المخالفات_المرورية.html';
-                break;
-            case ROLES.INQUIRY:
-                window.location.href = 'inquiry_violations.html';
-                break;
-            default:
-                window.location.href = 'index.html';
+        // توجيه جميع المستخدمين إلى الصفحة الرئيسية
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/pages/')) {
+            window.location.href = 'home.html';
+        } else {
+            window.location.href = 'pages/home.html';
         }
     }
 

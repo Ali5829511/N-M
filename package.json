@@ -1,7 +1,7 @@
 {
   "name": "n-m-traffic-management-system",
-  "version": "1.0.0",
-  "description": "نظام إدارة المرور - Traffic Management System",
+  "version": "1.4.1",
+  "description": "نظام المرور - Traffic Management System",
   "main": "index.html",
   "scripts": {
     "start": "node server.js",
@@ -9,10 +9,9 @@
     "start:http-server": "http-server -p 8080 -c-1 --cors -o",
     "start:python": "python3 -m http.server 8080",
     "dev": "nodemon server.js",
-    "check": "node check-setup.js",
-    "deploy:check": "node deploy-check.js",
     "test:server": "node -e \"console.log('Server configuration test passed')\"",
-    "build": "echo 'Static site - no build required'"
+    "build": "echo 'Static site - no build required'",
+    "version:tag": "git tag -a v$(node -p \"require('./package.json').version\") -m \"Version $(node -p \"require('./package.json').version\")\""
   },
   "keywords": [
     "traffic",

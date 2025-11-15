@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المنصة الأمنية - جامعة الإمام محمد بن سعود الإسلامية</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+  <style>
+    body { background-color: #f5f5f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    .header { background-color: #a7d1f4; color: #333; padding: 18px 0 12px 0; border-bottom: 4px solid #c9a855; text-align:center; margin-bottom:30px;}
+    .header .logo { width: 90px; margin-bottom: 8px;}
+    .header h1, .header h3 { margin: 0; }
+    .nav-tabs .nav-link.active {background: #a7d1f4; color: #154360;}
+    .section-title { border-right: 4px solid #c9a855; padding-right: 10px; margin: 20px 0 15px; font-size: 18px; color: #333; background: #f9f9f9; padding: 8px; border-radius: 5px;}
+    .footer { background: #f9f9f9; border-top: 1px solid #eee; color: #666; font-size: 14px; text-align: center; margin-top: 40px; padding: 10px;}
+    /* لتوحيد مظهر الفورمات */
+    .form-container { background: #fff; border-radius: 10px; padding: 24px 18px 10px 18px; margin-bottom: 24px; box-shadow: 0 0 10px rgba(0,0,0,0.08);}
+    label { font-weight: bold; color: #333;}
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;}
+    textarea { min-height: 80px; resize: vertical;}
+    .file-input-label { display: block; cursor: pointer; padding: 10px; background: #a7d1f4; color: #333; border-radius: 5px; margin: 10px auto; width: 200px; text-align: center;}
+    .file-input { display: none;}
+    .file-list { margin-top: 10px;}
+    .file-item { display: flex; justify-content: space-between; align-items: center; padding: 5px; border-bottom: 1px solid #eee;}
+    .buttons { margin-top: 18px; text-align: center;}
+    button { background: #a7d1f4; color: #333; border: none; padding: 10px 20px; margin: 0 4px; border-radius: 5px; cursor: pointer; font-size: 16px; border-bottom: 3px solid #c9a855;}
+    button:hover { background: #86bfe9;}
+    .form-row { display: flex; gap: 15px; margin-bottom: 15px;}
+    .form-col { flex: 1;}
+    @media (max-width: 900px) {.form-row {flex-direction: column; gap: 0;}}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/9/99/Imam_Muhammad_ibn_Saud_Islamic_University_Logo.svg/1200px-Imam_Muhammad_ibn_Saud_Islamic_University_Logo.svg.png" alt="شعار الجامعة" class="logo">
+    <h1>المنصة الأمنية</h1>
+    <h3>جامعة الإمام محمد بن سعود الإسلامية</h3>
+  </div>
+  <div class="container">
+    <ul class="nav nav-tabs mb-4" id="mainTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab" aria-controls="security" aria-selected="true">
+          نظام الوقائع الأمنية
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="accident-tab" data-bs-toggle="tab" data-bs-target="#accident" type="button" role="tab" aria-controls="accident" aria-selected="false">
+          نظام الحوادث المرورية
+        </button>
+      </li>
+    </ul>
+    <div class="tab-content" id="mainTabContent">
+      <!-- تبويب نظام الوقائع الأمنية -->
+      <div class="tab-pane fade show active" id="security" role="tabpanel" aria-labelledby="security-tab">
+        <div class="form-container">
+          <form id="securityForm">
+            <h3 class="section-title">معلومات الموقع</h3>
+            <div class="form-row">
+              <div class="form-col">
+                <label for="building">المبنى:</label>
+                <input type="text" id="building" name="building" required>
+              </div>
+              <div class="form-col">
+                <label for="apartment">الشقة:</label>
+                <input type="text" id="apartment" name="apartment" required>
+              </div>
+            </div>
+            <h3 class="section-title">معلومات الواقعة</h3>
+            <div class="form-row">
+              <div class="form-col">
+                <label for="date">تاريخ الواقعة:</label>
+                <input type="date" id="date" name="date" required>
+              </div>
+              <div class="form-col">
+                <label for="type">نوع الواقعة:</label>
+                <select id="type" name="type" required>
+                  <option value="">-- اختر نوع الواقعة --</option>
+                  <option value="سرقة">سرقة</option>
+                  <option value="اعتداء">اعتداء</option>
+                  <option value="تخريب">تخريب</option>
+                  <option value="حريق">حريق</option>
+                  <option value="تسرب مياه">تسرب مياه</option>
+                  <option value="أخرى">أخرى</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description">وصف الواقعة:</label>
+              <textarea id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="action">الإجراء المتخذ:</label>
+              <textarea id="action" name="action" required></textarea>
+            </div>
+            <h3 class="section-title">معلومات التسجيل</h3>
+            <div class="form-row">
+              <div class="form-col">
+                <label for="reporter">اسم المبلغ:</label>
+                <input type="text" id="reporter" name="reporter" required>
+              </div>
+              <div class="form-col">
+                <label for="recorder">اسم المسجل:</label>
+                <input type="text" id="recorder" name="recorder" required>
+              </div>
+            </div>
+            <h3 class="section-title">المرفقات</h3>
+            <div class="file-input-container">
+              <p>يمكنك إرفاق الصور أو المستندات المتعلقة بالواقعة</p>
+              <label for="attachments" class="file-input-label">اختر الملفات</label>
+              <input type="file" id="attachments" name="attachments" class="file-input" multiple>
+              <div class="file-list">
+                <div class="file-item">
+                  <span>لا توجد ملفات مرفقة</span>
+                </div>
+              </div>
+            </div>
+            <div class="buttons">
+              <button type="submit">حفظ</button>
+              <button type="reset">إعادة تعيين</button>
+              <button type="button">إغلاق</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- تبويب نظام الحوادث المرورية -->
+      <div class="tab-pane fade" id="accident" role="tabpanel" aria-labelledby="accident-tab">
+        <div class="form-container">
+          <form id="accidentForm">
+            <h3 class="section-title">بيانات الحادث</h3>
+            <div class="form-row">
+              <div class="form-col">
+                <label>تاريخ الحادث:</label>
+                <input required name="accident_date" type="date">
+              </div>
+              <div class="form-col">
+                <label>اليوم:</label>
+                <input name="accident_day" type="text" placeholder="مثال: الثلاثاء">
+              </div>
+              <div class="form-col">
+                <label>وقت الحادث:</label>
+                <input required name="accident_time" type="time">
+              </div>
+              <div class="form-col">
+                <label>موقع الحادث:</label>
+                <input required name="accident_place" type="text">
+              </div>
+              <div class="form-col">
+                <label>نوع الحادث:</label>
+                <select name="accident_type" required>
+                  <option value="">-- اختر --</option>
+                  <option>تصادم</option>
+                  <option>دهس</option>
+                  <option>انقلاب</option>
+                  <option>تلفيات فقط</option>
+                  <option>أخرى</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-col">
+                <label>رقم بلاغ المرور:</label>
+                <input name="police_report_num" type="text">
+              </div>
+              <div class="form-col">
+                <label>رقم بلاغ نجم:</label>
+                <input name="najm_report_num" type="text">
+              </div>
+              <div class="form-col">
+                <label>اسم مباشر الحادث:</label>
+                <input name="incident_officer" type="text">
+              </div>
+              <div class="form-col">
+                <label>وصف موجز للحادث:</label>
+                <input name="accident_details" type="text">
+              </div>
+            </div>
+            <h3 class="section-title">بيانات الطرف الأول</h3>
+            <div class="form-row">
+              <div class="form-col">
+                <label>الاسم:</label>
+                <input name="party1_name" type="text">
+              </div>
+              <div class="form-col">
+                <label>الجنسية:</label>
+                <input name="party1_nationality" type="text">
+              </div>
+              <div class="form-col">
+                <label>رقم الهوية/الإقامة:</label>
+                <input name="party1_id" type="text">
+              </div>
+              <div class="form-col">
+                <label>رقم الجوال:</label>
+                <input name="party1_mobile" type="text">
+              </div>
+              <div class="form-col">
+                <label>نوع السيارة:</label>
+                <input name="party1_car_type" type="text">
+              </div>
+              <div class="form-col">
+                <label>رقم اللوحة:</label>
+                <input name="party1_car_plate" type="text">
+              </div>
+              <div class="form-col">
+                <label>شركة التأمين:</label>
+                <input name="party1_insurance" type="text">
+              </div>
+            </div>
+            <h3 class="section-title">بيانات الطرف الثاني</h3>
+            <div class="form-row">
+              <div class="form-col">
+                <label>الاسم:</label>
+                <input name="party2_name" type="text">
+              </div>
+              <div class="form-col">
+                <label>الجنسية:</label>
+                <input name="party2_nationality" type="text">
+              </div>
+              <div class="form-col">
+                <label>رقم الهوية/الإقامة:</label>
+                <input name="party2_id" type="text">
+              </div>
+              <div class="form-col">
+                <label>رقم الجوال:</label>
+                <input name="party2_mobile" type="text">
+              </div>
+              <div class="form-col">
+                <label>نوع السيارة:</label>
+                <input name="party2_car_type" type="text">
+              </div>
+              <div class="form-col">
+                <label>رقم اللوحة:</label>
+                <input name="party2_car_plate" type="text">
+              </div>
+              <div class="form-col">
+                <label>شركة التأمين:</label>
+                <input name="party2_insurance" type="text">
+              </div>
+            </div>
+            <h3 class="section-title">الإصابات والتلافيات</h3>
+            <div class="form-row">
+              <div class="form-col">
+                <label>هل يوجد إصابات؟</label>
+                <select name="has_injury">
+                  <option>لا</option>
+                  <option>نعم</option>
+                </select>
+              </div>
+              <div class="form-col">
+                <label>تفاصيل الإصابات:</label>
+                <input name="injury_details" type="text">
+              </div>
+              <div class="form-col">
+                <label>هل يوجد تلافيات سيارات؟</label>
+                <select name="has_car_damage">
+                  <option>لا</option>
+                  <option>نعم</option>
+                </select>
+              </div>
+              <div class="form-col">
+                <label>تفاصيل تلافيات السيارات:</label>
+                <input name="car_damage_details" type="text">
+              </div>
+              <div class="form-col">
+                <label>هل يوجد تلافيات ممتلكات الجامعة؟</label>
+                <select name="has_uni_damage">
+                  <option>لا</option>
+                  <option>نعم</option>
+                </select>
+              </div>
+              <div class="form-col">
+                <label>تفاصيل تلافيات ممتلكات الجامعة:</label>
+                <input name="uni_damage_details" type="text">
+              </div>
+            </div>
+            <h3 class="section-title">الإسعاف</h3>
+            <div class="form-row">
+              <div class="form-col">
+                <label>هل تم طلب الإسعاف؟</label>
+                <select name="ambulance_called">
+                  <option>لا</option>
+                  <option>نعم</option>
+                </select>
+              </div>
+              <div class="form-col">
+                <label>وقت طلب الإسعاف:</label>
+                <input name="ambulance_time" type="time">
+              </div>
+              <div class="form-col">
+                <label>تاريخ طلب الإسعاف:</label>
+                <input name="ambulance_date" type="date">
+              </div>
+            </div>
+            <h3 class="section-title">مرفقات وصور الحادث</h3>
+            <div class="file-input-container">
+              <label for="accident_attachments" class="file-input-label">اختر الملفات</label>
+              <input name="accident_attachments" id="accident_attachments" type="file" class="file-input" multiple>
+              <div class="file-list" id="accident-file-list">
+                <div class="file-item"><span>لا توجد ملفات مرفقة</span></div>
+              </div>
+              <small>يمكنك رفع صور أو ملفات PDF أو غيرها (ستظهر أسماؤها فقط في السجل)</small>
+            </div>
+            <h3 class="section-title">ملاحظات أو بيانات إضافية</h3>
+            <textarea name="notes" rows="2" placeholder="أي تفاصيل أو ملاحظات إضافية"></textarea>
+            <div class="buttons">
+              <button type="submit">حفظ</button>
+              <button type="reset">إعادة تعيين</button>
+              <button type="button">إغلاق</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      جميع الحقوق محفوظة © جامعة الإمام محمد بن سعود الإسلامية 2025 - إدارة الأمن والسلامة
+    </div>
+  </div>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ملفات نظام الوقائع الأمنية
+    document.getElementById('attachments').addEventListener('change', function(e) {
+      const fileList = document.querySelector('.file-list');
+      fileList.innerHTML = '';
+      if (this.files.length > 0) {
+        for (let i = 0; i < this.files.length; i++) {
+          const fileItem = document.createElement('div');
+          fileItem.className = 'file-item';
+          fileItem.innerHTML = `<span>${this.files[i].name}</span>
+            <button type="button" class="remove-file">حذف</button>`;
+          fileList.appendChild(fileItem);
+        }
+      } else {
+        fileList.innerHTML = '<div class="file-item"><span>لا توجد ملفات مرفقة</span></div>';
+      }
+    });
+    // ملفات الحادث المروري
+    document.getElementById('accident_attachments').addEventListener('change', function(e) {
+      const fileList = document.getElementById('accident-file-list');
+      fileList.innerHTML = '';
+      if (this.files.length > 0) {
+        for (let i = 0; i < this.files.length; i++) {
+          const fileItem = document.createElement('div');
+          fileItem.className = 'file-item';
+          fileItem.innerHTML = `<span>${this.files[i].name}</span>
+            <button type="button" class="remove-file">حذف</button>`;
+          fileList.appendChild(fileItem);
+        }
+      } else {
+        fileList.innerHTML = '<div class="file-item"><span>لا توجد ملفات مرفقة</span></div>';
+      }
+    });
+  </script>
+</body>
+</html>

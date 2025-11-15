@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام الوقائع الأمنية - جامعة الإمام محمد بن سعود الإسلامية</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .header {
+      background-color: #6B5536;
+      color: white;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .logo {
+      max-width: 80px;
+      margin-left: 15px;
+    }
+    .form-container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    .form-label {
+      font-weight: bold;
+    }
+    .btn-primary {
+      background-color: #6B5536;
+      border-color: #6B5536;
+    }
+    .btn-primary:hover {
+      background-color: #154360;
+      border-color: #154360;
+    }
+    .footer {
+      background-color: #6B5536;
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      margin-top: 30px;
+    }
+    .nav-tabs .nav-link.active {
+      background-color: #6B5536;
+      color: white;
+      border-color: #6B5536;
+    }
+    .nav-tabs .nav-link {
+      color: #6B5536;
+    }
+    .back-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      color: white;
+    }
+    .priority-selector {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .priority-option {
+      flex: 1;
+      min-width: 120px;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .priority-option:hover {
+      border-color: #6B5536;
+      background-color: #f8f9fa;
+    }
+    .priority-option.selected {
+      border-color: #6B5536;
+      background-color: #6B5536;
+      color: white;
+    }
+    .priority-option input[type="radio"] {
+      display: none;
+    }
+    .incident-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: white;
+      transition: all 0.3s ease;
+    }
+    .incident-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    .priority-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+    .priority-منخفضة { background-color: #d4edda; color: #155724; }
+    .priority-متوسطة { background-color: #fff3cd; color: #856404; }
+    .priority-عالية { background-color: #f8d7da; color: #721c24; }
+    .priority-عاجلة { background-color: #dc3545; color: white; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <img src="../assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="logo">
+          <h1>نظام الوقائع الأمنية</h1>
+        </div>
+        <a href="unified_dashboard.html" class="back-btn">
+          <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="true">تسجيل واقعة جديدة</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab" aria-controls="search" aria-selected="false">البحث عن واقعة</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab" aria-controls="reports" aria-selected="false">التقارير</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+      <!-- تبويب تسجيل واقعة جديدة -->
+      <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+        <div class="form-container">
+          <h3 class="mb-4"><i class="fas fa-shield-alt text-primary"></i> تسجيل واقعة أمنية جديدة</h3>
+          <form id="incidentForm">
+            
+            <!-- معلومات الواقعة الأساسية -->
+            <h5 class="text-primary mb-3"><i class="fas fa-info-circle"></i> معلومات الواقعة</h5>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="incidentDate" class="form-label"><i class="fas fa-calendar-day"></i> تاريخ الواقعة:</label>
+                <input type="date" class="form-control" id="incidentDate" required>
+              </div>
+              <div class="col-md-6">
+                <label for="incidentTime" class="form-label"><i class="fas fa-clock"></i> وقت الواقعة:</label>
+                <input type="time" class="form-control" id="incidentTime" required>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="incidentLocation" class="form-label"><i class="fas fa-map-marker-alt"></i> موقع الواقعة:</label>
+                <select class="form-select" id="incidentLocation" required>
+                  <option value="" selected disabled>اختر موقع الواقعة</option>
+                  <option value="المبنى A">المبنى A</option>
+                  <option value="المبنى B">المبنى B</option>
+                  <option value="المبنى C">المبنى C</option>
+                  <option value="موقف السيارات">موقف السيارات</option>
+                  <option value="الحدائق">الحدائق</option>
+                  <option value="المدخل الرئيسي">المدخل الرئيسي</option>
+                  <option value="المنطقة الخارجية">المنطقة الخارجية</option>
+                  <option value="أخرى">أخرى</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="incidentType" class="form-label"><i class="fas fa-exclamation-triangle"></i> نوع الواقعة:</label>
+                <select class="form-select" id="incidentType" required>
+                  <option value="" selected disabled>اختر نوع الواقعة</option>
+                  <option value="سرقة">سرقة</option>
+                  <option value="تخريب">تخريب ممتلكات</option>
+                  <option value="مشاجرة">مشاجرة</option>
+                  <option value="اشتباه">شخص مشتبه به</option>
+                  <option value="حريق">حريق</option>
+                  <option value="تسلل">تسلل</option>
+                  <option value="إزعاج">إزعاج</option>
+                  <option value="طوارئ طبية">طوارئ طبية</option>
+                  <option value="أخرى">أخرى</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">درجة الأولوية:</label>
+              <div class="priority-selector">
+                <label class="priority-option">
+                  <input type="radio" name="priority" value="منخفضة" required>
+                  <i class="fas fa-info-circle fa-2x mb-2" style="color: #28a745;"></i>
+                  <div><strong>منخفضة</strong></div>
+                </label>
+                <label class="priority-option">
+                  <input type="radio" name="priority" value="متوسطة" required>
+                  <i class="fas fa-exclamation-circle fa-2x mb-2" style="color: #ffc107;"></i>
+                  <div><strong>متوسطة</strong></div>
+                </label>
+                <label class="priority-option">
+                  <input type="radio" name="priority" value="عالية" required>
+                  <i class="fas fa-exclamation-triangle fa-2x mb-2" style="color: #ff6b6b;"></i>
+                  <div><strong>عالية</strong></div>
+                </label>
+                <label class="priority-option">
+                  <input type="radio" name="priority" value="عاجلة" required>
+                  <i class="fas fa-siren-on fa-2x mb-2" style="color: #dc3545;"></i>
+                  <div><strong>عاجلة</strong></div>
+                </label>
+              </div>
+            </div>
+
+            <!-- تفاصيل الواقعة -->
+            <h5 class="text-primary mb-3 mt-4"><i class="fas fa-clipboard"></i> تفاصيل الواقعة</h5>
+            <div class="mb-3">
+              <label for="incidentDescription" class="form-label"><i class="fas fa-file-alt"></i> وصف تفصيلي للواقعة:</label>
+              <textarea class="form-control" id="incidentDescription" rows="4" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="witnessInfo" class="form-label"><i class="fas fa-users"></i> معلومات الشهود (إن وجدت):</label>
+              <textarea class="form-control" id="witnessInfo" rows="2" placeholder="أسماء وأرقام الشهود"></textarea>
+            </div>
+
+            <!-- معلومات المبلغ -->
+            <h5 class="text-primary mb-3 mt-4"><i class="fas fa-user"></i> معلومات المبلغ</h5>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="reporterName" class="form-label"><i class="fas fa-user"></i> اسم المبلغ:</label>
+                <input type="text" class="form-control" id="reporterName" required>
+              </div>
+              <div class="col-md-4">
+                <label for="reporterPhone" class="form-label"><i class="fas fa-phone"></i> رقم الجوال:</label>
+                <input type="tel" class="form-control" id="reporterPhone" required>
+              </div>
+              <div class="col-md-4">
+                <label for="reporterBuilding" class="form-label"><i class="fas fa-building"></i> المبنى/الوحدة:</label>
+                <input type="text" class="form-control" id="reporterBuilding">
+              </div>
+            </div>
+
+            <!-- الإجراء المتخذ -->
+            <h5 class="text-primary mb-3 mt-4"><i class="fas fa-tasks"></i> الإجراء المتخذ</h5>
+            <div class="mb-3">
+              <label for="actionTaken" class="form-label"><i class="fas fa-check-square"></i> الإجراءات التي تم اتخاذها:</label>
+              <textarea class="form-control" id="actionTaken" rows="3" placeholder="صف الإجراءات التي تم اتخاذها"></textarea>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="reportedToPolice" class="form-label"><i class="fas fa-shield-alt"></i> هل تم إبلاغ الشرطة؟</label>
+                <select class="form-select" id="reportedToPolice">
+                  <option value="لا">لا</option>
+                  <option value="نعم">نعم</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="incidentStatus" class="form-label"><i class="fas fa-tasks"></i> حالة الواقعة:</label>
+                <select class="form-select" id="incidentStatus" required>
+                  <option value="جديدة" selected>جديدة</option>
+                  <option value="قيد المتابعة">قيد المتابعة</option>
+                  <option value="تم الحل">تم الحل</option>
+                  <option value="مغلقة">مغلقة</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-save"></i> تسجيل الواقعة
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- تبويب البحث -->
+      <div class="tab-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
+        <div class="form-container">
+          <h3 class="mb-4"><i class="fas fa-search"></i> البحث عن واقعة</h3>
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label for="searchType" class="form-label"><i class="fas fa-tag"></i> نوع الواقعة:</label>
+              <input type="text" class="form-control" id="searchType" placeholder="ابحث بنوع الواقعة">
+            </div>
+            <div class="col-md-4">
+              <label for="searchDate" class="form-label"><i class="fas fa-calendar"></i> التاريخ:</label>
+              <input type="date" class="form-control" id="searchDate">
+            </div>
+            <div class="col-md-4">
+              <label for="searchLocation" class="form-label"><i class="fas fa-map-marker-alt"></i> الموقع:</label>
+              <input type="text" class="form-control" id="searchLocation" placeholder="ابحث بالموقع">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="searchIncidents()">
+            <i class="fas fa-search"></i> بحث
+          </button>
+        </div>
+
+        <div id="searchResults" class="mt-4"></div>
+      </div>
+
+      <!-- تبويب التقارير -->
+      <div class="tab-pane fade" id="reports" role="tabpanel" aria-labelledby="reports-tab">
+        <div class="form-container">
+          <h3 class="mb-4"><i class="fas fa-chart-bar"></i> تقارير الوقائع الأمنية</h3>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                  <h5 class="card-title">إجمالي الوقائع</h5>
+                  <h2 class="text-primary" id="totalIncidents">0</h2>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <i class="fas fa-calendar-week fa-3x text-info mb-3"></i>
+                  <h5 class="card-title">وقائع هذا الشهر</h5>
+                  <h2 class="text-primary" id="monthlyIncidents">0</h2>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                  <h5 class="card-title">حالات عالية الأولوية</h5>
+                  <h2 class="text-primary" id="highPriorityIncidents">0</h2>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                  <h5 class="card-title">وقائع محلولة</h5>
+                  <h2 class="text-primary" id="resolvedIncidents">0</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <button class="btn btn-success me-2" onclick="exportIncidentsReport()">
+              <i class="fas fa-file-excel"></i> تصدير تقرير Excel
+            </button>
+            <button class="btn btn-info" onclick="printIncidentsReport()">
+              <i class="fas fa-print"></i> طباعة التقرير
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p class="mb-0">جميع الحقوق محفوظة © جامعة الإمام محمد بن سعود الإسلامية 2025</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../database/database.js"></script>
+  <script>
+    // Handle priority selection
+    document.querySelectorAll('.priority-option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+        this.querySelector('input[type="radio"]').checked = true;
+      });
+    });
+
+    // Form submission
+    document.getElementById('incidentForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const incidentData = {
+        date: document.getElementById('incidentDate').value,
+        time: document.getElementById('incidentTime').value,
+        location: document.getElementById('incidentLocation').value,
+        type: document.getElementById('incidentType').value,
+        priority: document.querySelector('input[name="priority"]:checked').value,
+        description: document.getElementById('incidentDescription').value,
+        witnessInfo: document.getElementById('witnessInfo').value || 'لا يوجد',
+        reporter: {
+          name: document.getElementById('reporterName').value,
+          phone: document.getElementById('reporterPhone').value,
+          building: document.getElementById('reporterBuilding').value || 'غير محدد'
+        },
+        actionTaken: document.getElementById('actionTaken').value || 'لم يتم اتخاذ إجراء بعد',
+        reportedToPolice: document.getElementById('reportedToPolice').value,
+        status: document.getElementById('incidentStatus').value,
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        // Save to localStorage
+        let incidents = JSON.parse(localStorage.getItem('securityIncidents') || '[]');
+        incidents.push(incidentData);
+        localStorage.setItem('securityIncidents', JSON.stringify(incidents));
+
+        alert('✅ تم تسجيل الواقعة بنجاح!');
+        this.reset();
+        document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
+        updateStatistics();
+      } catch (error) {
+        console.error('Error saving incident:', error);
+        alert('❌ حدث خطأ أثناء حفظ البيانات. الرجاء المحاولة مرة أخرى.');
+      }
+    });
+
+    // Search function
+    function searchIncidents() {
+      const type = document.getElementById('searchType').value.toLowerCase();
+      const date = document.getElementById('searchDate').value;
+      const location = document.getElementById('searchLocation').value.toLowerCase();
+
+      let incidents = JSON.parse(localStorage.getItem('securityIncidents') || '[]');
+
+      const results = incidents.filter(inc => {
+        return (!type || inc.type.toLowerCase().includes(type)) &&
+               (!date || inc.date === date) &&
+               (!location || inc.location.toLowerCase().includes(location));
+      });
+
+      displaySearchResults(results);
+    }
+
+    function displaySearchResults(results) {
+      const resultsDiv = document.getElementById('searchResults');
+      
+      if (results.length === 0) {
+        resultsDiv.innerHTML = '<div class="alert alert-info">لم يتم العثور على نتائج</div>';
+        return;
+      }
+
+      let html = '<h4 class="mb-3">نتائج البحث (' + results.length + ' واقعة)</h4>';
+      
+      results.forEach((inc, index) => {
+        html += `
+          <div class="incident-card">
+            <div class="row">
+              <div class="col-md-8">
+                <h5><i class="fas fa-shield-alt text-primary"></i> واقعة رقم ${index + 1}</h5>
+                <p><strong>التاريخ:</strong> ${inc.date} | <strong>الوقت:</strong> ${inc.time}</p>
+                <p><strong>الموقع:</strong> ${inc.location} | <strong>النوع:</strong> ${inc.type}</p>
+                <p><strong>المبلغ:</strong> ${inc.reporter.name} - ${inc.reporter.phone}</p>
+                <p><strong>الحالة:</strong> ${inc.status}</p>
+              </div>
+              <div class="col-md-4 text-end">
+                <span class="priority-badge priority-${inc.priority}">${inc.priority}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      resultsDiv.innerHTML = html;
+    }
+
+    // Update statistics
+    function updateStatistics() {
+      const incidents = JSON.parse(localStorage.getItem('securityIncidents') || '[]');
+      
+      document.getElementById('totalIncidents').textContent = incidents.length;
+      
+      const now = new Date();
+      const thisMonth = now.getMonth();
+      const thisYear = now.getFullYear();
+      const monthlyCount = incidents.filter(inc => {
+        const incDate = new Date(inc.date);
+        return incDate.getMonth() === thisMonth && incDate.getFullYear() === thisYear;
+      }).length;
+      document.getElementById('monthlyIncidents').textContent = monthlyCount;
+      
+      const highPriorityCount = incidents.filter(inc => 
+        inc.priority === 'عالية' || inc.priority === 'عاجلة'
+      ).length;
+      document.getElementById('highPriorityIncidents').textContent = highPriorityCount;
+      
+      const resolvedCount = incidents.filter(inc => 
+        inc.status === 'تم الحل' || inc.status === 'مغلقة'
+      ).length;
+      document.getElementById('resolvedIncidents').textContent = resolvedCount;
+    }
+
+    // Export report
+    function exportIncidentsReport() {
+      const incidents = JSON.parse(localStorage.getItem('securityIncidents') || '[]');
+      
+      if (incidents.length === 0) {
+        alert('لا توجد بيانات للتصدير');
+        return;
+      }
+
+      let csv = '\uFEFF'; // BOM for Arabic
+      csv += 'التاريخ,الوقت,الموقع,النوع,الأولوية,الوصف,المبلغ,الجوال,الحالة,إبلاغ الشرطة\n';
+      
+      incidents.forEach(inc => {
+        csv += `"${inc.date}","${inc.time}","${inc.location}","${inc.type}","${inc.priority}","${inc.description}","${inc.reporter.name}","${inc.reporter.phone}","${inc.status}","${inc.reportedToPolice}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `تقرير_الوقائع_الأمنية_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    function printIncidentsReport() {
+      window.print();
+    }
+
+    // Initialize statistics on page load
+    document.addEventListener('DOMContentLoaded', updateStatistics);
+  </script>
+</body>
+</html>

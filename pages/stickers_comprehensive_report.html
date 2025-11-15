@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تقرير ملصقات السيارات الشامل - جامعة الإمام محمد بن سعود الإسلامية</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .header {
+      background-color: #6B5536;
+      color: white;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .logo {
+      max-width: 80px;
+      margin-left: 15px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    .stat-card h3 {
+      font-size: 2.5em;
+      margin: 10px 0;
+      color: #6B5536;
+    }
+    .stat-card p {
+      margin: 0;
+      color: #666;
+      font-size: 1.1em;
+    }
+    .stat-card.success { border-right: 5px solid #28a745; }
+    .stat-card.warning { border-right: 5px solid #ffc107; }
+    .stat-card.danger { border-right: 5px solid #dc3545; }
+    .stat-card.info { border-right: 5px solid #17a2b8; }
+    .stat-card.primary { border-right: 5px solid #6B5536; }
+    
+    .report-section {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    .report-section h4 {
+      color: #6B5536;
+      border-bottom: 2px solid #6B5536;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    .table thead {
+      background-color: #6B5536;
+      color: white;
+    }
+    .nav-tabs .nav-link.active {
+      background-color: #6B5536;
+      color: white;
+      border-color: #6B5536;
+    }
+    .nav-tabs .nav-link {
+      color: #6B5536;
+    }
+    .btn-primary {
+      background-color: #6B5536;
+      border-color: #6B5536;
+    }
+    .btn-primary:hover {
+      background-color: #154360;
+      border-color: #154360;
+    }
+    .back-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      color: white;
+    }
+    .badge-duplicate {
+      background-color: #ffc107;
+      color: #000;
+    }
+    .badge-missing {
+      background-color: #dc3545;
+      color: white;
+    }
+    .badge-valid {
+      background-color: #28a745;
+      color: white;
+    }
+    .filter-section {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white;
+      }
+    }
+    @media (max-width: 768px) {
+      .stat-card h3 {
+        font-size: 1.8em;
+      }
+      .table {
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header no-print">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <img src="../assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="logo">
+          <h1>تقرير ملصقات السيارات الشامل</h1>
+        </div>
+        <a href="unified_dashboard.html" class="back-btn">
+          <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="stat-card primary">
+          <i class="fas fa-id-card fa-3x mb-3" style="color: #6B5536;"></i>
+          <h3 id="totalStickers">0</h3>
+          <p><i class="fas fa-hashtag"></i> إجمالي الملصقات</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card success">
+          <i class="fas fa-user fa-3x mb-3" style="color: #28a745;"></i>
+          <h3 id="totalResidents">0</h3>
+          <p><i class="fas fa-users"></i> إجمالي السكان</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card info">
+          <i class="fas fa-building fa-3x mb-3" style="color: #17a2b8;"></i>
+          <h3 id="totalBuildings">0</h3>
+          <p><i class="fas fa-city"></i> عدد المباني</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card warning">
+          <i class="fas fa-copy fa-3x mb-3" style="color: #ffc107;"></i>
+          <h3 id="duplicateStickers">0</h3>
+          <p><i class="fas fa-exclamation-triangle"></i> ملصقات متكررة</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="stat-card danger">
+          <i class="fas fa-exclamation-circle fa-3x mb-3" style="color: #dc3545;"></i>
+          <h3 id="missingStickers">0</h3>
+          <p><i class="fas fa-question"></i> ملصقات ناقصة</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card success">
+          <i class="fas fa-check-circle fa-3x mb-3" style="color: #28a745;"></i>
+          <h3 id="occupiedUnits">0</h3>
+          <p><i class="fas fa-home"></i> وحدات مشغولة</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card info">
+          <i class="fas fa-door-open fa-3x mb-3" style="color: #17a2b8;"></i>
+          <h3 id="vacantUnits">0</h3>
+          <p><i class="fas fa-inbox"></i> وحدات شاغرة</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card primary">
+          <i class="fas fa-percentage fa-3x mb-3" style="color: #6B5536;"></i>
+          <h3 id="occupancyRate">0%</h3>
+          <p><i class="fas fa-chart-pie"></i> نسبة الإشغال</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4 no-print" id="reportTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="by-resident-tab" data-bs-toggle="tab" data-bs-target="#by-resident" type="button" role="tab">
+          <i class="fas fa-user"></i> حسب الساكن
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="by-building-tab" data-bs-toggle="tab" data-bs-target="#by-building" type="button" role="tab">
+          <i class="fas fa-building"></i> حسب المبنى
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="by-unit-tab" data-bs-toggle="tab" data-bs-target="#by-unit" type="button" role="tab">
+          <i class="fas fa-door-closed"></i> حسب الوحدة
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="duplicates-tab" data-bs-toggle="tab" data-bs-target="#duplicates" type="button" role="tab">
+          <i class="fas fa-copy"></i> الملصقات المتكررة
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="missing-tab" data-bs-toggle="tab" data-bs-target="#missing" type="button" role="tab">
+          <i class="fas fa-exclamation-circle"></i> الملصقات الناقصة
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="matching-tab" data-bs-toggle="tab" data-bs-target="#matching" type="button" role="tab">
+          <i class="fas fa-equals"></i> مطابقة الأرقام
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="occupancy-tab" data-bs-toggle="tab" data-bs-target="#occupancy" type="button" role="tab">
+          <i class="fas fa-home"></i> حالة الوحدات
+        </button>
+      </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="reportTabsContent">
+      <!-- By Resident -->
+      <div class="tab-pane fade show active" id="by-resident" role="tabpanel">
+        <div class="report-section">
+          <h4><i class="fas fa-user"></i> تقرير الملصقات حسب الساكن</h4>
+          <div class="filter-section no-print">
+            <div class="row">
+              <div class="col-md-4">
+                <input type="text" class="form-control" id="searchResident" placeholder="🔍 بحث باسم الساكن...">
+              </div>
+              <div class="col-md-3">
+                <select class="form-select" id="filterBuilding">
+                  <option value="">جميع المباني</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select class="form-select" id="filterMultipleCars">
+                  <option value="">الكل</option>
+                  <option value="multiple">سكان لديهم أكثر من سيارة</option>
+                  <option value="single">سكان لديهم سيارة واحدة</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-primary w-100" onclick="applyResidentFilter()">
+                  <i class="fas fa-filter"></i> تصفية
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive mt-3">
+            <table class="table table-striped table-hover" id="residentTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><i class="fas fa-user"></i> اسم الساكن</th>
+                  <th><i class="fas fa-building"></i> المبنى</th>
+                  <th><i class="fas fa-door-closed"></i> الوحدة</th>
+                  <th><i class="fas fa-id-card"></i> رقم الملصق</th>
+                  <th><i class="fas fa-car"></i> رقم اللوحة</th>
+                  <th><i class="fas fa-car"></i> نوع المركبة</th>
+                  <th><i class="fas fa-hashtag"></i> عدد السيارات</th>
+                </tr>
+              </thead>
+              <tbody id="residentTableBody">
+                <!-- Will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- By Building -->
+      <div class="tab-pane fade" id="by-building" role="tabpanel">
+        <div class="report-section">
+          <h4><i class="fas fa-building"></i> تقرير الملصقات حسب المبنى</h4>
+          <div class="table-responsive">
+            <table class="table table-striped table-hover" id="buildingTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><i class="fas fa-building"></i> المبنى</th>
+                  <th><i class="fas fa-users"></i> عدد السكان</th>
+                  <th><i class="fas fa-id-card"></i> عدد الملصقات</th>
+                  <th><i class="fas fa-home"></i> وحدات مشغولة</th>
+                  <th><i class="fas fa-door-open"></i> وحدات شاغرة</th>
+                  <th><i class="fas fa-percentage"></i> نسبة الإشغال</th>
+                </tr>
+              </thead>
+              <tbody id="buildingTableBody">
+                <!-- Will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- By Unit -->
+      <div class="tab-pane fade" id="by-unit" role="tabpanel">
+        <div class="report-section">
+          <h4><i class="fas fa-door-closed"></i> تقرير الملصقات حسب الوحدة</h4>
+          <div class="filter-section no-print">
+            <div class="row">
+              <div class="col-md-6">
+                <select class="form-select" id="unitBuildingFilter">
+                  <option value="">جميع المباني</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <select class="form-select" id="unitStatusFilter">
+                  <option value="">كل الوحدات</option>
+                  <option value="occupied">مشغولة</option>
+                  <option value="vacant">شاغرة</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive mt-3">
+            <table class="table table-striped table-hover" id="unitTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><i class="fas fa-building"></i> المبنى</th>
+                  <th><i class="fas fa-door-closed"></i> الوحدة</th>
+                  <th><i class="fas fa-user"></i> الساكن</th>
+                  <th><i class="fas fa-id-card"></i> عدد الملصقات</th>
+                  <th><i class="fas fa-info-circle"></i> الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="unitTableBody">
+                <!-- Will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Duplicates -->
+      <div class="tab-pane fade" id="duplicates" role="tabpanel">
+        <div class="report-section">
+          <h4><i class="fas fa-copy"></i> الملصقات المتكررة (السماح بالتكرار للسكان الذين لديهم أكثر من سيارة)</h4>
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> الملصقات المتكررة لنفس الساكن تعتبر طبيعية (سيارات متعددة)
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped table-hover" id="duplicatesTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><i class="fas fa-id-card"></i> رقم الملصق</th>
+                  <th><i class="fas fa-hashtag"></i> عدد التكرار</th>
+                  <th><i class="fas fa-users"></i> السكان</th>
+                  <th><i class="fas fa-exclamation-triangle"></i> نوع التكرار</th>
+                </tr>
+              </thead>
+              <tbody id="duplicatesTableBody">
+                <!-- Will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Missing -->
+      <div class="tab-pane fade" id="missing" role="tabpanel">
+        <div class="report-section">
+          <h4><i class="fas fa-exclamation-circle"></i> الملصقات الناقصة (أرقام أو أحرف)</h4>
+          <div class="table-responsive">
+            <table class="table table-striped table-hover" id="missingTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><i class="fas fa-id-card"></i> رقم الملصق</th>
+                  <th><i class="fas fa-user"></i> الساكن</th>
+                  <th><i class="fas fa-building"></i> المبنى</th>
+                  <th><i class="fas fa-door-closed"></i> الوحدة</th>
+                  <th><i class="fas fa-exclamation-triangle"></i> المشكلة</th>
+                </tr>
+              </thead>
+              <tbody id="missingTableBody">
+                <!-- Will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matching -->
+      <div class="tab-pane fade" id="matching" role="tabpanel">
+        <div class="report-section">
+          <h4><i class="fas fa-equals"></i> مطابقة أرقام الملصقات مع أرقام اللوحات</h4>
+          <div class="table-responsive">
+            <table class="table table-striped table-hover" id="matchingTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><i class="fas fa-user"></i> الساكن</th>
+                  <th><i class="fas fa-id-card"></i> رقم الملصق</th>
+                  <th><i class="fas fa-car"></i> رقم اللوحة</th>
+                  <th><i class="fas fa-check-circle"></i> حالة المطابقة</th>
+                </tr>
+              </thead>
+              <tbody id="matchingTableBody">
+                <!-- Will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Occupancy -->
+      <div class="tab-pane fade" id="occupancy" role="tabpanel">
+        <div class="report-section">
+          <h4><i class="fas fa-home"></i> حالة الوحدات السكنية (مشغولة / شاغرة)</h4>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body text-center">
+                  <h2 class="text-success" id="occupiedUnitsDetail">0</h2>
+                  <p>وحدات مشغولة</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body text-center">
+                  <h2 class="text-info" id="vacantUnitsDetail">0</h2>
+                  <p>وحدات شاغرة</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped table-hover" id="occupancyTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th><i class="fas fa-building"></i> المبنى</th>
+                  <th><i class="fas fa-home"></i> مشغولة</th>
+                  <th><i class="fas fa-door-open"></i> شاغرة</th>
+                  <th><i class="fas fa-chart-pie"></i> إجمالي الوحدات</th>
+                  <th><i class="fas fa-percentage"></i> نسبة الإشغال</th>
+                </tr>
+              </thead>
+              <tbody id="occupancyTableBody">
+                <!-- Will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4 no-print">
+      <div class="col-md-12">
+        <button class="btn btn-success me-2" onclick="exportToExcel()">
+          <i class="fas fa-file-excel"></i> تصدير Excel
+        </button>
+        <button class="btn btn-primary me-2" onclick="exportToPDF()">
+          <i class="fas fa-file-pdf"></i> تصدير PDF
+        </button>
+        <button class="btn btn-info" onclick="window.print()">
+          <i class="fas fa-print"></i> طباعة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../database/database.js"></script>
+  <script>
+    let allStickers = [];
+    let allResidents = [];
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadData();
+      displayAllReports();
+    });
+
+    async function loadData() {
+      try {
+        // Try to load from database
+        const db = window.database;
+        if (db) {
+          allStickers = await db.getAllStickers() || [];
+          allResidents = await db.getAllResidents() || [];
+        }
+        
+        // If no data, generate sample data
+        if (allStickers.length === 0) {
+          allStickers = generateSampleStickers();
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+        allStickers = generateSampleStickers();
+      }
+    }
+
+    function generateSampleStickers() {
+      const buildings = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+      const names = ['أحمد محمد علي', 'علي حسن سعيد', 'محمد سعيد ناصر', 'خالد عبدالله أحمد', 'سعيد ناصر محمد'];
+      const vehicles = ['سيدان', 'SUV', 'بك أب', 'هاتشباك'];
+      const sample = [];
+      
+      for (let i = 0; i < 100; i++) {
+        const building = buildings[Math.floor(Math.random() * buildings.length)];
+        const unit = Math.floor(Math.random() * 20) + 1;
+        const name = names[Math.floor(Math.random() * names.length)];
+        const stickerNum = String(1000 + i).padStart(4, '0');
+        const plateNum = `${Math.floor(Math.random() * 9000) + 1000}`;
+        
+        sample.push({
+          stickerNumber: stickerNum,
+          residentName: name,
+          building: building,
+          unit: String(unit),
+          plateNumber: plateNum,
+          vehicleType: vehicles[Math.floor(Math.random() * vehicles.length)],
+          isActive: Math.random() > 0.1
+        });
+        
+        // Some residents have multiple cars
+        if (Math.random() > 0.7) {
+          sample.push({
+            stickerNumber: String(1000 + i + 1000).padStart(4, '0'),
+            residentName: name,
+            building: building,
+            unit: String(unit),
+            plateNumber: `${Math.floor(Math.random() * 9000) + 1000}`,
+            vehicleType: vehicles[Math.floor(Math.random() * vehicles.length)],
+            isActive: true
+          });
+        }
+      }
+      
+      return sample;
+    }
+
+    function displayAllReports() {
+      updateStatistics();
+      displayByResident();
+      displayByBuilding();
+      displayByUnit();
+      displayDuplicates();
+      displayMissing();
+      displayMatching();
+      displayOccupancy();
+      populateFilters();
+    }
+
+    function updateStatistics() {
+      const totalStickers = allStickers.length;
+      const uniqueResidents = [...new Set(allStickers.map(s => s.residentName))].length;
+      const uniqueBuildings = [...new Set(allStickers.map(s => s.building))].length;
+      
+      // Find duplicates
+      const stickerCounts = {};
+      allStickers.forEach(s => {
+        stickerCounts[s.stickerNumber] = (stickerCounts[s.stickerNumber] || 0) + 1;
+      });
+      const duplicates = Object.values(stickerCounts).filter(count => count > 1).length;
+      
+      // Find missing data
+      const missing = allStickers.filter(s => 
+        !s.stickerNumber || !s.plateNumber || s.stickerNumber.length < 4
+      ).length;
+      
+      // Calculate occupancy
+      const occupied = [...new Set(allStickers.map(s => `${s.building}-${s.unit}`))].length;
+      const totalUnits = uniqueBuildings * 20; // Assuming 20 units per building
+      const vacant = totalUnits - occupied;
+      const occupancyRate = ((occupied / totalUnits) * 100).toFixed(1);
+      
+      document.getElementById('totalStickers').textContent = totalStickers;
+      document.getElementById('totalResidents').textContent = uniqueResidents;
+      document.getElementById('totalBuildings').textContent = uniqueBuildings;
+      document.getElementById('duplicateStickers').textContent = duplicates;
+      document.getElementById('missingStickers').textContent = missing;
+      document.getElementById('occupiedUnits').textContent = occupied;
+      document.getElementById('vacantUnits').textContent = vacant;
+      document.getElementById('occupancyRate').textContent = occupancyRate + '%';
+    }
+
+    function displayByResident() {
+      const tbody = document.getElementById('residentTableBody');
+      tbody.innerHTML = '';
+      
+      // Group by resident
+      const residentGroups = {};
+      allStickers.forEach(sticker => {
+        const key = `${sticker.residentName}-${sticker.building}-${sticker.unit}`;
+        if (!residentGroups[key]) {
+          residentGroups[key] = [];
+        }
+        residentGroups[key].push(sticker);
+      });
+      
+      let index = 1;
+      Object.entries(residentGroups).forEach(([key, stickers]) => {
+        stickers.forEach((sticker, i) => {
+          const row = `
+            <tr>
+              <td>${index++}</td>
+              <td>${sticker.residentName}</td>
+              <td>${sticker.building}</td>
+              <td>${sticker.unit}</td>
+              <td><span class="badge bg-primary">${sticker.stickerNumber}</span></td>
+              <td>${sticker.plateNumber}</td>
+              <td>${sticker.vehicleType}</td>
+              <td><span class="badge bg-info">${stickers.length}</span></td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+      });
+    }
+
+    function displayByBuilding() {
+      const tbody = document.getElementById('buildingTableBody');
+      tbody.innerHTML = '';
+      
+      const buildingData = {};
+      allStickers.forEach(sticker => {
+        if (!buildingData[sticker.building]) {
+          buildingData[sticker.building] = {
+            residents: new Set(),
+            stickers: 0,
+            units: new Set()
+          };
+        }
+        buildingData[sticker.building].residents.add(sticker.residentName);
+        buildingData[sticker.building].stickers++;
+        buildingData[sticker.building].units.add(sticker.unit);
+      });
+      
+      let index = 1;
+      Object.entries(buildingData).forEach(([building, data]) => {
+        const totalUnits = 20; // Assuming 20 units per building
+        const occupied = data.units.size;
+        const vacant = totalUnits - occupied;
+        const rate = ((occupied / totalUnits) * 100).toFixed(1);
+        
+        const row = `
+          <tr>
+            <td>${index++}</td>
+            <td><strong>${building}</strong></td>
+            <td>${data.residents.size}</td>
+            <td>${data.stickers}</td>
+            <td>${occupied}</td>
+            <td>${vacant}</td>
+            <td><span class="badge bg-success">${rate}%</span></td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function displayByUnit() {
+      const tbody = document.getElementById('unitTableBody');
+      tbody.innerHTML = '';
+      
+      const unitData = {};
+      allStickers.forEach(sticker => {
+        const key = `${sticker.building}-${sticker.unit}`;
+        if (!unitData[key]) {
+          unitData[key] = {
+            building: sticker.building,
+            unit: sticker.unit,
+            resident: sticker.residentName,
+            count: 0
+          };
+        }
+        unitData[key].count++;
+      });
+      
+      let index = 1;
+      Object.values(unitData).forEach(unit => {
+        const row = `
+          <tr>
+            <td>${index++}</td>
+            <td>${unit.building}</td>
+            <td>${unit.unit}</td>
+            <td>${unit.resident}</td>
+            <td><span class="badge bg-info">${unit.count}</span></td>
+            <td><span class="badge bg-success">مشغولة</span></td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function displayDuplicates() {
+      const tbody = document.getElementById('duplicatesTableBody');
+      tbody.innerHTML = '';
+      
+      const stickerGroups = {};
+      allStickers.forEach(sticker => {
+        if (!stickerGroups[sticker.stickerNumber]) {
+          stickerGroups[sticker.stickerNumber] = [];
+        }
+        stickerGroups[sticker.stickerNumber].push(sticker);
+      });
+      
+      let index = 1;
+      Object.entries(stickerGroups)
+        .filter(([_, group]) => group.length > 1)
+        .forEach(([stickerNum, group]) => {
+          const uniqueResidents = [...new Set(group.map(s => s.residentName))];
+          const isDifferentResident = uniqueResidents.length > 1;
+          const badgeClass = isDifferentResident ? 'badge-duplicate' : 'badge-valid';
+          const typeText = isDifferentResident ? 'تكرار غير طبيعي (سكان مختلفون)' : 'تكرار طبيعي (نفس الساكن - سيارات متعددة)';
+          
+          const row = `
+            <tr>
+              <td>${index++}</td>
+              <td><span class="badge bg-primary">${stickerNum}</span></td>
+              <td><span class="badge ${badgeClass}">${group.length}</span></td>
+              <td>${uniqueResidents.join(', ')}</td>
+              <td><span class="badge ${badgeClass}">${typeText}</span></td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+    }
+
+    function displayMissing() {
+      const tbody = document.getElementById('missingTableBody');
+      tbody.innerHTML = '';
+      
+      let index = 1;
+      allStickers.forEach(sticker => {
+        let problem = '';
+        if (!sticker.stickerNumber || sticker.stickerNumber.length < 4) {
+          problem = 'رقم ملصق ناقص';
+        } else if (!sticker.plateNumber) {
+          problem = 'رقم لوحة مفقود';
+        } else if (!/[0-9]/.test(sticker.stickerNumber)) {
+          problem = 'ملصق بدون أرقام';
+        }
+        
+        if (problem) {
+          const row = `
+            <tr>
+              <td>${index++}</td>
+              <td><span class="badge badge-missing">${sticker.stickerNumber || 'غير محدد'}</span></td>
+              <td>${sticker.residentName}</td>
+              <td>${sticker.building}</td>
+              <td>${sticker.unit}</td>
+              <td><span class="badge bg-danger">${problem}</span></td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        }
+      });
+    }
+
+    function displayMatching() {
+      const tbody = document.getElementById('matchingTableBody');
+      tbody.innerHTML = '';
+      
+      let index = 1;
+      allStickers.forEach(sticker => {
+        const stickerDigits = sticker.stickerNumber.replace(/\D/g, '');
+        const plateDigits = sticker.plateNumber.replace(/\D/g, '');
+        const isMatch = stickerDigits === plateDigits;
+        const badgeClass = isMatch ? 'bg-success' : 'bg-warning';
+        const statusText = isMatch ? 'متطابق' : 'غير متطابق';
+        
+        const row = `
+          <tr>
+            <td>${index++}</td>
+            <td>${sticker.residentName}</td>
+            <td><span class="badge bg-primary">${sticker.stickerNumber}</span></td>
+            <td><span class="badge bg-info">${sticker.plateNumber}</span></td>
+            <td><span class="badge ${badgeClass}">${statusText}</span></td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function displayOccupancy() {
+      const tbody = document.getElementById('occupancyTableBody');
+      tbody.innerHTML = '';
+      
+      const buildingOccupancy = {};
+      allStickers.forEach(sticker => {
+        if (!buildingOccupancy[sticker.building]) {
+          buildingOccupancy[sticker.building] = new Set();
+        }
+        buildingOccupancy[sticker.building].add(sticker.unit);
+      });
+      
+      let index = 1;
+      let totalOccupied = 0;
+      Object.entries(buildingOccupancy).forEach(([building, units]) => {
+        const totalUnits = 20;
+        const occupied = units.size;
+        const vacant = totalUnits - occupied;
+        const rate = ((occupied / totalUnits) * 100).toFixed(1);
+        totalOccupied += occupied;
+        
+        const row = `
+          <tr>
+            <td>${index++}</td>
+            <td><strong>${building}</strong></td>
+            <td><span class="badge bg-success">${occupied}</span></td>
+            <td><span class="badge bg-info">${vacant}</span></td>
+            <td>${totalUnits}</td>
+            <td><span class="badge bg-primary">${rate}%</span></td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+      
+      const totalBuildings = Object.keys(buildingOccupancy).length;
+      const totalUnits = totalBuildings * 20;
+      const totalVacant = totalUnits - totalOccupied;
+      
+      document.getElementById('occupiedUnitsDetail').textContent = totalOccupied;
+      document.getElementById('vacantUnitsDetail').textContent = totalVacant;
+    }
+
+    function populateFilters() {
+      const buildings = [...new Set(allStickers.map(s => s.building))].sort();
+      
+      const filters = ['filterBuilding', 'unitBuildingFilter'];
+      filters.forEach(filterId => {
+        const select = document.getElementById(filterId);
+        buildings.forEach(building => {
+          const option = document.createElement('option');
+          option.value = building;
+          option.textContent = building;
+          select.appendChild(option);
+        });
+      });
+    }
+
+    function applyResidentFilter() {
+      // Implementation for filtering
+      displayByResident();
+    }
+
+    function exportToExcel() {
+      alert('سيتم تصدير التقرير إلى Excel');
+    }
+
+    function exportToPDF() {
+      alert('سيتم تصدير التقرير إلى PDF');
+    }
+  </script>
+</body>
+</html>
