@@ -1,6 +1,6 @@
 {
   "api_token": "22ba3cf7155a1ea730a0b64787f98ab5f9a3de94",
-  "parkpow_token": "7c13be422713a758a42a0bc453cf3331fbfd346",
+  "parkpow_token": "7c13be422713a758a42a0bc453cf3331fbf4d346",
   "webhook_url": "https://app.parkpow.com/api/v1/webhook-receiver/",
   "ftp_host": "ftp.platerecognizer.com",
   "ftp_port": 21,
