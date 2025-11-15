@@ -496,6 +496,37 @@
             transform: translateX(-3px) rotate(15deg);
         }
 
+        .forgot-password-link {
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .forgot-password-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .forgot-password-link a:hover {
+            color: var(--primary-dark);
+            background: rgba(139, 111, 71, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .forgot-password-link a i {
+            font-size: 14px;
+        }
+
         .footer {
             text-align: center;
             margin-top: 32px;
@@ -715,6 +746,14 @@
                     </span>
                 </button>
             </form>
+
+            <!-- رابط استرجاع كلمة المرور -->
+            <div class="forgot-password-link">
+                <a href="pages/password_recovery.html">
+                    <i class="fas fa-key"></i>
+                    نسيت كلمة المرور؟
+                </a>
+            </div>
 
             <!-- رابط النشر على الإنترنت -->
 

@@ -62,7 +62,7 @@ class EmailService {
             notifyOnUserCreation: true,
             notifyOnViolation: true,
             notifyOnPasswordReset: true,
-            adminEmail: 'admin@university.edu.sa'
+            adminEmail: 'aliayashi522@gmail.com'
         };
     }
 
@@ -229,6 +229,30 @@ class EmailService {
         };
 
         return await this.sendEmail(this.templateIds.systemNotification, params);
+    }
+
+    /**
+     * إرسال بريد إلكتروني لاسترجاع كلمة المرور مع كلمة المرور المؤقتة
+     * @param {string} email - البريد الإلكتروني للمستخدم
+     * @param {string} username - اسم المستخدم
+     * @param {string} tempPassword - كلمة المرور المؤقتة الجديدة
+     */
+    async sendPasswordResetEmail(email, username, tempPassword) {
+        const settings = this.loadEmailSettings();
+        if (!settings.notifyOnPasswordReset) {
+            return { success: false, message: 'إشعارات استرجاع كلمة المرور غير مفعلة' };
+        }
+
+        const params = {
+            to_email: email,
+            username: username,
+            temp_password: tempPassword,
+            login_url: window.location.origin + '/index.html',
+            system_name: 'نظام إدارة المرور',
+            reset_date: new Date().toLocaleString('ar-SA')
+        };
+
+        return await this.sendEmail(this.templateIds.passwordReset, params);
     }
 
     /**
