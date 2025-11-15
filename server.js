@@ -106,7 +106,7 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
-    version: '1.4.0',
+    version: '1.5.0',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     parkpow_configured: !!PARKPOW_API_TOKEN
