@@ -94,6 +94,27 @@ headers = {
 
 ### 2. جلب البيانات / Data Fetching
 
+السكريبت يستخدم استراتيجية **fallback متعددة المستويات** لجلب البيانات من عدة نقاط نهاية:
+
+The script uses a **multi-level fallback strategy** to fetch data from multiple endpoints:
+
+#### نقاط النهاية المستخدمة / Endpoints Used:
+
+1. **`/review/`** - نقطة نهاية المراجعات (الأساسية)
+   - Review endpoint (primary)
+2. **`/plate-reader/`** - نتائج التعرف على اللوحات
+   - Plate reader results
+3. **`/results/`** - النتائج الكاملة
+   - Complete results
+4. **`/vehicles/`** - ✅ **نقطة نهاية السيارات** (**تم الإضافة**)
+   - ✅ **Vehicles endpoint** (**Added**)
+
+إذا فشلت نقطة نهاية، يحاول النظام النقطة التالية تلقائياً.
+
+If one endpoint fails, the system automatically tries the next one.
+
+#### الصفحات / Pages:
+
 يجلب البيانات من صفحات متعددة، بدءاً من الصفحة 2 كما هو مطلوب:
 
 Fetches data from multiple pages, starting from page 2 as required:
