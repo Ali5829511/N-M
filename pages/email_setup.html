@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعداد خدمة البريد الإلكتروني - نظام المرور</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #8B6F47;
+            --primary-dark: #6B5537;
+            --success-color: #51cf66;
+            --error-color: #ff6b6b;
+            --warning-color: #ffa94d;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #f8f5f0 0%, #e8e4dc 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(139, 111, 71, 0.15);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .alert {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 5px solid;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #1565c0;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-color: var(--warning-color);
+            color: #e65100;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border-color: var(--success-color);
+            color: #2e7d32;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            border-color: var(--error-color);
+            color: #c62828;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 111, 71, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .steps {
+            margin: 30px 0;
+        }
+
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .step-content {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #d32f2f;
+        }
+
+        .link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+
+        .status-active {
+            background: var(--success-color);
+            box-shadow: 0 0 10px var(--success-color);
+        }
+
+        .status-inactive {
+            background: var(--error-color);
+            box-shadow: 0 0 10px var(--error-color);
+        }
+
+        #messageDiv {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-envelope-open-text"></i> إعداد خدمة البريد الإلكتروني</h1>
+        <p class="subtitle">لتفعيل إرسال كلمات المرور عبر البريد الإلكتروني</p>
+
+        <div id="messageDiv" class="alert"></div>
+
+        <!-- حالة النظام الحالية -->
+        <div class="alert alert-warning">
+            <h3 style="margin-bottom: 10px;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                حالة خدمة البريد الإلكتروني: 
+                <span class="status-indicator status-inactive"></span>
+                <strong>غير مفعلة</strong>
+            </h3>
+            <p><strong>السبب:</strong> لم يتم إعداد EmailJS بعد. يجب تكوين الخدمة أولاً لإرسال البريد الإلكتروني.</p>
+            <p style="margin-top: 10px;"><strong>البريد المستهدف:</strong> aliayashi522@gmail.com</p>
+        </div>
+
+        <!-- خطوات سريعة -->
+        <div class="alert alert-info">
+            <h3 style="margin-bottom: 15px;"><i class="fas fa-info-circle"></i> خطوات سريعة للإعداد (15 دقيقة)</h3>
+            <ol style="margin-right: 20px; line-height: 2;">
+                <li>إنشاء حساب مجاني على <a href="https://www.emailjs.com/" target="_blank" class="link">EmailJS</a></li>
+                <li>ربط Gmail (aliayashi522@gmail.com) بالخدمة</li>
+                <li>إنشاء قالب البريد الإلكتروني</li>
+                <li>ملء النموذج أدناه بالمعلومات</li>
+                <li>حفظ الإعدادات واختبار النظام</li>
+            </ol>
+        </div>
+
+        <!-- الخطوات التفصيلية -->
+        <div class="steps">
+            <h2 style="color: var(--primary-color); margin-bottom: 20px;">
+                <i class="fas fa-list-ol"></i> الخطوات التفصيلية
+            </h2>
+
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    إنشاء حساب EmailJS
+                </div>
+                <div class="step-content">
+                    • اذهب إلى: <a href="https://www.emailjs.com/" target="_blank" class="link">https://www.emailjs.com/</a><br>
+                    • اضغط "Sign Up" وأنشئ حساب جديد (مجاني)<br>
+                    • سجل الدخول إلى لوحة التحكم
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">2</span>
+                    ربط Gmail بالخدمة
+                </div>
+                <div class="step-content">
+                    • في لوحة التحكم، اضغط "Email Services"<br>
+                    • اضغط "Add New Service"<br>
+                    • اختر "Gmail"<br>
+                    • اتبع التعليمات لربط <code>aliayashi522@gmail.com</code><br>
+                    • بعد الربط، انسخ <strong>Service ID</strong> (مثل: service_xxxxxxx)
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">3</span>
+                    إنشاء قالب البريد الإلكتروني
+                </div>
+                <div class="step-content">
+                    • اضغط "Email Templates" → "Create New Template"<br>
+                    • <strong>اسم القالب:</strong> password_reset_template<br>
+                    • <strong>الموضوع:</strong> استعادة كلمة المرور - نظام المرور<br>
+                    • <strong>المحتوى:</strong> (انسخ من EMAIL_RECOVERY_SETUP_GUIDE.md)<br>
+                    • احفظ وانسخ <strong>Template ID</strong> (مثل: template_xxxxxxx)
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">4</span>
+                    الحصول على المفتاح العام
+                </div>
+                <div class="step-content">
+                    • اذهب إلى "Account" → "General"<br>
+                    • ابحث عن "Public Key"<br>
+                    • انسخ المفتاح (مثل: user_xxxxxxxxxxxxxxx)
+                </div>
+            </div>
+        </div>
+
+        <!-- نموذج الإعدادات -->
+        <h2 style="color: var(--primary-color); margin: 30px 0 20px;">
+            <i class="fas fa-cog"></i> تكوين الإعدادات
+        </h2>
+
+        <form id="emailSettingsForm">
+            <div class="form-group">
+                <label for="serviceId">
+                    <i class="fas fa-server"></i> Service ID
+                    <span style="color: #999; font-weight: normal;">(من الخطوة 2)</span>
+                </label>
+                <input type="text" id="serviceId" placeholder="service_xxxxxxx" required>
+            </div>
+
+            <div class="form-group">
+                <label for="publicKey">
+                    <i class="fas fa-key"></i> Public Key
+                    <span style="color: #999; font-weight: normal;">(من الخطوة 4)</span>
+                </label>
+                <input type="text" id="publicKey" placeholder="user_xxxxxxxxxxxxxxx" required>
+            </div>
+
+            <div class="form-group">
+                <label for="templateId">
+                    <i class="fas fa-file-alt"></i> Template ID لاستعادة كلمة المرور
+                    <span style="color: #999; font-weight: normal;">(من الخطوة 3)</span>
+                </label>
+                <input type="text" id="templateId" placeholder="template_xxxxxxx" required>
+            </div>
+
+            <div class="form-group">
+                <label for="adminEmail">
+                    <i class="fas fa-envelope"></i> البريد الإلكتروني للمسؤول
+                </label>
+                <input type="email" id="adminEmail" value="aliayashi522@gmail.com" required>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="enableEmail" checked>
+                <label for="enableEmail" style="margin: 0;">تفعيل خدمة البريد الإلكتروني</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="notifyPasswordReset" checked>
+                <label for="notifyPasswordReset" style="margin: 0;">تفعيل إشعارات استعادة كلمة المرور</label>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> حفظ الإعدادات
+                </button>
+                <button type="button" class="btn btn-success" onclick="testEmail()">
+                    <i class="fas fa-paper-plane"></i> اختبار إرسال البريد
+                </button>
+                <button type="button" class="btn btn-warning" onclick="viewGuide()">
+                    <i class="fas fa-book"></i> الدليل الكامل
+                </button>
+            </div>
+        </form>
+
+        <!-- روابط مفيدة -->
+        <div class="alert alert-info" style="margin-top: 30px;">
+            <h3 style="margin-bottom: 15px;"><i class="fas fa-link"></i> روابط مفيدة</h3>
+            <ul style="margin-right: 20px; line-height: 2;">
+                <li><a href="https://www.emailjs.com/" target="_blank" class="link">EmailJS الموقع الرسمي</a></li>
+                <li><a href="https://dashboard.emailjs.com/" target="_blank" class="link">لوحة تحكم EmailJS</a></li>
+                <li><a href="https://www.emailjs.com/docs/" target="_blank" class="link">توثيق EmailJS</a></li>
+                <li><a href="../EMAIL_RECOVERY_SETUP_GUIDE.md" target="_blank" class="link">الدليل الكامل (بالعربية)</a></li>
+                <li><a href="../EMAIL_RECOVERY_QUICKSTART.md" target="_blank" class="link">دليل البدء السريع</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../js/email-service.js"></script>
+    <script>
+        // تحميل الإعدادات الحالية
+        window.addEventListener('DOMContentLoaded', () => {
+            const settings = emailService.loadEmailSettings();
+            
+            document.getElementById('serviceId').value = settings.serviceId || '';
+            document.getElementById('publicKey').value = settings.publicKey || '';
+            document.getElementById('templateId').value = settings.templateIds?.passwordReset || '';
+            document.getElementById('adminEmail').value = settings.adminEmail || 'aliayashi522@gmail.com';
+            document.getElementById('enableEmail').checked = settings.enabled || false;
+            document.getElementById('notifyPasswordReset').checked = settings.notifyOnPasswordReset !== false;
+        });
+
+        // حفظ الإعدادات
+        document.getElementById('emailSettingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const settings = {
+                enabled: document.getElementById('enableEmail').checked,
+                serviceId: document.getElementById('serviceId').value.trim(),
+                publicKey: document.getElementById('publicKey').value.trim(),
+                adminEmail: document.getElementById('adminEmail').value.trim(),
+                notifyOnPasswordReset: document.getElementById('notifyPasswordReset').checked,
+                notifyOnUserCreation: true,
+                notifyOnViolation: true
+            };
+
+            // حفظ Template ID
+            const templateId = document.getElementById('templateId').value.trim();
+            settings.templateIds = {
+                passwordReset: templateId,
+                userCreated: 'template_user_created',
+                violationAdded: 'template_violation_added',
+                systemNotification: 'template_system_notification'
+            };
+
+            const result = emailService.saveEmailSettings(settings);
+            
+            showMessage(result.success ? 'success' : 'error', result.message || result.error);
+
+            if (result.success) {
+                setTimeout(() => {
+                    showMessage('info', 'يمكنك الآن اختبار النظام بالضغط على "اختبار إرسال البريد"');
+                }, 2000);
+            }
+        });
+
+        // اختبار إرسال البريد
+        async function testEmail() {
+            const adminEmail = document.getElementById('adminEmail').value.trim();
+            
+            if (!adminEmail) {
+                showMessage('error', 'يرجى إدخال البريد الإلكتروني للمسؤول');
+                return;
+            }
+
+            showMessage('info', 'جاري إرسال البريد التجريبي...');
+
+            try {
+                const result = await emailService.testEmailConfiguration(adminEmail);
+                
+                if (result.success) {
+                    showMessage('success', `✅ تم إرسال البريد التجريبي بنجاح إلى ${adminEmail}. تحقق من صندوق الوارد!`);
+                } else {
+                    showMessage('error', result.error || 'فشل إرسال البريد. تحقق من الإعدادات.');
+                }
+            } catch (error) {
+                showMessage('error', 'حدث خطأ: ' + error.message);
+            }
+        }
+
+        // عرض رسالة
+        function showMessage(type, text) {
+            const messageDiv = document.getElementById('messageDiv');
+            messageDiv.className = `alert alert-${type}`;
+            messageDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${text}`;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, type === 'success' ? 8000 : 5000);
+        }
+
+        // عرض الدليل
+        function viewGuide() {
+            window.open('../EMAIL_RECOVERY_SETUP_GUIDE.md', '_blank');
+        }
+    </script>
+</body>
+</html>
