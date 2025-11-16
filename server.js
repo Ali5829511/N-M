@@ -20,10 +20,16 @@
  * Do not use in production without additional security layers
  */
 
-const express = require('express');
-const path = require('path');
-const compression = require('compression');
-const cors = require('cors');
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import compression from 'compression';
+import cors from 'cors';
+import os from 'os';
+
+// ES modules don't have __dirname, so we need to create it
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // إنشاء تطبيق Express
 const app = express();
@@ -422,7 +428,6 @@ app.listen(PORT, HOST, () => {
   console.log(`   http://127.0.0.1:${PORT}`);
   
   // عرض عنوان IP المحلي للشبكة
-  const os = require('os');
   const networkInterfaces = os.networkInterfaces();
   console.log(`\n🌐 عنوان الشبكة / Network Address:`);
   Object.keys(networkInterfaces).forEach((interfaceName) => {
