@@ -857,13 +857,27 @@
                         window.authManager.redirectToDefaultPage();
                     }, 1500);
                 } else {
-                    showMessage(errorMessage, result.error_ar || 'فشل تسجيل الدخول', 'fas fa-exclamation-circle');
+                    showMessage(errorMessage, result.error_ar || 'فشل تسجيل الدخول. يرجى التحقق من بيانات الدخول.', 'fas fa-exclamation-circle');
                     shakeContainer();
                     setButtonLoading(false);
+                    
+                    // إضافة رسالة توضيحية للمطورين
+                    console.log('💡 للمطورين: افتح صفحة إدارة كلمات المرور: pages/dev_password_manager.html');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showMessage(errorMessage, 'حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.', 'fas fa-times-circle');
+                let errorMsg = 'حدث خطأ أثناء تسجيل الدخول. ';
+                
+                if (error.message && error.message.includes('CryptoUtils')) {
+                    errorMsg += 'خطأ في تحميل نظام التشفير. يرجى إعادة تحميل الصفحة.';
+                } else if (error.message) {
+                    errorMsg += 'التفاصيل: ' + error.message;
+                } else {
+                    errorMsg += 'يرجى المحاولة مرة أخرى أو الاتصال بمدير النظام.';
+                }
+                
+                showMessage(errorMessage, errorMsg, 'fas fa-times-circle');
+                console.log('💡 للمطورين: تأكد من تحميل ملف crypto-utils.js بشكل صحيح');
                 shakeContainer();
                 setButtonLoading(false);
             }
