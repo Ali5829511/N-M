@@ -1,30 +1,85 @@
 /**
  * نظام إدارة إرسال البريد الإلكتروني
  * Email Notification Service
- * @version 1.0.0
+ * @version 1.1.0
  * 
  * يستخدم EmailJS لإرسال الإشعارات عبر البريد الإلكتروني
  * Uses EmailJS for sending email notifications
+ * 
+ * 📚 للإعداد الكامل، راجع الأدلة التالية:
+ * For complete setup, see the following guides:
+ * 
+ * 🚀 البدء السريع / Quick Start:
+ *    - EMAILJS_QUICK_SETUP.md (15 دقيقة)
+ * 
+ * 📖 الدليل الشامل / Complete Guide:
+ *    - EMAILJS_SETUP_GUIDE.md (تفاصيل كاملة)
+ * 
+ * 🔧 استكشاف الأخطاء / Troubleshooting:
+ *    - WHY_EMAIL_NOT_WORKING.md
+ * 
+ * 🌐 رابط EmailJS المباشر / Direct Link:
+ *    https://dashboard.emailjs.com/admin
+ * 
+ * ⚙️ صفحة الإعدادات / Settings Page:
+ *    pages/email_settings.html (الطريقة الأسهل!)
  */
 
 class EmailService {
     constructor() {
         // تكوين EmailJS - يجب تعيين هذه القيم من لوحة تحكم EmailJS
         // EmailJS configuration - these values should be set from EmailJS dashboard
-        this.serviceId = 'service_default'; // معرف الخدمة
+        // 
+        // ⚠️ طريقتان للتكوين / Two ways to configure:
+        // 
+        // 1️⃣ استخدام صفحة الإعدادات (موصى به):
+        //    افتح pages/email_settings.html وملأ النموذج
+        //    Open pages/email_settings.html and fill the form
+        // 
+        // 2️⃣ التحديث اليدوي هنا:
+        //    عدّل القيم أدناه بقيمك من EmailJS
+        //    Update the values below with your EmailJS values
+        
+        this.serviceId = 'service_default'; // معرف الخدمة / Service ID
         this.templateIds = {
-            userCreated: 'template_user_created',
-            violationAdded: 'template_violation_added',
-            passwordReset: 'template_password_reset',
-            systemNotification: 'template_system_notification'
+            userCreated: 'template_user_created',           // قالب إنشاء مستخدم
+            violationAdded: 'template_violation_added',     // قالب مخالفة جديدة
+            passwordReset: 'template_password_reset',       // قالب استعادة كلمة المرور
+            systemNotification: 'template_system_notification' // قالب إشعار عام
         };
-        this.publicKey = 'YOUR_PUBLIC_KEY'; // المفتاح العام من EmailJS
+        this.publicKey = 'YOUR_PUBLIC_KEY'; // المفتاح العام من EmailJS / Public Key
         
         // حالة النظام
         this.isEnabled = this.loadEmailSettings().enabled || false;
         this.isConfigured = false;
         
         this.init();
+        this.showSetupMessage();
+    }
+    
+    /**
+     * عرض رسالة توجيهية للإعداد
+     */
+    showSetupMessage() {
+        if (!this.isEmailEnabled() && !localStorage.getItem('emailSetupMessageShown')) {
+            console.log('%c📧 إعداد خدمة البريد الإلكتروني', 'font-size: 16px; font-weight: bold; color: #8B6F47;');
+            console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #8B6F47;');
+            console.log('');
+            console.log('%c🚀 للبدء السريع (15 دقيقة):', 'font-weight: bold; color: #51cf66;');
+            console.log('   1. راجع ملف: EMAILJS_QUICK_SETUP.md');
+            console.log('   2. أو افتح: pages/email_settings.html');
+            console.log('');
+            console.log('%c📖 للدليل الشامل:', 'font-weight: bold; color: #339af0;');
+            console.log('   راجع ملف: EMAILJS_SETUP_GUIDE.md');
+            console.log('');
+            console.log('%c🌐 رابط EmailJS:', 'font-weight: bold; color: #ff6b6b;');
+            console.log('   https://dashboard.emailjs.com/admin');
+            console.log('');
+            console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #8B6F47;');
+            
+            // تعيين علامة لعدم إظهار الرسالة مرة أخرى في نفس الجلسة
+            sessionStorage.setItem('emailSetupMessageShown', 'true');
+        }
     }
 
     /**
