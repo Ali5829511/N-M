@@ -308,7 +308,75 @@ app.post('/api/parkpow/recognize', async (req, res) => {
   }
 });
 
-// استقبال Webhook من ParkPow
+// ============================================
+// Django REST Framework-style Webhook Receiver
+// جهاز استقبال الـ Webhook بنمط Django REST Framework
+// ============================================
+
+// OPTIONS request for webhook-receiver (CORS preflight)
+app.options('/api/v1/webhook-receiver/', (req, res) => {
+  res.setHeader('Allow', 'POST, OPTIONS');
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Vary', 'Accept');
+  res.status(200).json({
+    name: 'Webhook Receiver',
+    description: 'Endpoint for receiving webhook notifications',
+    renders: ['application/json'],
+    parses: ['application/json']
+  });
+});
+
+// GET request for webhook-receiver (returns 403 - method not allowed for webhooks)
+// Django REST Framework style: GET is not allowed on webhook receiver endpoints
+app.get('/api/v1/webhook-receiver/', (req, res) => {
+  res.setHeader('Allow', 'POST, OPTIONS');
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Vary', 'Accept');
+  res.status(403).json({
+    detail: 'لم يتم تقديم أوراق اعتماد المصادقة'
+  });
+});
+
+// POST request for webhook-receiver (actual webhook handler)
+app.post('/api/v1/webhook-receiver/', async (req, res) => {
+  try {
+    const webhookData = req.body;
+    const timestamp = new Date().toISOString();
+    
+    console.log('📨 [Webhook Receiver] Data received at:', timestamp);
+    console.log('📨 [Webhook Receiver] Payload:', JSON.stringify(webhookData, null, 2));
+    
+    // معالجة البيانات الواردة من Webhook
+    // Process incoming webhook data
+    
+    // إذا كانت البيانات من ParkPow (تحتوي على معلومات اللوحة)
+    if (webhookData.plate || webhookData.results) {
+      console.log('📋 [Webhook Receiver] Plate recognition data detected');
+      // يمكن حفظ البيانات في قاعدة البيانات هنا
+      // Can save data to database here
+    }
+    
+    // إرجاع استجابة بنمط Django REST Framework
+    res.setHeader('Allow', 'POST, OPTIONS');
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Vary', 'Accept');
+    res.status(200).json({
+      detail: 'تم استقبال البيانات بنجاح',
+      message: 'Webhook data received successfully',
+      received_at: timestamp,
+      status: 'success'
+    });
+  } catch (error) {
+    console.error('❌ [Webhook Receiver] Error processing webhook:', error);
+    res.status(500).json({
+      detail: 'خطأ في معالجة البيانات',
+      message: 'Error processing webhook data',
+      error: error.message
+    });
+  }
+});
+
+// استقبال Webhook من ParkPow (legacy endpoint - kept for backward compatibility)
 app.post('/api/parkpow/webhook', async (req, res) => {
   try {
     const webhookData = req.body;
