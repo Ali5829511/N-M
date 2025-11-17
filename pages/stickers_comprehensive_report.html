@@ -505,7 +505,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../js/auth.js"></script>
-  <script src="../database/database.js"></script>
+  <script src="../js/database.js"></script>
   <script>
     let allStickers = [];
     let allResidents = [];
@@ -513,67 +513,71 @@
     // Load data on page load
     document.addEventListener('DOMContentLoaded', async function() {
       await loadData();
-      displayAllReports();
+      
+      if (allStickers.length === 0) {
+        // Show message if no data
+        document.querySelector('.container').innerHTML = `
+          <div class="alert alert-warning text-center" role="alert">
+            <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+            <h4>لا توجد بيانات متاحة</h4>
+            <p>لم يتم العثور على بيانات الملصقات. يرجى التأكد من وجود ملف stickers_data.json أو الاتصال بقاعدة البيانات.</p>
+            <a href="unified_dashboard.html" class="btn btn-primary mt-3">
+              <i class="fas fa-home"></i> العودة للصفحة الرئيسية
+            </a>
+          </div>
+        `;
+      } else {
+        displayAllReports();
+      }
     });
 
     async function loadData() {
+      try {
+        // Try to load from JSON file first
+        const response = await fetch('stickers_data.json');
+        if (response.ok) {
+          const jsonData = await response.json();
+          // Map JSON data to expected format
+          allStickers = jsonData.filter(item => item['حالة'] === 'فعال').map(item => ({
+            stickerNumber: item['رقم الهوية'] || '',
+            residentName: item['اسم الساكن'] || '',
+            status: item['حالة'] || '',
+            issueDate: item['تاريخ الملصق'] || '',
+            plateNumber: item['رقم لوحة السيارة'] || '',
+            vehicleType: item['نوع المركبة'] || '',
+            unit: item['نوع الوحدة'] || '',
+            building: item['المبنى'] || '',
+            apartment: item['شقة'] || '',
+            isActive: item['حالة'] === 'فعال'
+          }));
+          console.log('Loaded real data from JSON:', allStickers.length, 'stickers');
+          return;
+        }
+      } catch (error) {
+        console.log('Could not load from JSON file:', error);
+      }
+
       try {
         // Try to load from database
         const db = window.database;
         if (db) {
           allStickers = await db.getAllStickers() || [];
           allResidents = await db.getAllResidents() || [];
-        }
-        
-        // If no data, generate sample data
-        if (allStickers.length === 0) {
-          allStickers = generateSampleStickers();
+          if (allStickers.length > 0) {
+            console.log('Loaded data from database:', allStickers.length, 'stickers');
+            return;
+          }
         }
       } catch (error) {
-        console.error('Error loading data:', error);
-        allStickers = generateSampleStickers();
+        console.error('Error loading from database:', error);
       }
+      
+      // No data available
+      console.warn('No data available from any source');
+      allStickers = [];
     }
 
-    function generateSampleStickers() {
-      const buildings = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-      const names = ['أحمد محمد علي', 'علي حسن سعيد', 'محمد سعيد ناصر', 'خالد عبدالله أحمد', 'سعيد ناصر محمد'];
-      const vehicles = ['سيدان', 'SUV', 'بك أب', 'هاتشباك'];
-      const sample = [];
-      
-      for (let i = 0; i < 100; i++) {
-        const building = buildings[Math.floor(Math.random() * buildings.length)];
-        const unit = Math.floor(Math.random() * 20) + 1;
-        const name = names[Math.floor(Math.random() * names.length)];
-        const stickerNum = String(1000 + i).padStart(4, '0');
-        const plateNum = `${Math.floor(Math.random() * 9000) + 1000}`;
-        
-        sample.push({
-          stickerNumber: stickerNum,
-          residentName: name,
-          building: building,
-          unit: String(unit),
-          plateNumber: plateNum,
-          vehicleType: vehicles[Math.floor(Math.random() * vehicles.length)],
-          isActive: Math.random() > 0.1
-        });
-        
-        // Some residents have multiple cars
-        if (Math.random() > 0.7) {
-          sample.push({
-            stickerNumber: String(1000 + i + 1000).padStart(4, '0'),
-            residentName: name,
-            building: building,
-            unit: String(unit),
-            plateNumber: `${Math.floor(Math.random() * 9000) + 1000}`,
-            vehicleType: vehicles[Math.floor(Math.random() * vehicles.length)],
-            isActive: true
-          });
-        }
-      }
-      
-      return sample;
-    }
+
 
     function displayAllReports() {
       updateStatistics();
@@ -590,12 +594,14 @@
     function updateStatistics() {
       const totalStickers = allStickers.length;
       const uniqueResidents = [...new Set(allStickers.map(s => s.residentName))].length;
-      const uniqueBuildings = [...new Set(allStickers.map(s => s.building))].length;
+      const uniqueBuildings = [...new Set(allStickers.map(s => s.building).filter(b => b && b !== ''))].length;
       
-      // Find duplicates
+      // Find duplicates based on sticker number
       const stickerCounts = {};
       allStickers.forEach(s => {
-        stickerCounts[s.stickerNumber] = (stickerCounts[s.stickerNumber] || 0) + 1;
+        if (s.stickerNumber) {
+          stickerCounts[s.stickerNumber] = (stickerCounts[s.stickerNumber] || 0) + 1;
+        }
       });
       const duplicates = Object.values(stickerCounts).filter(count => count > 1).length;
       
@@ -604,18 +610,25 @@
         !s.stickerNumber || !s.plateNumber || s.stickerNumber.length < 4
       ).length;
       
-      // Calculate occupancy
-      const occupied = [...new Set(allStickers.map(s => `${s.building}-${s.unit}`))].length;
-      const totalUnits = uniqueBuildings * 20; // Assuming 20 units per building
-      const vacant = totalUnits - occupied;
-      const occupancyRate = ((occupied / totalUnits) * 100).toFixed(1);
+      // Calculate occupancy - count unique building-unit combinations
+      const occupiedUnits = [...new Set(
+        allStickers
+          .filter(s => s.building && s.apartment && s.apartment !== '0')
+          .map(s => `${s.building}-${s.apartment}`)
+      )].length;
+      
+      // Estimate total units (assume 80 units per building on average)
+      const estimatedUnitsPerBuilding = 80;
+      const totalUnits = uniqueBuildings > 0 ? uniqueBuildings * estimatedUnitsPerBuilding : 0;
+      const vacant = totalUnits > occupiedUnits ? totalUnits - occupiedUnits : 0;
+      const occupancyRate = totalUnits > 0 ? ((occupiedUnits / totalUnits) * 100).toFixed(1) : '0';
       
       document.getElementById('totalStickers').textContent = totalStickers;
       document.getElementById('totalResidents').textContent = uniqueResidents;
       document.getElementById('totalBuildings').textContent = uniqueBuildings;
       document.getElementById('duplicateStickers').textContent = duplicates;
       document.getElementById('missingStickers').textContent = missing;
-      document.getElementById('occupiedUnits').textContent = occupied;
+      document.getElementById('occupiedUnits').textContent = occupiedUnits;
       document.getElementById('vacantUnits').textContent = vacant;
       document.getElementById('occupancyRate').textContent = occupancyRate + '%';
     }
@@ -627,7 +640,7 @@
       // Group by resident
       const residentGroups = {};
       allStickers.forEach(sticker => {
-        const key = `${sticker.residentName}-${sticker.building}-${sticker.unit}`;
+        const key = `${sticker.residentName}-${sticker.building}-${sticker.apartment}`;
         if (!residentGroups[key]) {
           residentGroups[key] = [];
         }
@@ -642,16 +655,20 @@
               <td>${index++}</td>
               <td>${sticker.residentName}</td>
               <td>${sticker.building}</td>
-              <td>${sticker.unit}</td>
+              <td>${sticker.apartment || '-'}</td>
               <td><span class="badge bg-primary">${sticker.stickerNumber}</span></td>
               <td>${sticker.plateNumber}</td>
-              <td>${sticker.vehicleType}</td>
+              <td>${sticker.vehicleType || '-'}</td>
               <td><span class="badge bg-info">${stickers.length}</span></td>
             </tr>
           `;
           tbody.innerHTML += row;
         });
       });
+      
+      if (index === 1) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center">لا توجد بيانات</td></tr>';
+      }
     }
 
     function displayByBuilding() {
@@ -660,6 +677,8 @@
       
       const buildingData = {};
       allStickers.forEach(sticker => {
+        if (!sticker.building) return;
+        
         if (!buildingData[sticker.building]) {
           buildingData[sticker.building] = {
             residents: new Set(),
@@ -669,15 +688,20 @@
         }
         buildingData[sticker.building].residents.add(sticker.residentName);
         buildingData[sticker.building].stickers++;
-        buildingData[sticker.building].units.add(sticker.unit);
+        // Only count apartments that are not '0' (villa indicator)
+        if (sticker.apartment && sticker.apartment !== '0') {
+          buildingData[sticker.building].units.add(sticker.apartment);
+        }
       });
       
       let index = 1;
-      Object.entries(buildingData).forEach(([building, data]) => {
-        const totalUnits = 20; // Assuming 20 units per building
+      Object.entries(buildingData).sort().forEach(([building, data]) => {
+        // Estimate total units - if many apartments, likely apartment building (80 units)
+        // If few or no apartments, likely villa area (20 units)
+        const totalUnits = data.units.size > 10 ? 80 : 20;
         const occupied = data.units.size;
         const vacant = totalUnits - occupied;
-        const rate = ((occupied / totalUnits) * 100).toFixed(1);
+        const rate = totalUnits > 0 ? ((occupied / totalUnits) * 100).toFixed(1) : '0';
         
         const row = `
           <tr>
@@ -692,6 +716,10 @@
         `;
         tbody.innerHTML += row;
       });
+      
+      if (index === 1) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">لا توجد بيانات</td></tr>';
+      }
     }
 
     function displayByUnit() {
@@ -700,16 +728,19 @@
       
       const unitData = {};
       allStickers.forEach(sticker => {
-        const key = `${sticker.building}-${sticker.unit}`;
-        if (!unitData[key]) {
-          unitData[key] = {
-            building: sticker.building,
-            unit: sticker.unit,
-            resident: sticker.residentName,
-            count: 0
-          };
+        // Only process units with valid apartment numbers (not '0')
+        if (sticker.apartment && sticker.apartment !== '0') {
+          const key = `${sticker.building}-${sticker.apartment}`;
+          if (!unitData[key]) {
+            unitData[key] = {
+              building: sticker.building,
+              unit: sticker.apartment,
+              resident: sticker.residentName,
+              count: 0
+            };
+          }
+          unitData[key].count++;
         }
-        unitData[key].count++;
       });
       
       let index = 1;
@@ -726,6 +757,10 @@
         `;
         tbody.innerHTML += row;
       });
+      
+      if (index === 1) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">لا توجد بيانات</td></tr>';
+      }
     }
 
     function displayDuplicates() {
@@ -734,6 +769,8 @@
       
       const stickerGroups = {};
       allStickers.forEach(sticker => {
+        if (!sticker.stickerNumber) return;
+        
         if (!stickerGroups[sticker.stickerNumber]) {
           stickerGroups[sticker.stickerNumber] = [];
         }
@@ -741,9 +778,12 @@
       });
       
       let index = 1;
+      let foundDuplicates = false;
+      
       Object.entries(stickerGroups)
         .filter(([_, group]) => group.length > 1)
         .forEach(([stickerNum, group]) => {
+          foundDuplicates = true;
           const uniqueResidents = [...new Set(group.map(s => s.residentName))];
           const isDifferentResident = uniqueResidents.length > 1;
           const badgeClass = isDifferentResident ? 'badge-duplicate' : 'badge-valid';
@@ -760,6 +800,10 @@
           `;
           tbody.innerHTML += row;
         });
+      
+      if (!foundDuplicates) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-success"><i class="fas fa-check-circle"></i> لا توجد ملصقات متكررة</td></tr>';
+      }
     }
 
     function displayMissing() {
@@ -767,6 +811,8 @@
       tbody.innerHTML = '';
       
       let index = 1;
+      let foundIssues = false;
+      
       allStickers.forEach(sticker => {
         let problem = '';
         if (!sticker.stickerNumber || sticker.stickerNumber.length < 4) {
@@ -778,19 +824,24 @@
         }
         
         if (problem) {
+          foundIssues = true;
           const row = `
             <tr>
               <td>${index++}</td>
               <td><span class="badge badge-missing">${sticker.stickerNumber || 'غير محدد'}</span></td>
               <td>${sticker.residentName}</td>
               <td>${sticker.building}</td>
-              <td>${sticker.unit}</td>
+              <td>${sticker.apartment || '-'}</td>
               <td><span class="badge bg-danger">${problem}</span></td>
             </tr>
           `;
           tbody.innerHTML += row;
         }
       });
+      
+      if (!foundIssues) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-success"><i class="fas fa-check-circle"></i> لا توجد ملصقات ناقصة</td></tr>';
+      }
     }
 
     function displayMatching() {
@@ -816,6 +867,10 @@
         `;
         tbody.innerHTML += row;
       });
+      
+      if (index === 1) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">لا توجد بيانات</td></tr>';
+      }
     }
 
     function displayOccupancy() {
@@ -824,20 +879,29 @@
       
       const buildingOccupancy = {};
       allStickers.forEach(sticker => {
+        if (!sticker.building) return;
+        
         if (!buildingOccupancy[sticker.building]) {
           buildingOccupancy[sticker.building] = new Set();
         }
-        buildingOccupancy[sticker.building].add(sticker.unit);
+        // Only count apartments that are not '0' (villa indicator)
+        if (sticker.apartment && sticker.apartment !== '0') {
+          buildingOccupancy[sticker.building].add(sticker.apartment);
+        }
       });
       
       let index = 1;
       let totalOccupied = 0;
-      Object.entries(buildingOccupancy).forEach(([building, units]) => {
-        const totalUnits = 20;
+      let totalVacant = 0;
+      
+      Object.entries(buildingOccupancy).sort().forEach(([building, units]) => {
+        // Estimate total units based on occupied count
+        const totalUnits = units.size > 10 ? 80 : 20;
         const occupied = units.size;
         const vacant = totalUnits - occupied;
-        const rate = ((occupied / totalUnits) * 100).toFixed(1);
+        const rate = totalUnits > 0 ? ((occupied / totalUnits) * 100).toFixed(1) : '0';
         totalOccupied += occupied;
+        totalVacant += vacant;
         
         const row = `
           <tr>
@@ -852,20 +916,25 @@
         tbody.innerHTML += row;
       });
       
-      const totalBuildings = Object.keys(buildingOccupancy).length;
-      const totalUnits = totalBuildings * 20;
-      const totalVacant = totalUnits - totalOccupied;
+      if (index === 1) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">لا توجد بيانات</td></tr>';
+      }
       
       document.getElementById('occupiedUnitsDetail').textContent = totalOccupied;
       document.getElementById('vacantUnitsDetail').textContent = totalVacant;
     }
 
     function populateFilters() {
-      const buildings = [...new Set(allStickers.map(s => s.building))].sort();
+      const buildings = [...new Set(allStickers.map(s => s.building).filter(b => b && b !== ''))].sort();
       
       const filters = ['filterBuilding', 'unitBuildingFilter'];
       filters.forEach(filterId => {
         const select = document.getElementById(filterId);
+        // Clear existing options except the first one
+        while (select.options.length > 1) {
+          select.remove(1);
+        }
+        // Add building options
         buildings.forEach(building => {
           const option = document.createElement('option');
           option.value = building;
