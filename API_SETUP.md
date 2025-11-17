@@ -21,6 +21,10 @@
 3. انسخ **API Token** الخاص بك
 4. احتفظ به في مكان آمن
 
+**ملاحظة:** إذا كنت بحاجة لإنشاء رمز جديد أو إعادة تعيين الرمز الحالي:
+- 🔄 [إعادة تعيين رمز API](https://app.platerecognizer.com/accounts/reset-token/)
+- سيتم إلغاء صلاحية الرمز القديم تلقائياً عند إنشاء رمز جديد
+
 ### الخطوة 3: التحقق من الباقة
 
 Plate Recognizer يقدم باقات مختلفة:
@@ -186,7 +190,10 @@ console.log(localStorage.getItem('PLATE_RECOGNIZER_API_TOKEN'));
 **الحل:**
 1. تحقق من صحة الرمز في لوحة تحكم Plate Recognizer
 2. تأكد من نسخ الرمز بالكامل بدون مسافات
-3. جرب إنشاء رمز جديد
+3. جرب إنشاء رمز جديد من خلال:
+   - 🔄 **[رابط إعادة تعيين الرمز](https://app.platerecognizer.com/accounts/reset-token/)**
+   - أو من لوحة التحكم: [https://app.platerecognizer.com](https://app.platerecognizer.com)
+4. بعد الحصول على الرمز الجديد، قم بتحديثه في النظام
 
 ---
 
@@ -251,6 +258,7 @@ console.log(localStorage.getItem('PLATE_RECOGNIZER_API_TOKEN'));
 - **API Reference:** https://docs.platerecognizer.com/api-reference
 - **الدعم الفني:** support@platerecognizer.com
 - **لوحة التحكم:** https://app.platerecognizer.com
+- **إعادة تعيين رمز API:** https://app.platerecognizer.com/accounts/reset-token/
 
 ---
 
