@@ -350,6 +350,13 @@
                 </select>
               </div>
             </div>
+            <div class="row mt-2">
+              <div class="col-md-12">
+                <button class="btn btn-primary" onclick="applyUnitFilter()">
+                  <i class="fas fa-filter"></i> تصفية
+                </button>
+              </div>
+            </div>
           </div>
           <div class="table-responsive mt-3">
             <table class="table table-striped table-hover" id="unitTable">
@@ -504,6 +511,11 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Excel Export Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- PDF Export Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <script>
     let allStickers = [];
     let allResidents = [];
@@ -531,47 +543,21 @@
 
     async function loadData() {
       try {
-        // Try to load from JSON file first
-        const response = await fetch('stickers_data.json');
+        // Load from the properly formatted vehicle_stickers.json file
+        const response = await fetch('../data/vehicle_stickers.json');
         if (response.ok) {
           const jsonData = await response.json();
-          // Map JSON data to expected format
-          allStickers = jsonData.filter(item => item['حالة'] === 'فعال').map(item => ({
-            stickerNumber: item['رقم الهوية'] || '',
-            residentName: item['اسم الساكن'] || '',
-            status: item['حالة'] || '',
-            issueDate: item['تاريخ الملصق'] || '',
-            plateNumber: item['رقم لوحة السيارة'] || '',
-            vehicleType: item['نوع المركبة'] || '',
-            unit: item['نوع الوحدة'] || '',
-            building: item['المبنى'] || '',
-            apartment: item['شقة'] || '',
-            isActive: item['حالة'] === 'فعال'
-          }));
-          console.log('Loaded real data from JSON:', allStickers.length, 'stickers');
+          // Filter only active stickers
+          allStickers = jsonData.filter(item => item.status === 'فعال');
+          console.log('✅ تم تحميل البيانات من vehicle_stickers.json:', allStickers.length, 'ملصق فعال');
           return;
         }
       } catch (error) {
-        console.log('Could not load from JSON file:', error);
-      }
-
-      try {
-        // Try to load from database
-        const db = window.database;
-        if (db) {
-          allStickers = await db.getAllStickers() || [];
-          allResidents = await db.getAllResidents() || [];
-          if (allStickers.length > 0) {
-            console.log('Loaded data from database:', allStickers.length, 'stickers');
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('Error loading from database:', error);
+        console.error('خطأ في تحميل البيانات:', error);
       }
       
       // No data available
-      console.warn('No data available from any source');
+      console.warn('⚠️ لم يتم العثور على بيانات');
       allStickers = [];
     }
 
@@ -970,16 +956,314 @@
     }
 
     function applyResidentFilter() {
-      // Implementation for filtering
-      displayByResident();
+      const searchTerm = document.getElementById('searchResident').value.toLowerCase();
+      const buildingFilter = document.getElementById('filterBuilding').value;
+      const multipleCarsFilter = document.getElementById('filterMultipleCars').value;
+      
+      const tbody = document.getElementById('residentTableBody');
+      tbody.innerHTML = '';
+      
+      // Group by resident
+      const residentGroups = {};
+      allStickers.forEach(sticker => {
+        const key = `${sticker.residentName}-${sticker.building}-${sticker.apartment}`;
+        if (!residentGroups[key]) {
+          residentGroups[key] = [];
+        }
+        residentGroups[key].push(sticker);
+      });
+      
+      let index = 1;
+      for (const [key, stickers] of Object.entries(residentGroups)) {
+        const firstSticker = stickers[0];
+        
+        // Apply filters
+        if (searchTerm && !firstSticker.residentName.toLowerCase().includes(searchTerm)) {
+          continue;
+        }
+        if (buildingFilter && firstSticker.building !== buildingFilter) {
+          continue;
+        }
+        if (multipleCarsFilter === 'multiple' && stickers.length <= 1) {
+          continue;
+        }
+        if (multipleCarsFilter === 'single' && stickers.length > 1) {
+          continue;
+        }
+        
+        stickers.forEach((sticker) => {
+          const row = `
+            <tr>
+              <td>${index++}</td>
+              <td>${sticker.residentName}</td>
+              <td>${sticker.building}</td>
+              <td>${sticker.apartment || '-'}</td>
+              <td><span class="badge bg-primary">${sticker.stickerNumber}</span></td>
+              <td>${sticker.plateNumber}</td>
+              <td>${sticker.vehicleType || '-'}</td>
+              <td><span class="badge bg-info">${stickers.length}</span></td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+      }
+      
+      if (index === 1) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center">لا توجد نتائج تطابق البحث</td></tr>';
+      }
+    }
+
+    function applyUnitFilter() {
+      const buildingFilter = document.getElementById('unitBuildingFilter').value;
+      const statusFilter = document.getElementById('unitStatusFilter').value;
+      
+      const tbody = document.getElementById('unitTableBody');
+      tbody.innerHTML = '';
+      
+      const unitData = {};
+      allStickers.forEach(sticker => {
+        if (sticker.apartment && sticker.apartment !== '0') {
+          const key = `${sticker.building}-${sticker.apartment}`;
+          if (!unitData[key]) {
+            unitData[key] = {
+              building: sticker.building,
+              unit: sticker.apartment,
+              resident: sticker.residentName,
+              count: 0
+            };
+          }
+          unitData[key].count++;
+        }
+      });
+      
+      let index = 1;
+      Object.values(unitData).forEach(unit => {
+        // Apply filters
+        if (buildingFilter && unit.building !== buildingFilter) {
+          return;
+        }
+        if (statusFilter === 'vacant') {
+          return; // Skip occupied units when showing vacant
+        }
+        
+        const row = `
+          <tr>
+            <td>${index++}</td>
+            <td>${unit.building}</td>
+            <td>${unit.unit}</td>
+            <td>${unit.resident}</td>
+            <td><span class="badge bg-info">${unit.count}</span></td>
+            <td><span class="badge bg-success">مشغولة</span></td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+      
+      if (index === 1) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">لا توجد نتائج تطابق البحث</td></tr>';
+      }
     }
 
     function exportToExcel() {
-      alert('سيتم تصدير التقرير إلى Excel');
+      try {
+        // Create workbook
+        const wb = XLSX.utils.book_new();
+        
+        // Export statistics
+        const statsData = [
+          ['الإحصائيات العامة', ''],
+          ['إجمالي الملصقات', document.getElementById('totalStickers').textContent],
+          ['إجمالي السكان', document.getElementById('totalResidents').textContent],
+          ['عدد المباني', document.getElementById('totalBuildings').textContent],
+          ['ملصقات متكررة', document.getElementById('duplicateStickers').textContent],
+          ['ملصقات ناقصة', document.getElementById('missingStickers').textContent],
+          ['وحدات مشغولة', document.getElementById('occupiedUnits').textContent],
+          ['وحدات شاغرة', document.getElementById('vacantUnits').textContent],
+          ['نسبة الإشغال', document.getElementById('occupancyRate').textContent]
+        ];
+        const wsStats = XLSX.utils.aoa_to_sheet(statsData);
+        XLSX.utils.book_append_sheet(wb, wsStats, 'الإحصائيات');
+        
+        // Export by resident data
+        const residentData = [['#', 'اسم الساكن', 'المبنى', 'الوحدة', 'رقم الملصق', 'رقم اللوحة', 'نوع المركبة', 'عدد السيارات']];
+        const residentGroups = {};
+        allStickers.forEach(sticker => {
+          const key = `${sticker.residentName}-${sticker.building}-${sticker.apartment}`;
+          if (!residentGroups[key]) {
+            residentGroups[key] = [];
+          }
+          residentGroups[key].push(sticker);
+        });
+        
+        let index = 1;
+        for (const [key, stickers] of Object.entries(residentGroups)) {
+          stickers.forEach(sticker => {
+            residentData.push([
+              index++,
+              sticker.residentName,
+              sticker.building,
+              sticker.apartment || '-',
+              sticker.stickerNumber,
+              sticker.plateNumber,
+              sticker.vehicleType || '-',
+              stickers.length
+            ]);
+          });
+        }
+        const wsResident = XLSX.utils.aoa_to_sheet(residentData);
+        XLSX.utils.book_append_sheet(wb, wsResident, 'حسب الساكن');
+        
+        // Export by building data
+        const buildingData = [['#', 'المبنى', 'عدد السكان', 'عدد الملصقات', 'وحدات مشغولة', 'وحدات شاغرة', 'نسبة الإشغال']];
+        const buildingStats = {};
+        allStickers.forEach(sticker => {
+          if (!sticker.building) return;
+          if (!buildingStats[sticker.building]) {
+            buildingStats[sticker.building] = {
+              residents: new Set(),
+              stickers: 0,
+              units: new Set()
+            };
+          }
+          buildingStats[sticker.building].residents.add(sticker.residentName);
+          buildingStats[sticker.building].stickers++;
+          if (sticker.apartment && sticker.apartment !== '0') {
+            buildingStats[sticker.building].units.add(sticker.apartment);
+          }
+        });
+        
+        index = 1;
+        Object.entries(buildingStats).sort().forEach(([building, data]) => {
+          const totalUnits = data.units.size > 10 ? 80 : 20;
+          const occupied = data.units.size;
+          const vacant = totalUnits - occupied;
+          const rate = totalUnits > 0 ? ((occupied / totalUnits) * 100).toFixed(1) + '%' : '0%';
+          
+          buildingData.push([
+            index++,
+            building,
+            data.residents.size,
+            data.stickers,
+            occupied,
+            vacant,
+            rate
+          ]);
+        });
+        const wsBuilding = XLSX.utils.aoa_to_sheet(buildingData);
+        XLSX.utils.book_append_sheet(wb, wsBuilding, 'حسب المبنى');
+        
+        // Save file
+        const fileName = `تقرير_الملصقات_${new Date().toISOString().split('T')[0]}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+        
+        alert('✅ تم تصدير التقرير إلى Excel بنجاح');
+      } catch (error) {
+        console.error('Error exporting to Excel:', error);
+        alert('❌ حدث خطأ أثناء التصدير إلى Excel');
+      }
     }
 
     function exportToPDF() {
-      alert('سيتم تصدير التقرير إلى PDF');
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        
+        // Add Arabic font support (using default for now)
+        doc.setLanguage("ar");
+        
+        // Add title
+        doc.setFontSize(18);
+        doc.text('تقرير ملصقات السيارات الشامل', 105, 20, { align: 'center' });
+        doc.setFontSize(12);
+        doc.text(`تاريخ التقرير: ${new Date().toLocaleDateString('ar-SA')}`, 105, 30, { align: 'center' });
+        
+        // Add statistics
+        doc.setFontSize(14);
+        doc.text('الإحصائيات العامة', 105, 45, { align: 'center' });
+        
+        const stats = [
+          ['إجمالي الملصقات', document.getElementById('totalStickers').textContent],
+          ['إجمالي السكان', document.getElementById('totalResidents').textContent],
+          ['عدد المباني', document.getElementById('totalBuildings').textContent],
+          ['ملصقات متكررة', document.getElementById('duplicateStickers').textContent],
+          ['ملصقات ناقصة', document.getElementById('missingStickers').textContent],
+          ['وحدات مشغولة', document.getElementById('occupiedUnits').textContent],
+          ['وحدات شاغرة', document.getElementById('vacantUnits').textContent],
+          ['نسبة الإشغال', document.getElementById('occupancyRate').textContent]
+        ];
+        
+        doc.autoTable({
+          startY: 50,
+          head: [['البيان', 'القيمة']],
+          body: stats,
+          styles: { font: 'helvetica', halign: 'center' },
+          headStyles: { fillColor: [107, 85, 54] }
+        });
+        
+        // Add by building table
+        let finalY = doc.lastAutoTable.finalY + 10;
+        doc.setFontSize(14);
+        doc.text('تقرير حسب المبنى', 105, finalY, { align: 'center' });
+        
+        const buildingStats = {};
+        allStickers.forEach(sticker => {
+          if (!sticker.building) return;
+          if (!buildingStats[sticker.building]) {
+            buildingStats[sticker.building] = {
+              residents: new Set(),
+              stickers: 0,
+              units: new Set()
+            };
+          }
+          buildingStats[sticker.building].residents.add(sticker.residentName);
+          buildingStats[sticker.building].stickers++;
+          if (sticker.apartment && sticker.apartment !== '0') {
+            buildingStats[sticker.building].units.add(sticker.apartment);
+          }
+        });
+        
+        const buildingData = [];
+        Object.entries(buildingStats).sort().forEach(([building, data]) => {
+          const totalUnits = data.units.size > 10 ? 80 : 20;
+          const occupied = data.units.size;
+          const vacant = totalUnits - occupied;
+          const rate = totalUnits > 0 ? ((occupied / totalUnits) * 100).toFixed(1) + '%' : '0%';
+          
+          buildingData.push([
+            building,
+            data.residents.size,
+            data.stickers,
+            occupied,
+            vacant,
+            rate
+          ]);
+        });
+        
+        doc.autoTable({
+          startY: finalY + 5,
+          head: [['المبنى', 'السكان', 'الملصقات', 'مشغولة', 'شاغرة', 'نسبة الإشغال']],
+          body: buildingData.slice(0, 30), // Limit to 30 buildings for PDF
+          styles: { font: 'helvetica', halign: 'center', fontSize: 9 },
+          headStyles: { fillColor: [107, 85, 54] }
+        });
+        
+        // Add footer
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+          doc.setPage(i);
+          doc.setFontSize(10);
+          doc.text(`صفحة ${i} من ${pageCount}`, 105, 285, { align: 'center' });
+        }
+        
+        // Save file
+        const fileName = `تقرير_الملصقات_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc.save(fileName);
+        
+        alert('✅ تم تصدير التقرير إلى PDF بنجاح');
+      } catch (error) {
+        console.error('Error exporting to PDF:', error);
+        alert('❌ حدث خطأ أثناء التصدير إلى PDF');
+      }
     }
   </script>
 </body>
