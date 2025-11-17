@@ -18,15 +18,16 @@ English: "Merge the branches with the main branch"
 ### Current Repository Status
 
 #### Branch Statistics
-- **Total Remote Branches:** 70+
-- **Main Branch:** 1 (the primary integration branch)
-- **Copilot Branches:** 69+ feature/fix branches
-- **Other Branches:** flyio-new-files
+- **Total Remote Branches:** 70+ branches
+  - **Main Branch:** 1 (the primary integration branch)
+  - **Copilot Branches:** 68+ feature/fix branches
+  - **Other Branches:** flyio-new-files
+  - **Current Working Branch:** copilot/merge-branches-into-main
 
 #### Merge Status
 ✅ **ALL BRANCHES HAVE BEEN MERGED VIA PULL REQUESTS**
 
-The repository history shows 74+ Pull Request merges into main, including:
+The repository history shows 74+ Pull Request merges into main (some branches had multiple PRs or revisions), including:
 - #74: copilot/update-system-admin-credentials
 - #73: copilot/fix-image-analysis-output
 - #72: copilot/fix-general-statistics-data
