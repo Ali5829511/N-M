@@ -580,15 +580,24 @@
 
 
     function displayAllReports() {
+      // Show a loading message
+      document.getElementById('residentTableBody').innerHTML = '<tr><td colspan="8" class="text-center"><i class="fas fa-spinner fa-spin"></i> جاري تحميل البيانات...</td></tr>';
+      
+      // Update statistics first (lightweight)
       updateStatistics();
-      displayByResident();
-      displayByBuilding();
-      displayByUnit();
-      displayDuplicates();
-      displayMissing();
-      displayMatching();
-      displayOccupancy();
-      populateFilters();
+      
+      // Then load reports one by one with small delays
+      setTimeout(() => {
+        displayByResident();
+        populateFilters();
+      }, 100);
+      
+      setTimeout(() => displayByBuilding(), 200);
+      setTimeout(() => displayByUnit(), 300);
+      setTimeout(() => displayDuplicates(), 400);
+      setTimeout(() => displayMissing(), 500);
+      setTimeout(() => displayMatching(), 600);
+      setTimeout(() => displayOccupancy(), 700);
     }
 
     function updateStatistics() {
@@ -647,8 +656,14 @@
         residentGroups[key].push(sticker);
       });
       
+      // Limit display to first 200 residents for performance
+      const displayLimit = 200;
       let index = 1;
-      Object.entries(residentGroups).forEach(([key, stickers]) => {
+      let count = 0;
+      
+      for (const [key, stickers] of Object.entries(residentGroups)) {
+        if (count >= displayLimit) break;
+        
         stickers.forEach((sticker, i) => {
           const row = `
             <tr>
@@ -664,7 +679,12 @@
           `;
           tbody.innerHTML += row;
         });
-      });
+        count++;
+      }
+      
+      if (Object.keys(residentGroups).length > displayLimit) {
+        tbody.innerHTML += `<tr><td colspan="8" class="text-center text-muted"><em>عرض ${displayLimit} من ${Object.keys(residentGroups).length} ساكن</em></td></tr>`;
+      }
       
       if (index === 1) {
         tbody.innerHTML = '<tr><td colspan="8" class="text-center">لا توجد بيانات</td></tr>';
@@ -848,8 +868,11 @@
       const tbody = document.getElementById('matchingTableBody');
       tbody.innerHTML = '';
       
+      // Only show first 100 records for performance
+      const displayLimit = 100;
       let index = 1;
-      allStickers.forEach(sticker => {
+      
+      allStickers.slice(0, displayLimit).forEach(sticker => {
         const stickerDigits = sticker.stickerNumber.replace(/\D/g, '');
         const plateDigits = sticker.plateNumber.replace(/\D/g, '');
         const isMatch = stickerDigits === plateDigits;
@@ -867,6 +890,10 @@
         `;
         tbody.innerHTML += row;
       });
+      
+      if (allStickers.length > displayLimit) {
+        tbody.innerHTML += `<tr><td colspan="5" class="text-center text-muted"><em>عرض ${displayLimit} من ${allStickers.length} سجل</em></td></tr>`;
+      }
       
       if (index === 1) {
         tbody.innerHTML = '<tr><td colspan="5" class="text-center">لا توجد بيانات</td></tr>';
