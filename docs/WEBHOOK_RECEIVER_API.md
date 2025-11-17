@@ -36,9 +36,9 @@ This endpoint provides a Django REST Framework-style webhook receiver that accep
 
 ### 1. GET Request | طلب GET
 
-Returns information about the webhook endpoint.
+Returns 403 Forbidden (Django REST Framework standard behavior for webhook endpoints that don't support GET).
 
-يعيد معلومات حول نقطة النهاية webhook.
+يعيد 403 ممنوع (سلوك Django REST Framework القياسي لنقاط نهاية webhook التي لا تدعم GET).
 
 **Request:**
 ```bash
@@ -48,19 +48,18 @@ curl -X GET http://localhost:8080/api/v1/webhook-receiver/
 **Response:**
 ```json
 {
-  "name": "Webhook Receiver",
-  "description": "جهاز استقبال هوك - Webhook receiver for ParkPow and other services",
-  "detail": "Use POST method to send webhook data",
-  "methods_allowed": ["POST", "OPTIONS"]
+  "detail": "لم يتم تقديم أوراق اعتماد المصادقة"
 }
 ```
 
-**Status Code:** `200 OK`
+**Status Code:** `403 Forbidden`
 
 **Headers:**
 - `Allow: POST, OPTIONS`
 - `Content-Type: application/json`
 - `Vary: Accept`
+
+**Note:** GET requests are not supported on webhook receiver endpoints. Use POST to send webhook data.
 
 ---
 

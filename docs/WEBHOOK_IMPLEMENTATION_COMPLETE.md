@@ -60,8 +60,8 @@ HTTP 403 ممنوع
 
 ### 1. طلب GET / GET Request
 
-**الغرض / Purpose:** الحصول على معلومات عن نقطة النهاية  
-Get information about the endpoint
+**الغرض / Purpose:** يعيد 403 ممنوع (سلوك Django REST Framework القياسي)  
+Returns 403 Forbidden (Django REST Framework standard behavior)
 
 **الطلب / Request:**
 ```bash
@@ -71,15 +71,15 @@ curl http://localhost:8080/api/v1/webhook-receiver/
 **الاستجابة / Response:**
 ```json
 {
-  "name": "Webhook Receiver",
-  "description": "جهاز استقبال هوك - Webhook receiver for ParkPow and other services",
-  "detail": "Use POST method to send webhook data",
-  "methods_allowed": ["POST", "OPTIONS"]
+  "detail": "لم يتم تقديم أوراق اعتماد المصادقة"
 }
 ```
 
-**الحالة / Status:** `200 OK`  
+**الحالة / Status:** `403 Forbidden`  
 **الرؤوس / Headers:** `Allow: POST, OPTIONS`
+
+**ملاحظة / Note:** طلبات GET غير مدعومة على نقاط نهاية webhook. استخدم POST لإرسال البيانات.  
+GET requests are not supported on webhook endpoints. Use POST to send data.
 
 ---
 
@@ -142,7 +142,7 @@ curl -X OPTIONS http://localhost:8080/api/v1/webhook-receiver/
 **السطور المضافة / Lines Added:** ~70 lines
 
 **الميزات / Features:**
-1. معالج GET لنقطة النهاية / GET handler for endpoint info
+1. معالج GET يعيد 403 ممنوع / GET handler returns 403 Forbidden
 2. معالج POST لاستقبال البيانات / POST handler for receiving data
 3. معالج OPTIONS لـ CORS / OPTIONS handler for CORS
 4. تسجيل جميع البيانات الواردة / Logging all incoming data

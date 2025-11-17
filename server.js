@@ -326,16 +326,14 @@ app.options('/api/v1/webhook-receiver/', (req, res) => {
   });
 });
 
-// GET request for webhook-receiver (information endpoint)
+// GET request for webhook-receiver (returns 403 - method not allowed for webhooks)
+// Django REST Framework style: GET is not allowed on webhook receiver endpoints
 app.get('/api/v1/webhook-receiver/', (req, res) => {
   res.setHeader('Allow', 'POST, OPTIONS');
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Vary', 'Accept');
-  res.json({
-    name: 'Webhook Receiver',
-    description: 'جهاز استقبال هوك - Webhook receiver for ParkPow and other services',
-    detail: 'Use POST method to send webhook data',
-    methods_allowed: ['POST', 'OPTIONS']
+  res.status(403).json({
+    detail: 'لم يتم تقديم أوراق اعتماد المصادقة'
   });
 });
 
