@@ -1,6 +1,6 @@
 {
   "name": "n-m-traffic-management-system",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "نظام المرور - Traffic Management System",
   "main": "index.html",
   "type": "module",
