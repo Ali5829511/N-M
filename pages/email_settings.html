@@ -383,14 +383,21 @@
                     <i class="fas fa-info-circle"></i>
                     كيفية إعداد خدمة البريد الإلكتروني
                 </h3>
-                <p>لتفعيل إرسال الإشعارات عبر البريد الإلكتروني، اتبع الخطوات التالية:</p>
+                <p><strong>للحصول على الإعداد الكامل (15 دقيقة):</strong></p>
                 <ul>
-                    <li>قم بإنشاء حساب مجاني على <a href="https://www.emailjs.com" target="_blank">EmailJS</a></li>
-                    <li>أنشئ خدمة بريد إلكتروني جديدة (Gmail, Outlook, إلخ)</li>
-                    <li>أنشئ قوالب البريد الإلكتروني المطلوبة</li>
-                    <li>انسخ معرف الخدمة (Service ID) والمفتاح العام (Public Key)</li>
-                    <li>الصق المعلومات في الحقول أدناه وقم بالحفظ</li>
+                    <li>📖 <strong>الدليل السريع:</strong> <a href="../EMAILJS_QUICK_SETUP.md" target="_blank">EMAILJS_QUICK_SETUP.md</a> (ابدأ من هنا!)</li>
+                    <li>📚 <strong>الدليل الشامل:</strong> <a href="../EMAILJS_SETUP_GUIDE.md" target="_blank">EMAILJS_SETUP_GUIDE.md</a> (تفاصيل كاملة)</li>
+                    <li>🌐 <strong>لوحة التحكم:</strong> <a href="https://dashboard.emailjs.com/admin" target="_blank">dashboard.emailjs.com/admin</a></li>
                 </ul>
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
+                <p><strong>الخطوات المختصرة:</strong></p>
+                <ol>
+                    <li>سجل في <a href="https://www.emailjs.com" target="_blank">EmailJS</a> (مجاني)</li>
+                    <li>اربط حساب Gmail: <code>aliayashi522@gmail.com</code></li>
+                    <li>أنشئ 4 قوالب بريد إلكتروني (التفاصيل في الدليل)</li>
+                    <li>انسخ <strong>Service ID</strong> و <strong>Public Key</strong></li>
+                    <li>الصق المعلومات في الحقول أدناه واحفظ</li>
+                </ol>
             </div>
         </div>
 
@@ -570,6 +577,40 @@
             }, 5000);
         }
 
+        // التحقق من صحة البيانات
+        function validateEmailSettings(settings) {
+            const errors = [];
+            
+            // التحقق من Service ID
+            if (settings.enabled) {
+                if (!settings.serviceId) {
+                    errors.push('معرف الخدمة (Service ID) مطلوب');
+                } else if (!settings.serviceId.startsWith('service_')) {
+                    errors.push('معرف الخدمة يجب أن يبدأ بـ "service_"');
+                } else if (settings.serviceId.length < 15) {
+                    errors.push('معرف الخدمة قصير جداً - تأكد من نسخه بالكامل');
+                }
+                
+                // التحقق من Public Key
+                if (!settings.publicKey) {
+                    errors.push('المفتاح العام (Public Key) مطلوب');
+                } else if (!settings.publicKey.startsWith('user_') && settings.publicKey !== 'YOUR_PUBLIC_KEY') {
+                    errors.push('المفتاح العام عادة يبدأ بـ "user_"');
+                } else if (settings.publicKey === 'YOUR_PUBLIC_KEY') {
+                    errors.push('يرجى استبدال المفتاح العام بقيمتك من EmailJS');
+                } else if (settings.publicKey.length < 15) {
+                    errors.push('المفتاح العام قصير جداً - تأكد من نسخه بالكامل');
+                }
+                
+                // التحقق من البريد الإلكتروني
+                if (settings.adminEmail && !settings.adminEmail.includes('@')) {
+                    errors.push('البريد الإلكتروني للإدارة غير صحيح');
+                }
+            }
+            
+            return errors;
+        }
+
         // حفظ الإعدادات
         saveSettingsBtn.addEventListener('click', () => {
             const settings = {
@@ -582,16 +623,17 @@
                 notifyOnPasswordReset: notifyPasswordResetToggle.checked
             };
 
-            // التحقق من الحقول المطلوبة
-            if (settings.enabled && (!settings.serviceId || !settings.publicKey)) {
-                showAlert('يرجى إدخال معرف الخدمة والمفتاح العام', 'error');
+            // التحقق من صحة البيانات
+            const errors = validateEmailSettings(settings);
+            if (errors.length > 0) {
+                showAlert('⚠️ أخطاء في البيانات:\n• ' + errors.join('\n• '), 'error');
                 return;
             }
 
             const result = window.emailService.saveEmailSettings(settings);
             
             if (result.success) {
-                showAlert('تم حفظ الإعدادات بنجاح', 'success');
+                showAlert('✅ تم حفظ الإعدادات بنجاح! يمكنك الآن اختبار إرسال البريد.', 'success');
                 updateServiceStatus();
             } else {
                 showAlert(result.error || 'حدث خطأ أثناء حفظ الإعدادات', 'error');
@@ -606,6 +648,13 @@
                 showAlert('يرجى إدخال بريد إلكتروني للاختبار', 'error');
                 return;
             }
+            
+            // التحقق من صحة البريد الإلكتروني
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(testEmail)) {
+                showAlert('البريد الإلكتروني غير صحيح', 'error');
+                return;
+            }
 
             testEmailBtn.disabled = true;
             testEmailBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
@@ -616,9 +665,10 @@
             testEmailBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال بريد تجريبي';
 
             if (result.success) {
-                showAlert('تم إرسال البريد التجريبي بنجاح! تحقق من صندوق الوارد', 'success');
+                showAlert('✅ تم إرسال البريد التجريبي بنجاح! تحقق من صندوق الوارد (وربما مجلد Spam)', 'success');
             } else {
-                showAlert(result.error || 'فشل إرسال البريد التجريبي. تحقق من الإعدادات', 'error');
+                showAlert('❌ فشل إرسال البريد التجريبي. تحقق من الإعدادات والـ Console (F12) لمزيد من التفاصيل.', 'error');
+                console.error('Email test error:', result);
             }
         });
 

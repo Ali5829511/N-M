@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل الإعداد المرئي - EmailJS</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #f8f5f0 0%, #e8e4dc 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8B6F47 0%, #6B5537 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(139, 111, 71, 0.3);
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            font-size: 20px;
+            opacity: 0.95;
+        }
+
+        .step {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-right: 6px solid #8B6F47;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #8B6F47 0%, #6B5537 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(139, 111, 71, 0.3);
+        }
+
+        .step-title {
+            font-size: 28px;
+            color: #8B6F47;
+            font-weight: 700;
+        }
+
+        .step-content {
+            padding-right: 80px;
+        }
+
+        .step-content p {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #444;
+        }
+
+        .step-content ul {
+            margin: 15px 0;
+            padding-right: 30px;
+        }
+
+        .step-content li {
+            margin-bottom: 10px;
+            font-size: 17px;
+            color: #555;
+        }
+
+        .code-box {
+            background: #2d2d2d;
+            color: #51cf66;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin: 15px 0;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .highlight {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            border-right: 4px solid #ff9800;
+            margin: 15px 0;
+        }
+
+        .highlight strong {
+            color: #e65100;
+        }
+
+        .link-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(81, 207, 102, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .link-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .link-button i {
+            margin-left: 10px;
+        }
+
+        .template-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid #2196f3;
+        }
+
+        .template-box h4 {
+            color: #1565c0;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .info-icon {
+            color: #2196f3;
+            margin-left: 8px;
+        }
+
+        .warning-icon {
+            color: #ff9800;
+            margin-left: 8px;
+        }
+
+        .success-icon {
+            color: #51cf66;
+            margin-left: 8px;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .timeline-icon {
+            font-size: 40px;
+            color: #8B6F47;
+            margin-bottom: 10px;
+        }
+
+        .timeline-text {
+            font-size: 16px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .step-content {
+                padding-right: 0;
+            }
+
+            .timeline {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-envelope"></i> دليل الإعداد المرئي لـ EmailJS</h1>
+            <p>اتبع هذه الخطوات البسيطة لإعداد نظام البريد الإلكتروني في 15 دقيقة</p>
+        </div>
+
+        <!-- الجدول الزمني -->
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-icon"><i class="fas fa-user-plus"></i></div>
+                <div class="timeline-text">إنشاء حساب<br><strong>3 دقائق</strong></div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon"><i class="fas fa-link"></i></div>
+                <div class="timeline-text">ربط Gmail<br><strong>3 دقائق</strong></div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon"><i class="fas fa-file-alt"></i></div>
+                <div class="timeline-text">إنشاء القوالب<br><strong>7 دقائق</strong></div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon"><i class="fas fa-key"></i></div>
+                <div class="timeline-text">نسخ المفاتيح<br><strong>1 دقيقة</strong></div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon"><i class="fas fa-cog"></i></div>
+                <div class="timeline-text">تحديث النظام<br><strong>2 دقيقة</strong></div>
+            </div>
+        </div>
+
+        <!-- الخطوة 1 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">إنشاء حساب EmailJS</div>
+            </div>
+            <div class="step-content">
+                <p><i class="fas fa-info-circle info-icon"></i>أول خطوة هي إنشاء حساب مجاني على موقع EmailJS</p>
+                
+                <a href="https://www.emailjs.com" target="_blank" class="link-button">
+                    افتح موقع EmailJS <i class="fas fa-external-link-alt"></i>
+                </a>
+
+                <ul>
+                    <li>اضغط على زر <strong>"Sign Up"</strong> في الزاوية العليا</li>
+                    <li>استخدم البريد الإلكتروني: <code>aliayashi522@gmail.com</code></li>
+                    <li>اختر كلمة مرور قوية واحفظها في مكان آمن</li>
+                    <li>اضغط <strong>"Create Account"</strong></li>
+                </ul>
+
+                <div class="highlight">
+                    <i class="fas fa-exclamation-triangle warning-icon"></i>
+                    <strong>مهم:</strong> تحقق من صندوق الوارد لتأكيد البريد الإلكتروني قبل المتابعة
+                </div>
+
+                <p><strong>بعد التأكيد:</strong></p>
+                <a href="https://dashboard.emailjs.com/admin" target="_blank" class="link-button">
+                    افتح لوحة التحكم <i class="fas fa-tachometer-alt"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- الخطوة 2 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">ربط حساب Gmail</div>
+            </div>
+            <div class="step-content">
+                <p><i class="fas fa-info-circle info-icon"></i>الآن سنربط حساب Gmail بخدمة EmailJS</p>
+
+                <ul>
+                    <li>من القائمة الجانبية، اضغط <strong>"Email Services"</strong></li>
+                    <li>اضغط زر <strong>"Add New Service"</strong></li>
+                    <li>اختر <strong>"Gmail"</strong> من القائمة</li>
+                    <li>اضغط <strong>"Connect Account"</strong></li>
+                    <li>سجل الدخول باستخدام: <code>aliayashi522@gmail.com</code></li>
+                    <li>اسمح لـ EmailJS بالوصول (اضغط "Allow")</li>
+                </ul>
+
+                <div class="highlight">
+                    <i class="fas fa-check-circle success-icon"></i>
+                    <strong>مهم جداً:</strong> بعد الربط الناجح، ستحصل على <strong>Service ID</strong>
+                </div>
+
+                <div class="code-box">
+                    مثال على Service ID:<br>
+                    service_abc123xyz
+                </div>
+
+                <p><strong><i class="fas fa-copy"></i> انسخ هذا المعرف واحفظه - ستحتاجه لاحقاً!</strong></p>
+            </div>
+        </div>
+
+        <!-- الخطوة 3 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">إنشاء قوالب البريد الإلكتروني</div>
+            </div>
+            <div class="step-content">
+                <p><i class="fas fa-info-circle info-icon"></i>نحتاج إلى إنشاء 4 قوالب لأنواع الرسائل المختلفة</p>
+
+                <ul>
+                    <li>من القائمة الجانبية، اضغط <strong>"Email Templates"</strong></li>
+                    <li>اضغط <strong>"Create New Template"</strong></li>
+                </ul>
+
+                <div class="template-box">
+                    <h4><i class="fas fa-user-plus"></i> القالب 1: إنشاء مستخدم جديد</h4>
+                    <p><strong>اسم القالب:</strong> <code>user_created_template</code></p>
+                    <p><strong>الموضوع:</strong> مرحباً بك في نظام إدارة المرور - حساب جديد</p>
+                    <p><strong>المحتوى:</strong> راجع ملف EMAILJS_SETUP_GUIDE.md للحصول على المحتوى HTML الكامل</p>
+                </div>
+
+                <div class="template-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> القالب 2: مخالفة مرورية جديدة</h4>
+                    <p><strong>اسم القالب:</strong> <code>violation_added_template</code></p>
+                    <p><strong>الموضوع:</strong> تنبيه: تم تسجيل مخالفة مرورية جديدة</p>
+                </div>
+
+                <div class="template-box">
+                    <h4><i class="fas fa-key"></i> القالب 3: استعادة كلمة المرور</h4>
+                    <p><strong>اسم القالب:</strong> <code>password_reset_template</code></p>
+                    <p><strong>الموضوع:</strong> استعادة كلمة المرور - نظام المرور</p>
+                </div>
+
+                <div class="template-box">
+                    <h4><i class="fas fa-bell"></i> القالب 4: إشعار عام</h4>
+                    <p><strong>اسم القالب:</strong> <code>system_notification_template</code></p>
+                    <p><strong>الموضوع:</strong> <code>{{subject}}</code></p>
+                </div>
+
+                <div class="highlight">
+                    <i class="fas fa-lightbulb warning-icon"></i>
+                    <strong>تنبيه:</strong> بعد إنشاء كل قالب، احفظ <strong>Template ID</strong> الخاص به!
+                </div>
+
+                <a href="../EMAILJS_SETUP_GUIDE.md" target="_blank" class="link-button">
+                    عرض محتوى القوالب الكامل <i class="fas fa-file-alt"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- الخطوة 4 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">نسخ المفتاح العام</div>
+            </div>
+            <div class="step-content">
+                <p><i class="fas fa-info-circle info-icon"></i>الآن نحتاج إلى الحصول على المفتاح العام (Public Key)</p>
+
+                <ul>
+                    <li>من القائمة الجانبية، اضغط <strong>"Account"</strong></li>
+                    <li>اختر <strong>"General"</strong></li>
+                    <li>ابحث عن <strong>"Public Key"</strong></li>
+                    <li>انسخ المفتاح (سيكون بالشكل: <code>user_xxxxxxxxxx</code>)</li>
+                </ul>
+
+                <div class="code-box">
+                    مثال على Public Key:<br>
+                    user_abc123xyz789
+                </div>
+
+                <p><strong><i class="fas fa-copy"></i> احفظ هذا المفتاح مع المعلومات الأخرى!</strong></p>
+            </div>
+        </div>
+
+        <!-- الخطوة 5 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title">تحديث إعدادات النظام</div>
+            </div>
+            <div class="step-content">
+                <p><i class="fas fa-info-circle info-icon"></i>الآن لديك جميع المعلومات المطلوبة، حان وقت تحديث النظام!</p>
+
+                <h3 style="color: #8B6F47; margin: 20px 0;">الطريقة السهلة (موصى بها):</h3>
+                
+                <a href="email_settings.html" class="link-button">
+                    افتح صفحة الإعدادات <i class="fas fa-cog"></i>
+                </a>
+
+                <p style="margin-top: 15px;">في صفحة الإعدادات:</p>
+                <ul>
+                    <li>الصق <strong>Service ID</strong> في حقل "معرف الخدمة"</li>
+                    <li>الصق <strong>Public Key</strong> في حقل "المفتاح العام"</li>
+                    <li>أدخل البريد الإلكتروني: <code>aliayashi522@gmail.com</code></li>
+                    <li>فعّل خيار "تفعيل خدمة البريد الإلكتروني"</li>
+                    <li>اضغط <strong>"حفظ الإعدادات"</strong></li>
+                </ul>
+
+                <div class="highlight">
+                    <i class="fas fa-check-circle success-icon"></i>
+                    <strong>تهانينا!</strong> الآن النظام جاهز لإرسال الإشعارات عبر البريد الإلكتروني
+                </div>
+            </div>
+        </div>
+
+        <!-- الخطوة 6: الاختبار -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">✓</div>
+                <div class="step-title">اختبار النظام</div>
+            </div>
+            <div class="step-content">
+                <p><i class="fas fa-info-circle info-icon"></i>لنتأكد من أن كل شيء يعمل بشكل صحيح</p>
+
+                <h3 style="color: #8B6F47; margin: 20px 0;">اختبار سريع:</h3>
+                
+                <ol style="font-size: 18px; margin: 20px 0; padding-right: 30px;">
+                    <li style="margin-bottom: 15px;">في صفحة الإعدادات، أدخل بريدك الإلكتروني في حقل "اختبار"</li>
+                    <li style="margin-bottom: 15px;">اضغط <strong>"إرسال بريد تجريبي"</strong></li>
+                    <li style="margin-bottom: 15px;">تحقق من صندوق الوارد (وربما Spam)</li>
+                </ol>
+
+                <div class="highlight">
+                    <i class="fas fa-lightbulb warning-icon"></i>
+                    <strong>نصيحة:</strong> إذا لم تصل الرسالة فوراً، انتظر 1-2 دقيقة وتحقق من مجلد Spam
+                </div>
+
+                <h3 style="color: #8B6F47; margin: 20px 0;">اختبار استعادة كلمة المرور:</h3>
+                
+                <ul>
+                    <li>افتح صفحة تسجيل الدخول (<code>index.html</code>)</li>
+                    <li>اضغط <strong>"نسيت كلمة المرور؟"</strong></li>
+                    <li>أدخل اسم مستخدم: <code>admin</code></li>
+                    <li>يجب أن تصل رسالة بكلمة مرور مؤقتة</li>
+                </ul>
+
+                <div class="highlight" style="background: #e8f5e9; border-color: #51cf66;">
+                    <i class="fas fa-check-circle success-icon"></i>
+                    <strong>نجح الاختبار؟</strong> ممتاز! النظام جاهز للاستخدام الكامل
+                </div>
+            </div>
+        </div>
+
+        <!-- روابط إضافية -->
+        <div class="step" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-color: #2196f3;">
+            <div class="step-header">
+                <div class="step-number" style="background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="step-title" style="color: #1565c0;">مصادر إضافية</div>
+            </div>
+            <div class="step-content">
+                <h3 style="color: #1565c0; margin-bottom: 15px;">الأدلة والتوثيق:</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 12px;">
+                        <a href="../EMAILJS_QUICK_SETUP.md" style="color: #1565c0; text-decoration: none; font-size: 18px;">
+                            <i class="fas fa-rocket"></i> <strong>EMAILJS_QUICK_SETUP.md</strong> - دليل سريع (15 دقيقة)
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <a href="../EMAILJS_SETUP_GUIDE.md" style="color: #1565c0; text-decoration: none; font-size: 18px;">
+                            <i class="fas fa-book-open"></i> <strong>EMAILJS_SETUP_GUIDE.md</strong> - الدليل الشامل
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <a href="../WHY_EMAIL_NOT_WORKING.md" style="color: #1565c0; text-decoration: none; font-size: 18px;">
+                            <i class="fas fa-question-circle"></i> <strong>WHY_EMAIL_NOT_WORKING.md</strong> - استكشاف الأخطاء
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <a href="email_settings.html" style="color: #1565c0; text-decoration: none; font-size: 18px;">
+                            <i class="fas fa-cog"></i> <strong>email_settings.html</strong> - صفحة الإعدادات
+                        </a>
+                    </li>
+                </ul>
+
+                <h3 style="color: #1565c0; margin: 25px 0 15px;">روابط خارجية:</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 12px;">
+                        <a href="https://dashboard.emailjs.com/admin" target="_blank" style="color: #1565c0; text-decoration: none; font-size: 18px;">
+                            <i class="fas fa-external-link-alt"></i> لوحة تحكم EmailJS
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <a href="https://www.emailjs.com/docs/" target="_blank" style="color: #1565c0; text-decoration: none; font-size: 18px;">
+                            <i class="fas fa-book"></i> توثيق EmailJS الرسمي
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
