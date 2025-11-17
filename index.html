@@ -685,10 +685,204 @@
             border-radius: 8px;
         }
 
+        /* Credentials Helper Banner */
+        .credentials-helper {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.6s ease-out 0.3s both;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .credentials-helper-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .credentials-helper-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .credentials-helper-icon {
+            font-size: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .credentials-helper-content {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .credentials-helper-steps {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .credentials-helper-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            color: white;
+            font-size: 13px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .credentials-helper-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .credentials-helper-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .credentials-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            touch-action: manipulation;
+        }
+
+        .credentials-btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .credentials-btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .credentials-btn:active {
+            transform: scale(0.98);
+        }
+
+        @media (hover: hover) {
+            .credentials-btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+            }
+
+            .credentials-btn-secondary:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        .close-credentials-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        @media (hover: hover) {
+            .close-credentials-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: rotate(90deg);
+            }
+        }
+
+        .credentials-helper.hidden {
+            display: none;
+        }
+
         /* Prevent zoom on iOS */
         @media (hover: none) and (pointer: coarse) {
             .form-group input {
                 font-size: 16px;
+            }
+
+            .credentials-helper {
+                padding: 14px;
+                margin-bottom: 16px;
+            }
+
+            .credentials-helper-title {
+                font-size: 15px;
+            }
+
+            .credentials-helper-content {
+                font-size: 13px;
+            }
+
+            .credentials-helper-step {
+                font-size: 12px;
+            }
+
+            .credentials-btn {
+                min-width: 100%;
+                font-size: 13px;
+                padding: 9px 14px;
             }
         }
     </style>
@@ -700,6 +894,46 @@
                 <img src="assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="university-logo" loading="lazy">
                 <h1 class="university-name">وحدة إسكان هيئة التدريس</h1>
                 <p class="system-title">جامعة الإمام محمد بن سعود الإسلامية</p>
+            </div>
+
+            <!-- Credentials Helper Banner -->
+            <div class="credentials-helper" id="credentialsHelper" role="complementary" aria-label="مساعد بيانات الاعتماد">
+                <div class="credentials-helper-header">
+                    <div class="credentials-helper-title">
+                        <i class="fas fa-key credentials-helper-icon" aria-hidden="true"></i>
+                        <span>أول مرة تستخدم النظام؟</span>
+                    </div>
+                    <button class="close-credentials-btn" id="closeCredentialsHelper" aria-label="إغلاق" title="إغلاق">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="credentials-helper-content">
+                    للعثور على بيانات الاعتماد الافتراضية:
+                </div>
+                <div class="credentials-helper-steps">
+                    <div class="credentials-helper-step">
+                        <span class="step-number">1</span>
+                        <span>اضغط <strong>F12</strong> لفتح أدوات المطور</span>
+                    </div>
+                    <div class="credentials-helper-step">
+                        <span class="step-number">2</span>
+                        <span>انتقل إلى تبويب <strong>Console</strong></span>
+                    </div>
+                    <div class="credentials-helper-step">
+                        <span class="step-number">3</span>
+                        <span>ابحث عن كلمات المرور المعروضة</span>
+                    </div>
+                </div>
+                <div class="credentials-helper-actions">
+                    <button class="credentials-btn credentials-btn-primary" id="openGuideBtn">
+                        <i class="fas fa-book"></i>
+                        <span>دليل كامل</span>
+                    </button>
+                    <button class="credentials-btn credentials-btn-secondary" id="openConsoleBtn">
+                        <i class="fas fa-terminal"></i>
+                        <span>فتح Console</span>
+                    </button>
+                </div>
             </div>
 
             <div class="error-message message" id="errorMessage" role="alert" aria-live="polite"></div>
@@ -901,6 +1135,37 @@
             if (errorMessage.style.display === 'block') {
                 hideMessages();
             }
+        });
+
+        // Credentials Helper functionality
+        const credentialsHelper = document.getElementById('credentialsHelper');
+        const closeCredentialsHelper = document.getElementById('closeCredentialsHelper');
+        const openGuideBtn = document.getElementById('openGuideBtn');
+        const openConsoleBtn = document.getElementById('openConsoleBtn');
+
+        // Check if user has dismissed the credentials helper before
+        const credentialsHelperDismissed = localStorage.getItem('credentials_helper_dismissed');
+        if (credentialsHelperDismissed === 'true') {
+            credentialsHelper.classList.add('hidden');
+        }
+
+        // Close credentials helper
+        closeCredentialsHelper.addEventListener('click', () => {
+            credentialsHelper.classList.add('hidden');
+            localStorage.setItem('credentials_helper_dismissed', 'true');
+        });
+
+        // Open PASSWORD_GUIDE.md
+        openGuideBtn.addEventListener('click', () => {
+            window.open('PASSWORD_GUIDE.md', '_blank');
+        });
+
+        // Open Console instruction
+        openConsoleBtn.addEventListener('click', () => {
+            alert('اضغط F12 أو:\n\n' +
+                  '• Windows/Linux: Ctrl + Shift + J\n' +
+                  '• Mac: Cmd + Option + J\n\n' +
+                  'ثم انتقل إلى تبويب Console لرؤية بيانات الاعتماد.');
         });
     </script>
 </body>
