@@ -178,11 +178,23 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
 
         .action-buttons {
             display: flex;
             gap: 15px;
             margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
@@ -375,6 +387,16 @@
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+        
+        .alert ul {
+            list-style-type: disc;
+            margin: 10px 0 0 20px;
+            padding: 0;
+        }
+        
+        .alert ul li {
+            margin: 5px 0;
         }
 
         .alert-info {
@@ -745,6 +767,9 @@
             analyzeBtn.disabled = true;
             progressBar.style.display = 'block';
             analysisResults = [];
+            
+            let failedCount = 0;
+            let noPlatesCount = 0;
 
             for (let i = 0; i < selectedFiles.length; i++) {
                 const file = selectedFiles[i];
@@ -754,19 +779,46 @@
                 try {
                     const result = await analyzeImage(file);
                     if (result) {
-                        analysisResults.push(result);
+                        if (result.error) {
+                            failedCount++;
+                            console.warn(`Failed to analyze ${file.name}: ${result.error}`);
+                        } else if (result.noPlates) {
+                            noPlatesCount++;
+                            console.log(`No plates detected in ${file.name}`);
+                        } else {
+                            analysisResults.push(result);
+                        }
                     }
                 } catch (error) {
                     console.error('Error analyzing image:', error);
+                    failedCount++;
                 }
             }
 
             progressBar.style.display = 'none';
             analyzeBtn.disabled = false;
+            
+            // عرض رسالة إعلامية بنتائج التحليل
+            let message = `تم تحليل ${selectedFiles.length} صورة.\n`;
+            message += `تم اكتشاف لوحات في ${analysisResults.length} صورة.\n`;
+            if (noPlatesCount > 0) {
+                message += `${noPlatesCount} صورة لا تحتوي على لوحات واضحة.\n`;
+            }
+            if (failedCount > 0) {
+                message += `فشل تحليل ${failedCount} صورة.`;
+            }
+            
+            console.log(message);
+            
             displayResults();
             updateStats();
             statsCard.style.display = 'block';
             searchCard.style.display = 'block';
+            
+            // عرض رسالة للمستخدم
+            if (analysisResults.length === 0) {
+                alert(message + '\n\nتأكد من أن الصور تحتوي على لوحات واضحة ومن وجود رمز API صحيح.');
+            }
         });
 
         async function analyzeImage(file) {
@@ -775,6 +827,13 @@
             formData.append('regions', 'sa'); // Saudi Arabia
 
             try {
+                console.log(`Analyzing image: ${file.name}`);
+                
+                if (!API_TOKEN) {
+                    console.error('No API token configured');
+                    return { error: 'لم يتم تكوين رمز API', fileName: file.name };
+                }
+                
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -784,10 +843,13 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('API request failed');
+                    const errorText = await response.text();
+                    console.error(`API request failed for ${file.name}:`, response.status, errorText);
+                    return { error: `فشل الطلب: ${response.status}`, fileName: file.name };
                 }
 
                 const data = await response.json();
+                console.log(`API response for ${file.name}:`, data);
                 
                 if (data.results && data.results.length > 0) {
                     const plate = data.results[0];
@@ -818,7 +880,7 @@
                     // استخراج تاريخ التقاط الصورة من EXIF
                     const timestamp = await getImageDate(file);
                     
-                    return {
+                    const result = {
                         fileName: file.name,
                         plateNumber: plate.plate,
                         confidence: (plate.score * 100).toFixed(2),
@@ -828,17 +890,42 @@
                         timestamp: timestamp,
                         rawData: data
                     };
+                    
+                    console.log(`Successfully analyzed ${file.name}:`, result);
+                    return result;
+                } else {
+                    console.warn(`No plates detected in ${file.name}`);
+                    return { noPlates: true, fileName: file.name };
                 }
             } catch (error) {
-                console.error('Error:', error);
-                return null;
+                console.error(`Error analyzing ${file.name}:`, error);
+                return { error: error.message, fileName: file.name };
             }
         }
 
         function displayResults() {
+            resultsCard.style.display = 'block';
+            
             if (analysisResults.length === 0) {
-                resultsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>لم يتم العثور على نتائج</p></div>';
-                resultsCard.style.display = 'block';
+                resultsContainer.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>تنبيه:</strong> لم يتم اكتشاف أي لوحات في الصور المحللة.
+                            <br>
+                            <small>تأكد من:</small>
+                            <ul style="margin: 10px 0 0 20px; padding: 0;">
+                                <li>جودة الصور ووضوح اللوحات</li>
+                                <li>صحة إعدادات رمز API للنظام</li>
+                                <li>اتصال الإنترنت</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>لم يتم العثور على نتائج للعرض</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -873,8 +960,17 @@
             });
 
             html += '</tbody></table>';
+            
+            html = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>نجح!</strong> تم تحليل الصور بنجاح واكتشاف ${analysisResults.length} لوحة.
+                    </div>
+                </div>
+            ` + html;
+            
             resultsContainer.innerHTML = html;
-            resultsCard.style.display = 'block';
         }
 
         function getRepeatCount(plateNumber) {
