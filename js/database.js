@@ -1120,6 +1120,68 @@ class DatabaseManager {
             return [];
         }
     }
+
+    /**
+     * الحصول على بيانات السكان مع المخالفات للإحصائيات العامة
+     * Get resident violations data for general statistics
+     */
+    async getAllResidentViolations() {
+        try {
+            // محاولة تحميل البيانات من الملصقات أولاً
+            const stickers = await this.getStickers();
+            const violations = await this.getViolations();
+            
+            if (stickers.length > 0) {
+                // معالجة بيانات الملصقات
+                const residentData = stickers.map(sticker => {
+                    // حساب عدد المخالفات لهذا الملصق/اللوحة
+                    const plateNumber = sticker.plateNumber || sticker.data?.['رقم للوحة السيارة'] || '';
+                    const vehicleViolations = violations.filter(v => 
+                        v.plateNumber === plateNumber
+                    ).length;
+                    
+                    return {
+                        plateNumber: plateNumber,
+                        residentName: sticker.residentName || sticker.data?.['اسم الساكن'] || 'غير محدد',
+                        building: sticker.building || sticker.data?.['المبنى'] || '-',
+                        unit: sticker.unit || sticker.data?.['الشقة'] || '-',
+                        violations: vehicleViolations,
+                        date: sticker.issueDate || sticker.data?.['تاريخ الإصدار']?.split(' ')[0] || new Date().toISOString().split('T')[0]
+                    };
+                });
+                
+                return residentData;
+            }
+            
+            // إذا لم توجد ملصقات، استخدم قاعدة بيانات السيارات والمخالفات
+            const vehicles = await this.getVehiclesDatabase();
+            
+            if (vehicles.length > 0) {
+                const residentData = vehicles.map(vehicle => {
+                    const vehicleViolations = violations.filter(v => 
+                        v.plateNumber === vehicle.plateNumber
+                    );
+                    
+                    return {
+                        plateNumber: vehicle.plateNumber,
+                        residentName: vehicle.ownerName || 'غير محدد',
+                        building: vehicle.building || '-',
+                        unit: vehicle.unit || '-',
+                        violations: vehicleViolations.length,
+                        date: vehicle.lastViolationDate || vehicle.createdDate || new Date().toISOString().split('T')[0]
+                    };
+                });
+                
+                return residentData;
+            }
+            
+            // إذا لم توجد بيانات، إرجاع مصفوفة فارغة
+            return [];
+        } catch (error) {
+            console.error('Error getting resident violations:', error);
+            return [];
+        }
+    }
 }
 
 // إنشاء نسخة عامة من DatabaseManager

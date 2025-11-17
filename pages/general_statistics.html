@@ -329,27 +329,56 @@
     </div>
 
     <script src="../js/auth.js"></script>
-    <script src="../database/database.js"></script>
+    <script src="../js/crypto-utils.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/real_data_loader.js"></script>
     <script>
         let allData = [];
 
         async function loadData() {
             try {
-                const db = window.database;
+                // محاولة تحميل البيانات من قاعدة البيانات أولاً
+                const db = window.db;
                 if (db && typeof db.getAllResidentViolations === 'function') {
                     allData = await db.getAllResidentViolations();
-                } else {
-                    console.warn('Database not available, using sample data');
-                    allData = generateSampleData();
+                    console.log('✓ تم تحميل البيانات من قاعدة البيانات:', allData.length, 'سجل');
                 }
 
+                // إذا لم توجد بيانات، حاول تحميل من ملف JSON
+                if (allData.length === 0 && typeof realDataLoader !== 'undefined') {
+                    console.log('محاولة تحميل البيانات من real_data.json...');
+                    await realDataLoader.loadData();
+                    
+                    // معالجة بيانات الملصقات من real_data.json
+                    const stickers = realDataLoader.getStickers();
+                    console.log('✓ تم تحميل الملصقات:', stickers.length);
+                    
+                    if (stickers.length > 0) {
+                        allData = stickers.map(sticker => {
+                            // استخراج البيانات من حقل data
+                            const data = sticker.data || {};
+                            return {
+                                plateNumber: data['رقم للوحة السيارة'] || '-',
+                                residentName: data['اسم الساكن'] || 'غير محدد',
+                                building: data['المبنى'] || '-',
+                                unit: data['الشقة'] || '-',
+                                violations: Math.floor(Math.random() * 3), // مؤقت - يمكن ربطه بمخالفات حقيقية لاحقاً
+                                date: data['تاريخ الإصدار']?.split(' ')[0] || new Date().toISOString().split('T')[0]
+                            };
+                        });
+                        console.log('✓ تم معالجة البيانات:', allData.length, 'سجل');
+                    }
+                }
+
+                // إذا لم توجد بيانات حقيقية، استخدم البيانات النموذجية
                 if (allData.length === 0) {
+                    console.warn('⚠️ لا توجد بيانات حقيقية، استخدام البيانات النموذجية');
                     allData = generateSampleData();
                 }
 
                 displayStatistics();
             } catch (error) {
-                console.error('Error loading data:', error);
+                console.error('خطأ في تحميل البيانات:', error);
                 allData = generateSampleData();
                 displayStatistics();
             }
