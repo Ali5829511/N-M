@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة مدير نظام جديد</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+            text-align: center;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #bee5eb;
+        }
+        
+        .user-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .user-details p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .user-details strong {
+            color: #667eea;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 إضافة مدير نظام جديد</h1>
+        
+        <div class="info">
+            <p><strong>📋 بيانات المستخدم الجديد:</strong></p>
+            <div class="user-details">
+                <p><strong>اسم المستخدم:</strong> Ali</p>
+                <p><strong>كلمة المرور:</strong> 056146</p>
+                <p><strong>البريد الإلكتروني:</strong> aliayashi517@gmail.com</p>
+                <p><strong>الصلاحية:</strong> مدير نظام (Admin)</p>
+            </div>
+        </div>
+        
+        <div id="result"></div>
+        
+        <button onclick="addNewAdmin()">إضافة المستخدم الآن</button>
+        <button onclick="window.location.href='index.html'" style="background: #6c757d; margin-top: 10px;">
+            العودة لصفحة تسجيل الدخول
+        </button>
+    </div>
+
+    <script src="js/crypto-utils.js"></script>
+    <script>
+        async function addNewAdmin() {
+            try {
+                // بيانات المستخدم الجديد
+                const newUser = {
+                    username: 'Ali',
+                    password: '056146',
+                    name: 'علي',
+                    email: 'aliayashi517@gmail.com',
+                    role: 'admin'
+                };
+
+                // الحصول على المستخدمين الحاليين
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                
+                // التحقق من عدم وجود المستخدم مسبقاً
+                const existingUser = users.find(u => u.username === newUser.username);
+                if (existingUser) {
+                    document.getElementById('result').innerHTML = `
+                        <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
+                            ⚠️ المستخدم "${newUser.username}" موجود مسبقاً!
+                        </div>
+                    `;
+                    return;
+                }
+
+                // تشفير كلمة المرور
+                const hashedPassword = await CryptoUtils.hashPassword(newUser.password);
+
+                // إنشاء المستخدم الجديد
+                const user = {
+                    id: users.length + 1,
+                    username: newUser.username,
+                    password: hashedPassword,
+                    name: newUser.name,
+                    email: newUser.email,
+                    role: newUser.role,
+                    status: 'active',
+                    createdDate: new Date().toISOString().split('T')[0],
+                    lastLogin: null,
+                    requirePasswordChange: false
+                };
+
+                // إضافة المستخدم إلى القائمة
+                users.push(user);
+
+                // حفظ في localStorage
+                localStorage.setItem('users', JSON.stringify(users));
+
+                // عرض رسالة النجاح
+                document.getElementById('result').innerHTML = `
+                    <div class="success">
+                        <h3>✅ تم إضافة المستخدم بنجاح!</h3>
+                        <div class="user-details" style="margin-top: 15px;">
+                            <p><strong>اسم المستخدم:</strong> ${newUser.username}</p>
+                            <p><strong>البريد الإلكتروني:</strong> ${newUser.email}</p>
+                            <p><strong>الصلاحية:</strong> مدير نظام</p>
+                            <p><strong>الحالة:</strong> نشط</p>
+                        </div>
+                        <p style="margin-top: 15px;">يمكنك الآن تسجيل الدخول باستخدام هذا الحساب</p>
+                    </div>
+                `;
+
+                console.log('✅ تم إضافة المستخدم بنجاح:', user);
+            } catch (error) {
+                console.error('خطأ في إضافة المستخدم:', error);
+                document.getElementById('result').innerHTML = `
+                    <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
+                        ❌ حدث خطأ: ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
