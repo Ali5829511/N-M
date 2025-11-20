@@ -781,61 +781,6 @@ textarea.form-control {
 
 /* ==================== التصميم المتجاوب (Responsive Design) ==================== */
 
-/* تحسينات للأجهزة اللوحية (iPad) - Tablet Optimizations */
-@media (min-width: 769px) and (max-width: 1024px) {
-    :root {
-        --font-size-base: 1rem;
-        --font-size-xl: 1.25rem;
-        --spacing-md: 1rem;
-        --spacing-lg: 1.5rem;
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .col-md-6 {
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
-    
-    .col-md-12 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-    
-    .btn {
-        min-width: 120px;
-        padding: var(--spacing-md) var(--spacing-lg);
-    }
-    
-    .table th,
-    .table td {
-        padding: var(--spacing-md);
-        font-size: var(--font-size-sm);
-    }
-    
-    /* تحسين للنماذج على الأجهزة اللوحية */
-    .form-control {
-        font-size: 16px; /* منع التكبير التلقائي على iOS */
-    }
-}
-
-/* تحسينات للأجهزة اللوحية في الوضع الأفقي - Landscape Tablets */
-@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
-    .container {
-        max-width: 95%;
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .header {
-        padding: var(--spacing-lg) var(--spacing-xl);
-    }
-}
-
 /* الأجهزة اللوحية والأصغر (768px وأقل) */
 @media (max-width: 768px) {
     :root {
@@ -882,34 +827,24 @@ textarea.form-control {
     .btn {
         width: 100%;
         justify-content: center;
-        /* تحسين حجم الأزرار للأجهزة المحمولة */
-        min-height: 44px; /* Apple's recommended minimum touch target */
-        font-size: var(--font-size-base);
     }
     
     .btn-group {
         flex-direction: column;
         width: 100%;
-        gap: var(--spacing-sm);
     }
     
     .table-responsive {
         font-size: var(--font-size-sm);
-        border-radius: var(--border-radius-md);
-        /* تحسين التمرير الأفقي للجداول */
-        -webkit-overflow-scrolling: touch;
-        box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
     }
     
     .table th,
     .table td {
         padding: var(--spacing-sm);
-        white-space: nowrap;
     }
     
     .stats-grid {
         grid-template-columns: 1fr;
-        gap: var(--spacing-md);
     }
     
     .row {
@@ -924,18 +859,6 @@ textarea.form-control {
     
     .modal-content {
         margin: var(--spacing-sm);
-        max-height: 85vh;
-    }
-    
-    /* تحسين النماذج للأجهزة المحمولة */
-    .form-control {
-        font-size: 16px; /* منع التكبير التلقائي على iOS */
-        padding: var(--spacing-md);
-        min-height: 44px;
-    }
-    
-    select.form-control {
-        background-size: 16px;
     }
 }
 
@@ -952,13 +875,8 @@ textarea.form-control {
         --spacing-xl: 1.5rem;
     }
     
-    body {
-        padding: var(--spacing-sm);
-    }
-    
     .header {
-        padding: var(--spacing-md);
-        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-md) 0;
     }
     
     .header-logo img {
@@ -967,7 +885,7 @@ textarea.form-control {
     }
     
     .header-title h1 {
-        font-size: var(--font-size-lg);
+        font-size: var(--font-size-base);
     }
     
     .header-title p {
@@ -977,13 +895,11 @@ textarea.form-control {
     .user-avatar {
         width: 32px;
         height: 32px;
-        font-size: var(--font-size-sm);
     }
     
     .card {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm);
         margin-bottom: var(--spacing-md);
-        border-radius: var(--border-radius-md);
     }
     
     .card-title {
@@ -991,34 +907,18 @@ textarea.form-control {
     }
     
     .btn {
-        padding: var(--spacing-md);
-        font-size: var(--font-size-base);
-        min-height: 48px; /* أكبر قليلاً للأجهزة الصغيرة */
-        border-radius: var(--border-radius-md);
-    }
-    
-    .btn-sm {
         padding: var(--spacing-sm) var(--spacing-md);
         font-size: var(--font-size-sm);
-        min-height: 40px;
     }
     
     .btn-lg {
-        padding: var(--spacing-lg);
-        font-size: var(--font-size-lg);
-        min-height: 52px;
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: var(--font-size-base);
     }
     
     .form-control {
-        padding: var(--spacing-md);
-        font-size: 16px; /* منع التكبير التلقائي */
-        min-height: 48px;
-        border-radius: var(--border-radius-md);
-    }
-    
-    .form-label {
+        padding: var(--spacing-sm);
         font-size: var(--font-size-sm);
-        margin-bottom: var(--spacing-sm);
     }
     
     .table {
@@ -1027,13 +927,7 @@ textarea.form-control {
     
     .table th,
     .table td {
-        padding: var(--spacing-sm);
-        font-size: 0.8125rem;
-    }
-    
-    /* إخفاء بعض الأعمدة غير المهمة على الشاشات الصغيرة */
-    .table .hide-on-mobile {
-        display: none;
+        padding: var(--spacing-xs) var(--spacing-sm);
     }
     
     .stat-card {
@@ -1044,65 +938,21 @@ textarea.form-control {
         width: 50px;
         height: 50px;
         font-size: var(--font-size-xl);
-        margin-bottom: var(--spacing-sm);
     }
     
     .stat-value {
         font-size: var(--font-size-2xl);
     }
     
-    .stat-label {
-        font-size: var(--font-size-sm);
-    }
-    
     .modal-content {
         max-width: 100%;
-        margin: var(--spacing-sm);
-        border-radius: var(--border-radius-md);
+        margin: var(--spacing-xs);
     }
     
     .modal-header,
     .modal-body,
     .modal-footer {
         padding: var(--spacing-md);
-    }
-    
-    .modal-title {
-        font-size: var(--font-size-lg);
-    }
-    
-    /* تحسين عرض الإشعارات على الشاشات الصغيرة */
-    .alert {
-        padding: var(--spacing-sm) var(--spacing-md);
-        font-size: var(--font-size-sm);
-    }
-    
-    /* تحسين الشارات */
-    .badge {
-        font-size: 0.7rem;
-        padding: 2px var(--spacing-sm);
-    }
-}
-
-/* تحسينات للهواتف الصغيرة جداً (320px وأقل) */
-@media (max-width: 320px) {
-    :root {
-        --font-size-base: 0.8125rem;
-        --spacing-sm: 0.375rem;
-        --spacing-md: 0.625rem;
-    }
-    
-    .header-title h1 {
-        font-size: var(--font-size-base);
-    }
-    
-    .btn {
-        padding: var(--spacing-sm) var(--spacing-md);
-        font-size: var(--font-size-sm);
-    }
-    
-    .card {
-        padding: var(--spacing-sm);
     }
 }
 
@@ -1127,117 +977,6 @@ textarea.form-control {
 @media (min-width: 1025px) {
     .stats-grid {
         grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-/* تحسينات خاصة بـ iPad Pro (1024px x 1366px) */
-@media (min-width: 1024px) and (max-width: 1366px) {
-    .container {
-        max-width: 95%;
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .card {
-        padding: var(--spacing-xl);
-    }
-    
-    .btn {
-        min-height: 44px;
-        padding: var(--spacing-md) var(--spacing-xl);
-    }
-}
-
-/* تحسينات للوضع الأفقي على الهواتف */
-@media (max-height: 500px) and (orientation: landscape) {
-    body {
-        padding: var(--spacing-sm);
-    }
-    
-    .header {
-        padding: var(--spacing-sm) var(--spacing-md);
-    }
-    
-    .header-logo img {
-        width: 35px;
-        height: 35px;
-    }
-    
-    .header-title h1 {
-        font-size: var(--font-size-base);
-    }
-    
-    .card {
-        padding: var(--spacing-sm) var(--spacing-md);
-        margin-bottom: var(--spacing-sm);
-    }
-    
-    .modal-content {
-        max-height: 80vh;
-    }
-    
-    .stat-card {
-        padding: var(--spacing-sm) var(--spacing-md);
-    }
-    
-    .stat-icon {
-        width: 40px;
-        height: 40px;
-        font-size: var(--font-size-lg);
-        margin-bottom: var(--spacing-xs);
-    }
-}
-
-/* تحسينات للأجهزة ذات دقة عالية (Retina) */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    body {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-    
-    .card,
-    .btn,
-    .form-control {
-        border-width: 0.5px;
-    }
-}
-
-/* تحسينات للشاشات التي تدعم اللمس */
-@media (hover: none) and (pointer: coarse) {
-    /* زيادة حجم العناصر القابلة للنقر */
-    .btn,
-    a,
-    button,
-    input[type="button"],
-    input[type="submit"] {
-        min-height: 44px;
-        min-width: 44px;
-    }
-    
-    /* تحسين المسافات بين العناصر القابلة للنقر */
-    .btn + .btn,
-    a + a {
-        margin-right: var(--spacing-sm);
-    }
-    
-    /* إزالة hover effects على الأجهزة اللمسية */
-    .btn:hover,
-    .card:hover {
-        transform: none;
-    }
-    
-    /* تحسين ردود الفعل اللمسية */
-    .btn:active,
-    a:active {
-        transform: scale(0.97);
-        transition: transform 0.1s ease;
-    }
-    
-    /* منع التكبير على النقر المزدوج */
-    * {
-        touch-action: manipulation;
     }
 }
 
@@ -1415,175 +1154,6 @@ textarea:focus {
 
 .rounded-full {
     border-radius: var(--border-radius-full) !important;
-}
-
-/* ==================== فئات مساعدة للتصميم المتجاوب (Responsive Utilities) ==================== */
-
-/* إخفاء العناصر حسب حجم الشاشة */
-@media (max-width: 768px) {
-    .hide-mobile {
-        display: none !important;
-    }
-    
-    .show-mobile {
-        display: block !important;
-    }
-}
-
-@media (min-width: 769px) {
-    .hide-desktop {
-        display: none !important;
-    }
-    
-    .show-desktop {
-        display: block !important;
-    }
-    
-    .show-mobile {
-        display: none !important;
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-    .hide-tablet {
-        display: none !important;
-    }
-    
-    .show-tablet {
-        display: block !important;
-    }
-}
-
-/* تحسينات لعرض النص على الأجهزة المحمولة */
-.text-mobile-center {
-    @media (max-width: 768px) {
-        text-align: center !important;
-    }
-}
-
-.text-mobile-right {
-    @media (max-width: 768px) {
-        text-align: right !important;
-    }
-}
-
-/* تكديس العناصر على الأجهزة المحمولة */
-.stack-mobile {
-    @media (max-width: 768px) {
-        flex-direction: column !important;
-        align-items: stretch !important;
-    }
-}
-
-/* ملء العرض على الأجهزة المحمولة */
-.full-width-mobile {
-    @media (max-width: 768px) {
-        width: 100% !important;
-    }
-}
-
-/* مسافات مخصصة للأجهزة المحمولة */
-@media (max-width: 768px) {
-    .p-mobile-0 { padding: 0 !important; }
-    .p-mobile-1 { padding: var(--spacing-sm) !important; }
-    .p-mobile-2 { padding: var(--spacing-md) !important; }
-    
-    .m-mobile-0 { margin: 0 !important; }
-    .m-mobile-1 { margin: var(--spacing-sm) !important; }
-    .m-mobile-2 { margin: var(--spacing-md) !important; }
-}
-
-/* تحسين للجداول المتجاوبة */
-.table-card-mobile {
-    @media (max-width: 768px) {
-        display: block;
-        overflow-x: visible;
-    }
-    
-    @media (max-width: 768px) {
-        thead {
-            display: none;
-        }
-        
-        tbody,
-        tr,
-        td {
-            display: block;
-            width: 100%;
-        }
-        
-        tr {
-            margin-bottom: var(--spacing-md);
-            border: 1px solid var(--bg-secondary);
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-sm);
-            background: var(--bg-white);
-        }
-        
-        td {
-            text-align: right !important;
-            padding: var(--spacing-sm) var(--spacing-md);
-            position: relative;
-            padding-right: 50%;
-        }
-        
-        td:before {
-            content: attr(data-label);
-            position: absolute;
-            right: var(--spacing-md);
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-    }
-}
-
-/* تحسين الأزرار المجمعة على الأجهزة المحمولة */
-.btn-group-mobile-stack {
-    @media (max-width: 768px) {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-sm);
-        width: 100%;
-    }
-    
-    @media (max-width: 768px) {
-        .btn {
-            width: 100%;
-            margin: 0;
-        }
-    }
-}
-
-/* تحسين الكروت للشبكة على الأجهزة المختلفة */
-.card-grid-responsive {
-    display: grid;
-    gap: var(--spacing-lg);
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-}
-
-@media (max-width: 768px) {
-    .card-grid-responsive {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-md);
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-    .card-grid-responsive {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* تحسين المودال للشاشات الصغيرة */
-@media (max-width: 768px) {
-    .modal-fullscreen-mobile {
-        .modal-content {
-            max-width: 100%;
-            max-height: 100vh;
-            margin: 0;
-            border-radius: 0;
-        }
-    }
 }
 
 /* ==================== نهاية الملف ==================== */
