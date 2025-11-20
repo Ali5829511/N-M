@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعدادات API - نظام إدارة الإسكان</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .form-group small {
+            display: block;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .info-box ul {
+            margin-top: 10px;
+            padding-right: 20px;
+        }
+
+        .info-box li {
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="home.html" class="back-btn">
+            <i class="fas fa-arrow-right"></i> العودة للصفحة الرئيسية
+        </a>
+
+        <div class="header">
+            <h1><i class="fas fa-cog"></i> إعدادات API للتعرف على اللوحات</h1>
+            <p>قم بتكوين إعدادات API للتعرف الآلي على لوحات السيارات</p>
+        </div>
+
+        <div id="alertBox" class="alert"></div>
+
+        <div class="card">
+            <h2><i class="fas fa-info-circle"></i> معلومات مهمة</h2>
+            <div class="info-box">
+                <h3>خيارات التعرف على اللوحات:</h3>
+                <p><strong>1. نظام المحاكاة (Mock System):</strong></p>
+                <ul>
+                    <li>✅ يعمل بدون الحاجة إلى API خارجي</li>
+                    <li>✅ مجاني بالكامل</li>
+                    <li>✅ ينشئ بيانات واقعية للاختبار</li>
+                    <li>⚠️ البيانات عشوائية (للاختبار فقط)</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>2. Plate Recognizer API:</strong></p>
+                <ul>
+                    <li>✅ تعرف حقيقي على اللوحات</li>
+                    <li>✅ دقة عالية جداً</li>
+                    <li>✅ يدعم اللوحات السعودية</li>
+                    <li>⚠️ يحتاج رمز API (مدفوع)</li>
+                    <li>🔗 الموقع: <a href="https://app.platerecognizer.com/start/" target="_blank">app.platerecognizer.com</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-toggle-on"></i> اختيار نظام التعرف</h2>
+            <div class="form-group">
+                <label for="recognitionSystem">النظام المفضل:</label>
+                <select id="recognitionSystem">
+                    <option value="mock">نظام المحاكاة (Mock System) - مجاني</option>
+                    <option value="platerecognizer">Plate Recognizer API - احترافي</option>
+                </select>
+                <small>اختر النظام الذي تريد استخدامه للتعرف على اللوحات</small>
+            </div>
+        </div>
+
+        <div class="card" id="apiCard" style="display: none;">
+            <h2><i class="fas fa-key"></i> إعدادات Plate Recognizer API</h2>
+            
+            <div class="form-group">
+                <label for="apiToken">رمز API Token:</label>
+                <input type="text" id="apiToken" placeholder="أدخل رمز API Token هنا">
+                <small>احصل على رمز API من <a href="https://app.platerecognizer.com/start/" target="_blank">app.platerecognizer.com</a></small>
+            </div>
+
+            <div class="form-group">
+                <label for="apiRegion">المنطقة:</label>
+                <select id="apiRegion">
+                    <option value="sa">السعودية (SA)</option>
+                    <option value="ae">الإمارات (AE)</option>
+                    <option value="kw">الكويت (KW)</option>
+                    <option value="qa">قطر (QA)</option>
+                    <option value="bh">البحرين (BH)</option>
+                    <option value="om">عمان (OM)</option>
+                </select>
+                <small>اختر المنطقة الجغرافية للوحات</small>
+            </div>
+
+            <div class="form-group">
+                <label>حالة الاتصال:</label>
+                <span id="connectionStatus" class="status-badge status-disconnected">
+                    <i class="fas fa-circle"></i> غير متصل
+                </span>
+            </div>
+
+            <button class="btn btn-success" onclick="testConnection()">
+                <i class="fas fa-plug"></i> اختبار الاتصال
+            </button>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-save"></i> حفظ الإعدادات</h2>
+            <button class="btn btn-primary" onclick="saveSettings()">
+                <i class="fas fa-save"></i> حفظ الإعدادات
+            </button>
+            <button class="btn btn-danger" onclick="resetSettings()">
+                <i class="fas fa-trash"></i> إعادة تعيين
+            </button>
+        </div>
+    </div>
+
+    <script src="../js/auth-manager.js"></script>
+    <script>
+        // التحقق من تسجيل الدخول
+        if (window.authManager) {
+            window.authManager.requireAuth();
+        }
+
+        // تحميل الإعدادات المحفوظة
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+        });
+
+        // عرض/إخفاء بطاقة API حسب النظام المختار
+        document.getElementById('recognitionSystem').addEventListener('change', function() {
+            const apiCard = document.getElementById('apiCard');
+            if (this.value === 'platerecognizer') {
+                apiCard.style.display = 'block';
+            } else {
+                apiCard.style.display = 'none';
+            }
+        });
+
+        function loadSettings() {
+            // تحميل نظام التعرف
+            const system = localStorage.getItem('RECOGNITION_SYSTEM') || 'mock';
+            document.getElementById('recognitionSystem').value = system;
+            
+            // عرض بطاقة API إذا كان النظام هو platerecognizer
+            if (system === 'platerecognizer') {
+                document.getElementById('apiCard').style.display = 'block';
+            }
+
+            // تحميل رمز API
+            const apiToken = localStorage.getItem('PLATE_RECOGNIZER_API_TOKEN') || '';
+            document.getElementById('apiToken').value = apiToken;
+
+            // تحميل المنطقة
+            const region = localStorage.getItem('PLATE_RECOGNIZER_REGION') || 'sa';
+            document.getElementById('apiRegion').value = region;
+
+            // تحديث حالة الاتصال
+            if (apiToken) {
+                document.getElementById('connectionStatus').className = 'status-badge status-connected';
+                document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
+            }
+        }
+
+        function saveSettings() {
+            const system = document.getElementById('recognitionSystem').value;
+            const apiToken = document.getElementById('apiToken').value;
+            const region = document.getElementById('apiRegion').value;
+
+            // حفظ الإعدادات
+            localStorage.setItem('RECOGNITION_SYSTEM', system);
+            localStorage.setItem('PLATE_RECOGNIZER_API_TOKEN', apiToken);
+            localStorage.setItem('PLATE_RECOGNIZER_REGION', region);
+
+            showAlert('success', 'تم حفظ الإعدادات بنجاح! ✅');
+
+            // تحديث حالة الاتصال
+            if (apiToken && system === 'platerecognizer') {
+                document.getElementById('connectionStatus').className = 'status-badge status-connected';
+                document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
+            }
+        }
+
+        async function testConnection() {
+            const apiToken = document.getElementById('apiToken').value;
+            
+            if (!apiToken) {
+                showAlert('error', 'الرجاء إدخال رمز API أولاً! ⚠️');
+                return;
+            }
+
+            showAlert('info', 'جاري اختبار الاتصال... ⏳');
+
+            try {
+                // اختبار الاتصال بـ API
+                const response = await fetch('https://api.platerecognizer.com/v1/statistics/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Token ' + apiToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showAlert('success', `✅ الاتصال ناجح! لديك ${data.usage.calls} استدعاء متبقي من ${data.usage.max_calls}`);
+                    document.getElementById('connectionStatus').className = 'status-badge status-connected';
+                    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
+                } else {
+                    showAlert('error', '❌ فشل الاتصال! تحقق من صحة رمز API');
+                    document.getElementById('connectionStatus').className = 'status-badge status-disconnected';
+                    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
+                }
+            } catch (error) {
+                showAlert('error', '❌ خطأ في الاتصال: ' + error.message);
+                document.getElementById('connectionStatus').className = 'status-badge status-disconnected';
+                document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
+            }
+        }
+
+        function resetSettings() {
+            if (confirm('هل أنت متأكد من إعادة تعيين جميع الإعدادات؟')) {
+                localStorage.removeItem('RECOGNITION_SYSTEM');
+                localStorage.removeItem('PLATE_RECOGNIZER_API_TOKEN');
+                localStorage.removeItem('PLATE_RECOGNIZER_REGION');
+                
+                document.getElementById('recognitionSystem').value = 'mock';
+                document.getElementById('apiToken').value = '';
+                document.getElementById('apiRegion').value = 'sa';
+                document.getElementById('apiCard').style.display = 'none';
+                
+                document.getElementById('connectionStatus').className = 'status-badge status-disconnected';
+                document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
+                
+                showAlert('success', 'تم إعادة تعيين الإعدادات بنجاح! ✅');
+            }
+        }
+
+        function showAlert(type, message) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.className = 'alert alert-' + type;
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
