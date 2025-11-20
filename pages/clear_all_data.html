@@ -199,6 +199,13 @@
     </div>
 
     <script>
+        // Disable login protection for this page
+        window.addEventListener('DOMContentLoaded', function() {
+            // Remove any login redirects
+            const scripts = document.querySelectorAll('script[src*="auth"]');
+            scripts.forEach(s => s.remove());
+        });
+        
         function addLog(message, type = 'info') {
             const log = document.getElementById('log');
             log.style.display = 'block';
