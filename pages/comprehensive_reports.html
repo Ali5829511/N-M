@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير الشاملة - نظام إدارة الإسكان</title>
+    <link rel="stylesheet" href="../css/responsive-style.css">
+    <style>
+        .reports-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .report-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .report-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+
+        .report-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .report-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .report-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .report-card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .report-card-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .report-card-desc {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .report-options {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .option-group {
+            margin-bottom: 25px;
+        }
+
+        .option-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .option-group select,
+        .option-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .option-group select:focus,
+        .option-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-left: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .report-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            display: none;
+        }
+
+        .report-preview.active {
+            display: block;
+        }
+
+        .preview-header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .preview-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        @media print {
+            .report-header,
+            .report-types,
+            .report-options,
+            .action-buttons {
+                display: none !important;
+            }
+
+            .report-preview {
+                display: block !important;
+                box-shadow: none;
+                padding: 0;
+            }
+
+            body {
+                background: white;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .report-header h1 {
+                font-size: 1.8em;
+            }
+
+            .report-types {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="reports-container">
+        <div class="report-header">
+            <h1>📊 التقارير الشاملة</h1>
+            <p>نظام إدارة إسكان أعضاء هيئة التدريس - تقارير متقدمة ومفصلة</p>
+            <p id="reportDate"></p>
+        </div>
+
+        <div class="report-types">
+            <div class="report-card" data-report="stickers">
+                <div class="report-card-icon">🚗</div>
+                <div class="report-card-title">تقرير الملصقات</div>
+                <div class="report-card-desc">تقرير شامل عن ملصقات السيارات والمركبات</div>
+            </div>
+
+            <div class="report-card" data-report="housing">
+                <div class="report-card-icon">🏠</div>
+                <div class="report-card-title">تقرير الإسكان</div>
+                <div class="report-card-desc">تقرير عن الوحدات السكنية والإشغال</div>
+            </div>
+
+            <div class="report-card" data-report="residents">
+                <div class="report-card-icon">👥</div>
+                <div class="report-card-title">تقرير السكان</div>
+                <div class="report-card-desc">تقرير عن أعضاء هيئة التدريس والسكان</div>
+            </div>
+
+            <div class="report-card" data-report="violations">
+                <div class="report-card-icon">⚠️</div>
+                <div class="report-card-title">تقرير المخالفات</div>
+                <div class="report-card-desc">تقرير عن المخالفات والتجاوزات</div>
+            </div>
+
+            <div class="report-card" data-report="statistics">
+                <div class="report-card-icon">📈</div>
+                <div class="report-card-title">التقرير الإحصائي</div>
+                <div class="report-card-desc">إحصائيات شاملة ورسوم بيانية</div>
+            </div>
+
+            <div class="report-card" data-report="comprehensive">
+                <div class="report-card-icon">📋</div>
+                <div class="report-card-title">التقرير الشامل</div>
+                <div class="report-card-desc">تقرير كامل يشمل جميع الأقسام</div>
+            </div>
+        </div>
+
+        <div class="report-options">
+            <h2>⚙️ خيارات التقرير</h2>
+            
+            <div class="option-group">
+                <label>نوع التقرير:</label>
+                <select id="reportType">
+                    <option value="summary">ملخص</option>
+                    <option value="detailed">مفصل</option>
+                    <option value="full">كامل</option>
+                </select>
+            </div>
+
+            <div class="option-group">
+                <label>الفترة الزمنية:</label>
+                <select id="timePeriod">
+                    <option value="today">اليوم</option>
+                    <option value="week">هذا الأسبوع</option>
+                    <option value="month">هذا الشهر</option>
+                    <option value="quarter">هذا الربع</option>
+                    <option value="year">هذا العام</option>
+                    <option value="all">جميع الفترات</option>
+                    <option value="custom">فترة مخصصة</option>
+                </select>
+            </div>
+
+            <div class="option-group" id="customDateRange" style="display: none;">
+                <label>من تاريخ:</label>
+                <input type="date" id="startDate">
+                <label style="margin-top: 10px;">إلى تاريخ:</label>
+                <input type="date" id="endDate">
+            </div>
+
+            <div class="option-group">
+                <label>الأقسام المطلوبة:</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeStats" checked>
+                        <label for="includeStats">الإحصائيات</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeCharts" checked>
+                        <label for="includeCharts">الرسوم البيانية</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeTables" checked>
+                        <label for="includeTables">الجداول</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeDetails" checked>
+                        <label for="includeDetails">التفاصيل</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="generateReport()">
+                    📊 إنشاء التقرير
+                </button>
+                <button class="btn btn-success" onclick="exportExcel()">
+                    📗 تصدير Excel
+                </button>
+                <button class="btn btn-info" onclick="exportPDF()">
+                    📄 تصدير PDF
+                </button>
+                <button class="btn btn-warning" onclick="printReport()">
+                    🖨️ طباعة
+                </button>
+            </div>
+        </div>
+
+        <div class="report-preview" id="reportPreview">
+            <div class="preview-header">
+                <h2 id="previewTitle">التقرير الشامل</h2>
+                <p id="previewSubtitle"></p>
+            </div>
+
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <div id="reportContent"></div>
+        </div>
+    </div>
+
+    <script src="../js/database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // تهيئة التاريخ
+        document.getElementById('reportDate').textContent = `تاريخ الإنشاء: ${new Date().toLocaleDateString('ar-SA')}`;
+
+        // معالجة اختيار نوع التقرير
+        document.querySelectorAll('.report-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.report-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // معالجة الفترة المخصصة
+        document.getElementById('timePeriod').addEventListener('change', function() {
+            const customRange = document.getElementById('customDateRange');
+            if (this.value === 'custom') {
+                customRange.style.display = 'block';
+            } else {
+                customRange.style.display = 'none';
+            }
+        });
+
+        // دالة إنشاء التقرير
+        function generateReport() {
+            const selectedCard = document.querySelector('.report-card.active');
+            if (!selectedCard) {
+                alert('يرجى اختيار نوع التقرير أولاً');
+                return;
+            }
+
+            const reportType = selectedCard.dataset.report;
+            const preview = document.getElementById('reportPreview');
+            const title = document.getElementById('previewTitle');
+            const subtitle = document.getElementById('previewSubtitle');
+            const statsGrid = document.getElementById('statsGrid');
+            const content = document.getElementById('reportContent');
+
+            // عرض التقرير
+            preview.classList.add('active');
+            preview.scrollIntoView({ behavior: 'smooth' });
+
+            // تحديث العنوان
+            title.textContent = selectedCard.querySelector('.report-card-title').textContent;
+            subtitle.textContent = `تم إنشاء التقرير في: ${new Date().toLocaleString('ar-SA')}`;
+
+            // جلب البيانات
+            const stickers = JSON.parse(localStorage.getItem('stickers') || '[]');
+            const stats = JSON.parse(localStorage.getItem('stickerStats') || '{}');
+
+            // إنشاء الإحصائيات
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${stickers.length}</div>
+                    <div class="stat-label">إجمالي الملصقات</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stickers.filter(s => s.status === 'فعال').length}</div>
+                    <div class="stat-label">ملصقات فعالة</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stickers.filter(s => s.status === 'ملغي').length}</div>
+                    <div class="stat-label">ملصقات ملغية</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${new Set(stickers.map(s => s.building)).size}</div>
+                    <div class="stat-label">عدد المباني</div>
+                </div>
+            `;
+
+            // إنشاء محتوى التقرير حسب النوع
+            let reportHTML = '';
+
+            if (reportType === 'stickers' || reportType === 'comprehensive') {
+                reportHTML += generateStickersReport(stickers);
+            }
+
+            if (reportType === 'housing' || reportType === 'comprehensive') {
+                reportHTML += generateHousingReport(stickers);
+            }
+
+            if (reportType === 'residents' || reportType === 'comprehensive') {
+                reportHTML += generateResidentsReport(stickers);
+            }
+
+            if (reportType === 'violations' || reportType === 'comprehensive') {
+                reportHTML += generateViolationsReport(stickers);
+            }
+
+            if (reportType === 'statistics' || reportType === 'comprehensive') {
+                reportHTML += generateStatisticsReport(stickers);
+            }
+
+            content.innerHTML = reportHTML;
+        }
+
+        // دوال إنشاء التقارير المختلفة
+        function generateStickersReport(stickers) {
+            let html = '<h3>📋 تقرير الملصقات التفصيلي</h3>';
+            html += '<table style="width:100%; border-collapse: collapse; margin-top: 20px;">';
+            html += '<thead><tr style="background: #667eea; color: white;">';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">رقم الملصق</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">اسم الساكن</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">رقم اللوحة</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">المبنى</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">الشقة</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">الحالة</th>';
+            html += '</tr></thead><tbody>';
+
+            stickers.slice(0, 50).forEach((sticker, index) => {
+                html += `<tr style="background: ${index % 2 === 0 ? '#f8f9fa' : 'white'};">`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd;">${sticker.id}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd;">${sticker.residentName}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd;">${sticker.licensePlate}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd;">${sticker.building}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd;">${sticker.apartment}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd;">${sticker.status}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            if (stickers.length > 50) {
+                html += `<p style="margin-top: 15px; color: #666;">* عرض أول 50 سجل من أصل ${stickers.length} سجل</p>`;
+            }
+            return html;
+        }
+
+        function generateHousingReport(stickers) {
+            const buildings = {};
+            stickers.forEach(s => {
+                if (!buildings[s.building]) {
+                    buildings[s.building] = { total: 0, occupied: new Set() };
+                }
+                buildings[s.building].total++;
+                buildings[s.building].occupied.add(s.apartment);
+            });
+
+            let html = '<h3 style="margin-top: 40px;">🏠 تقرير الإسكان</h3>';
+            html += '<table style="width:100%; border-collapse: collapse; margin-top: 20px;">';
+            html += '<thead><tr style="background: #11998e; color: white;">';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">رقم المبنى</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">عدد الملصقات</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">عدد الوحدات المشغولة</th>';
+            html += '</tr></thead><tbody>';
+
+            Object.keys(buildings).sort((a, b) => a - b).forEach((building, index) => {
+                html += `<tr style="background: ${index % 2 === 0 ? '#f8f9fa' : 'white'};">`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${building}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${buildings[building].total}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${buildings[building].occupied.size}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function generateResidentsReport(stickers) {
+            const residents = {};
+            stickers.forEach(s => {
+                if (!residents[s.residentName]) {
+                    residents[s.residentName] = [];
+                }
+                residents[s.residentName].push(s);
+            });
+
+            let html = '<h3 style="margin-top: 40px;">👥 تقرير السكان</h3>';
+            html += '<table style="width:100%; border-collapse: collapse; margin-top: 20px;">';
+            html += '<thead><tr style="background: #4facfe; color: white;">';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">اسم الساكن</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">عدد المركبات</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">المبنى</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">الشقة</th>';
+            html += '</tr></thead><tbody>';
+
+            Object.keys(residents).slice(0, 50).forEach((name, index) => {
+                const resident = residents[name][0];
+                html += `<tr style="background: ${index % 2 === 0 ? '#f8f9fa' : 'white'};">`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd;">${name}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${residents[name].length}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${resident.building}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${resident.apartment}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function generateViolationsReport(stickers) {
+            const violations = stickers.filter(s => s.status === 'ملغي' || s.status === 'مخالف');
+
+            let html = '<h3 style="margin-top: 40px;">⚠️ تقرير المخالفات</h3>';
+            
+            if (violations.length === 0) {
+                html += '<p style="color: #28a745; font-size: 1.2em; margin-top: 20px;">✅ لا توجد مخالفات مسجلة</p>';
+            } else {
+                html += '<table style="width:100%; border-collapse: collapse; margin-top: 20px;">';
+                html += '<thead><tr style="background: #fa709a; color: white;">';
+                html += '<th style="padding: 12px; border: 1px solid #ddd;">رقم الملصق</th>';
+                html += '<th style="padding: 12px; border: 1px solid #ddd;">اسم الساكن</th>';
+                html += '<th style="padding: 12px; border: 1px solid #ddd;">رقم اللوحة</th>';
+                html += '<th style="padding: 12px; border: 1px solid #ddd;">الحالة</th>';
+                html += '</tr></thead><tbody>';
+
+                violations.forEach((v, index) => {
+                    html += `<tr style="background: ${index % 2 === 0 ? '#f8f9fa' : 'white'};">`;
+                    html += `<td style="padding: 10px; border: 1px solid #ddd;">${v.id}</td>`;
+                    html += `<td style="padding: 10px; border: 1px solid #ddd;">${v.residentName}</td>`;
+                    html += `<td style="padding: 10px; border: 1px solid #ddd;">${v.licensePlate}</td>`;
+                    html += `<td style="padding: 10px; border: 1px solid #ddd;">${v.status}</td>`;
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table>';
+            }
+
+            return html;
+        }
+
+        function generateStatisticsReport(stickers) {
+            const vehicleTypes = {};
+            const buildingStats = {};
+
+            stickers.forEach(s => {
+                // إحصائيات أنواع المركبات
+                const type = s.vehicleMake || 'غير محدد';
+                vehicleTypes[type] = (vehicleTypes[type] || 0) + 1;
+
+                // إحصائيات المباني
+                buildingStats[s.building] = (buildingStats[s.building] || 0) + 1;
+            });
+
+            let html = '<h3 style="margin-top: 40px;">📈 التقرير الإحصائي</h3>';
+            
+            // أنواع المركبات الأكثر شيوعاً
+            html += '<h4 style="margin-top: 25px;">أكثر أنواع المركبات شيوعاً:</h4>';
+            html += '<table style="width:100%; border-collapse: collapse; margin-top: 15px;">';
+            html += '<thead><tr style="background: #667eea; color: white;">';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">نوع المركبة</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">العدد</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">النسبة</th>';
+            html += '</tr></thead><tbody>';
+
+            const sortedTypes = Object.entries(vehicleTypes).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            sortedTypes.forEach(([type, count], index) => {
+                const percentage = ((count / stickers.length) * 100).toFixed(1);
+                html += `<tr style="background: ${index % 2 === 0 ? '#f8f9fa' : 'white'};">`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd;">${type}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${count}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${percentage}%</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+
+            // المباني الأكثر كثافة
+            html += '<h4 style="margin-top: 30px;">المباني الأكثر كثافة:</h4>';
+            html += '<table style="width:100%; border-collapse: collapse; margin-top: 15px;">';
+            html += '<thead><tr style="background: #11998e; color: white;">';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">رقم المبنى</th>';
+            html += '<th style="padding: 12px; border: 1px solid #ddd;">عدد الملصقات</th>';
+            html += '</tr></thead><tbody>';
+
+            const sortedBuildings = Object.entries(buildingStats).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            sortedBuildings.forEach(([building, count], index) => {
+                html += `<tr style="background: ${index % 2 === 0 ? '#f8f9fa' : 'white'};">`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${building}</td>`;
+                html += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${count}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+
+            return html;
+        }
+
+        // دالة تصدير Excel
+        function exportExcel() {
+            const stickers = JSON.parse(localStorage.getItem('stickers') || '[]');
+            
+            if (stickers.length === 0) {
+                alert('لا توجد بيانات للتصدير');
+                return;
+            }
+
+            const ws = XLSX.utils.json_to_sheet(stickers);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'الملصقات');
+            
+            const fileName = `تقرير_شامل_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        // دالة تصدير PDF
+        function exportPDF() {
+            window.print();
+        }
+
+        // دالة الطباعة
+        function printReport() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
