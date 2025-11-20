@@ -262,6 +262,19 @@
             </button>
         </div>
 
+        <!-- أزرار التصدير والطباعة -->
+        <div class="action-buttons" style="margin-top: 10px; border-top: 2px solid #eee; padding-top: 15px;">
+            <button class="btn btn-success" onclick="exportToExcel()">
+                📊 تصدير إلى Excel
+            </button>
+            <button class="btn btn-danger" onclick="exportToPDF()">
+                📄 تصدير إلى PDF
+            </button>
+            <button class="btn btn-primary" onclick="printReport()">
+                🖨️ طباعة
+            </button>
+        </div>
+
         <!-- سجل الأحداث -->
         <div class="status-card">
             <h2>📝 سجل الأحداث</h2>
@@ -284,6 +297,11 @@
         </div>
     </div>
 
+    <!-- مكتبات التصدير والطباعة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
     <script src="../js/database.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/parkpow-integration.js"></script>
@@ -521,6 +539,354 @@
         // العودة للصفحة الرئيسية
         function goBack() {
             window.location.href = 'home.html';
+        }
+
+        // ==================== وظائف التصدير والطباعة ====================
+
+        // تصدير إلى Excel
+        async function exportToExcel() {
+            try {
+                logMessage('info', 'جاري تحضير ملف Excel...');
+                
+                // الحصول على البيانات
+                const vehicles = window.db.getAllVehicles();
+                const stats = {
+                    total: vehicles.length,
+                    synced: 0,
+                    pending: vehicles.length
+                };
+
+                // تحضير البيانات للتصدير
+                const data = vehicles.map((v, index) => ({
+                    '#': index + 1,
+                    'رقم اللوحة': v.plateNumber || '',
+                    'الصانع': v.make || '',
+                    'الطراز': v.model || '',
+                    'اللون': v.color || '',
+                    'النوع': v.type || '',
+                    'اسم المالك': v.ownerName || '',
+                    'رقم الوحدة': v.unitNumber || '',
+                    'رقم الملصق': v.stickerNumber || '',
+                    'رقم الهوية': v.idNumber || '',
+                    'رقم الجوال': v.phoneNumber || '',
+                    'حالة المزامنة': 'في الانتظار'
+                }));
+
+                // إنشاء ورقة العمل
+                const ws = XLSX.utils.json_to_sheet(data);
+                
+                // تنسيق العرض
+                const colWidths = [
+                    {wch: 5},  // #
+                    {wch: 15}, // رقم اللوحة
+                    {wch: 12}, // الصانع
+                    {wch: 12}, // الطراز
+                    {wch: 10}, // اللون
+                    {wch: 10}, // النوع
+                    {wch: 20}, // اسم المالك
+                    {wch: 12}, // رقم الوحدة
+                    {wch: 12}, // رقم الملصق
+                    {wch: 15}, // رقم الهوية
+                    {wch: 15}, // رقم الجوال
+                    {wch: 15}  // حالة المزامنة
+                ];
+                ws['!cols'] = colWidths;
+
+                // إنشاء ورقة الإحصائيات
+                const statsData = [
+                    {'البيان': 'إجمالي المركبات', 'العدد': stats.total},
+                    {'البيان': 'المركبات المتزامنة', 'العدد': stats.synced},
+                    {'البيان': 'في انتظار المزامنة', 'العدد': stats.pending}
+                ];
+                const wsStats = XLSX.utils.json_to_sheet(statsData);
+                wsStats['!cols'] = [{wch: 25}, {wch: 15}];
+
+                // إنشاء كتاب العمل
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, wsStats, 'الإحصائيات');
+                XLSX.utils.book_append_sheet(wb, ws, 'المركبات');
+
+                // حفظ الملف
+                const fileName = `ParkPow_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                
+                logMessage('success', `تم تصدير ${vehicles.length} مركبة إلى Excel بنجاح`);
+            } catch (error) {
+                console.error('خطأ في التصدير:', error);
+                logMessage('error', 'فشل تصدير البيانات إلى Excel');
+            }
+        }
+
+        // تصدير إلى PDF
+        async function exportToPDF() {
+            try {
+                logMessage('info', 'جاري تحضير ملف PDF...');
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                // إضافة الخط العربي
+                doc.setFont('helvetica');
+                doc.setLanguage('ar');
+
+                // العنوان
+                doc.setFontSize(18);
+                doc.text('تقرير نظام ParkPow - التعرف على لوحات السيارات', 148, 20, { align: 'center' });
+                
+                doc.setFontSize(12);
+                doc.text(`التاريخ: ${new Date().toLocaleDateString('ar-SA')}`, 148, 28, { align: 'center' });
+
+                // الإحصائيات
+                const vehicles = window.db.getAllVehicles();
+                const stats = {
+                    total: vehicles.length,
+                    synced: 0,
+                    pending: vehicles.length
+                };
+
+                doc.setFontSize(14);
+                doc.text('الإحصائيات:', 270, 40, { align: 'right' });
+                
+                doc.setFontSize(11);
+                doc.text(`إجمالي المركبات: ${stats.total}`, 270, 48, { align: 'right' });
+                doc.text(`المركبات المتزامنة: ${stats.synced}`, 270, 54, { align: 'right' });
+                doc.text(`في انتظار المزامنة: ${stats.pending}`, 270, 60, { align: 'right' });
+
+                // جدول المركبات
+                const tableData = vehicles.slice(0, 50).map((v, index) => [
+                    index + 1,
+                    v.plateNumber || '',
+                    v.make || '',
+                    v.model || '',
+                    v.color || '',
+                    v.ownerName || '',
+                    v.unitNumber || '',
+                    v.stickerNumber || ''
+                ]);
+
+                doc.autoTable({
+                    startY: 70,
+                    head: [['#', 'رقم اللوحة', 'الصانع', 'الطراز', 'اللون', 'المالك', 'الوحدة', 'الملصق']],
+                    body: tableData,
+                    styles: {
+                        font: 'helvetica',
+                        fontSize: 9,
+                        halign: 'center'
+                    },
+                    headStyles: {
+                        fillColor: [41, 128, 185],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    alternateRowStyles: {
+                        fillColor: [245, 245, 245]
+                    },
+                    margin: { top: 70, right: 10, left: 10 }
+                });
+
+                // ملاحظة إذا كان هناك المزيد
+                if (vehicles.length > 50) {
+                    const finalY = doc.lastAutoTable.finalY + 10;
+                    doc.setFontSize(10);
+                    doc.text(`ملاحظة: يعرض التقرير أول 50 مركبة من أصل ${vehicles.length} مركبة`, 148, finalY, { align: 'center' });
+                }
+
+                // حفظ الملف
+                const fileName = `ParkPow_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+                
+                logMessage('success', 'تم تصدير التقرير إلى PDF بنجاح');
+            } catch (error) {
+                console.error('خطأ في التصدير:', error);
+                logMessage('error', 'فشل تصدير التقرير إلى PDF');
+            }
+        }
+
+        // طباعة التقرير (بدون رأس وتذييل)
+        function printReport() {
+            try {
+                logMessage('info', 'جاري تحضير الطباعة...');
+                
+                const vehicles = window.db.getAllVehicles();
+                const stats = {
+                    total: vehicles.length,
+                    synced: 0,
+                    pending: vehicles.length
+                };
+
+                // إنشاء نافذة طباعة
+                const printWindow = window.open('', '_blank');
+                
+                // محتوى الطباعة
+                const printContent = `
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>تقرير ParkPow</title>
+                    <style>
+                        @page {
+                            margin: 0;
+                            size: A4 landscape;
+                        }
+                        @media print {
+                            body {
+                                margin: 0;
+                                padding: 20mm;
+                            }
+                            header, footer {
+                                display: none !important;
+                            }
+                        }
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
+                        body {
+                            font-family: 'Arial', sans-serif;
+                            direction: rtl;
+                            padding: 20mm;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 20px;
+                            border-bottom: 3px solid #2c3e50;
+                            padding-bottom: 15px;
+                        }
+                        .header h1 {
+                            color: #2c3e50;
+                            font-size: 24px;
+                            margin-bottom: 10px;
+                        }
+                        .header p {
+                            color: #7f8c8d;
+                            font-size: 14px;
+                        }
+                        .stats {
+                            display: flex;
+                            justify-content: space-around;
+                            margin: 20px 0;
+                            padding: 15px;
+                            background: #ecf0f1;
+                            border-radius: 8px;
+                        }
+                        .stat-item {
+                            text-align: center;
+                        }
+                        .stat-item h3 {
+                            color: #2980b9;
+                            font-size: 28px;
+                            margin-bottom: 5px;
+                        }
+                        .stat-item p {
+                            color: #34495e;
+                            font-size: 14px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                            font-size: 11px;
+                        }
+                        th {
+                            background: #2980b9;
+                            color: white;
+                            padding: 12px 8px;
+                            text-align: center;
+                            font-weight: bold;
+                        }
+                        td {
+                            padding: 10px 8px;
+                            text-align: center;
+                            border-bottom: 1px solid #ddd;
+                        }
+                        tr:nth-child(even) {
+                            background: #f8f9fa;
+                        }
+                        tr:hover {
+                            background: #e8f4f8;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>🚗 تقرير نظام ParkPow - التعرف على لوحات السيارات</h1>
+                        <p>جامعة الإمام محمد بن سعود الإسلامية - وحدة إسكان هيئة التدريس</p>
+                        <p>التاريخ: ${new Date().toLocaleDateString('ar-SA')} | الوقت: ${new Date().toLocaleTimeString('ar-SA')}</p>
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <h3>${stats.total}</h3>
+                            <p>إجمالي المركبات</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>${stats.synced}</h3>
+                            <p>المركبات المتزامنة</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>${stats.pending}</h3>
+                            <p>في انتظار المزامنة</p>
+                        </div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>رقم اللوحة</th>
+                                <th>الصانع</th>
+                                <th>الطراز</th>
+                                <th>اللون</th>
+                                <th>النوع</th>
+                                <th>اسم المالك</th>
+                                <th>رقم الوحدة</th>
+                                <th>رقم الملصق</th>
+                                <th>رقم الهوية</th>
+                                <th>رقم الجوال</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${vehicles.map((v, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${v.plateNumber || '-'}</td>
+                                    <td>${v.make || '-'}</td>
+                                    <td>${v.model || '-'}</td>
+                                    <td>${v.color || '-'}</td>
+                                    <td>${v.type || '-'}</td>
+                                    <td>${v.ownerName || '-'}</td>
+                                    <td>${v.unitNumber || '-'}</td>
+                                    <td>${v.stickerNumber || '-'}</td>
+                                    <td>${v.idNumber || '-'}</td>
+                                    <td>${v.phoneNumber || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+                `;
+                
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                
+                // الانتظار حتى يتم تحميل المحتوى ثم الطباعة
+                printWindow.onload = function() {
+                    printWindow.focus();
+                    printWindow.print();
+                };
+                
+                logMessage('success', 'تم فتح نافذة الطباعة');
+            } catch (error) {
+                console.error('خطأ في الطباعة:', error);
+                logMessage('error', 'فشل فتح نافذة الطباعة');
+            }
         }
 
         // تهيئة عند تحميل الصفحة
