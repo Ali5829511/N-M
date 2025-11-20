@@ -91,7 +91,11 @@ class DatabaseManager {
      * ✅ تحسين أمني: كلمات المرور الآن مشفرة باستخدام SHA-256
      */
     async initializeDefaultUsers() {
-        // توليد كلمات مرور قوية عشوائية
+        // كلمة مرور المدير الرئيسي (Ali)
+        const aliPassword = '056146';
+        const hashedAliPassword = await CryptoUtils.hashPassword(aliPassword);
+        
+        // توليد كلمات مرور قوية عشوائية للمستخدمين الآخرين
         const adminPassword = CryptoUtils.generateSecurePassword(16);
         const violationsPassword = CryptoUtils.generateSecurePassword(16);
         const inquiryPassword = CryptoUtils.generateSecurePassword(16);
@@ -104,10 +108,23 @@ class DatabaseManager {
         const defaultUsers = [
             {
                 id: 1,
+                username: 'Ali',
+                password: hashedAliPassword, // ✅ كلمة مرور مشفرة
+                name: 'علي - مدير النظام',
+                email: 'aliayashi522@gmail.com',
+                role: 'admin',
+                status: 'active',
+                createdDate: new Date().toISOString().split('T')[0],
+                lastLogin: new Date().toISOString(),
+                requirePasswordChange: false, // لا يحتاج تغيير كلمة المرور
+                tempPassword: null // كلمة مرور دائمة
+            },
+            {
+                id: 2,
                 username: 'admin',
                 password: hashedAdminPassword, // ✅ كلمة مرور مشفرة
                 name: 'مدير النظام',
-                email: 'aliayashi522@gmail.com',
+                email: 'admin@university.edu.sa',
                 role: 'admin',
                 status: 'active',
                 createdDate: new Date().toISOString().split('T')[0],
@@ -116,7 +133,7 @@ class DatabaseManager {
                 tempPassword: adminPassword // كلمة المرور المؤقتة (سيتم حذفها بعد أول تسجيل دخول)
             },
             {
-                id: 2,
+                id: 3,
                 username: 'violations_officer',
                 password: hashedViolationsPassword, // ✅ كلمة مرور مشفرة
                 name: 'مسؤول المخالفات',
@@ -129,7 +146,7 @@ class DatabaseManager {
                 tempPassword: violationsPassword
             },
             {
-                id: 3,
+                id: 4,
                 username: 'inquiry_user',
                 password: hashedInquiryPassword, // ✅ كلمة مرور مشفرة
                 name: 'موظف الاستعلام',
@@ -150,6 +167,7 @@ class DatabaseManager {
         // عرض كلمات المرور المؤقتة في Console للمسؤول
         console.log('🔐 تم إنشاء المستخدمين بكلمات مرور آمنة:');
         console.log('━'.repeat(60));
+        console.log('👤 Ali (مدير رئيسي): 056146');
         console.log('👤 admin:', adminPassword);
         console.log('👤 violations_officer:', violationsPassword);
         console.log('👤 inquiry_user:', inquiryPassword);
