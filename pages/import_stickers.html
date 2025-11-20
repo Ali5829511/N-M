@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استيراد البيانات - نظام الملصقات</title>
+    <link rel="stylesheet" href="../css/responsive-style.css">
+    <style>
+        body {
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .import-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .import-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .import-header h1 {
+            color: #2c5282;
+            margin-bottom: 10px;
+        }
+        
+        .import-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-box.success {
+            background: #f0fff4;
+            border: 2px solid #38a169;
+        }
+        
+        .stat-box.warning {
+            background: #fffaf0;
+            border: 2px solid #d69e2e;
+        }
+        
+        .stat-box.danger {
+            background: #fff5f5;
+            border: 2px solid #e53e3e;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c53030;
+        }
+        
+        .btn-success {
+            background: #38a169;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #2f855a;
+        }
+        
+        .btn-primary {
+            background: #3182ce;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2c5282;
+        }
+        
+        .log-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .log-entry.success {
+            background: #f0fff4;
+            color: #22543d;
+        }
+        
+        .log-entry.error {
+            background: #fff5f5;
+            color: #742a2a;
+        }
+        
+        .log-entry.info {
+            background: #ebf8ff;
+            color: #2c5282;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #edf2f7;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38a169, #48bb78);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="import-container">
+        <div class="import-header">
+            <h1>🔄 استيراد البيانات من Excel</h1>
+            <p>إدارة استيراد وحذف بيانات الملصقات</p>
+        </div>
+        
+        <div class="import-stats">
+            <div class="stat-box success">
+                <div class="stat-value" id="currentCount">-</div>
+                <div class="stat-label">البيانات الحالية</div>
+            </div>
+            <div class="stat-box warning">
+                <div class="stat-value" id="newCount">2382</div>
+                <div class="stat-label">البيانات الجديدة</div>
+            </div>
+            <div class="stat-box danger">
+                <div class="stat-value" id="processedCount">0</div>
+                <div class="stat-label">تم المعالجة</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-danger" onclick="deleteAllData()">🗑️ حذف جميع البيانات</button>
+            <button class="btn btn-success" onclick="importData()">📥 استيراد البيانات</button>
+            <button class="btn btn-primary" onclick="viewData()">👁️ عرض البيانات</button>
+        </div>
+        
+        <div class="log-container" id="logContainer">
+            <div class="log-entry info">جاهز للبدء...</div>
+        </div>
+    </div>
+
+    <script src="../js/database.js"></script>
+    <script>
+        // البيانات الجديدة (سيتم تحميلها من JSON)
+        let newStickersData = [];
+        
+        // تحميل البيانات الجديدة
+        async function loadNewData() {
+            try {
+                const response = await fetch('../data/stickers_data.json');
+                newStickersData = await response.json();
+                document.getElementById('newCount').textContent = newStickersData.length;
+                addLog('success', `تم تحميل ${newStickersData.length} ملصق من ملف JSON`);
+            } catch (error) {
+                addLog('error', 'فشل تحميل البيانات: ' + error.message);
+            }
+        }
+        
+        // عرض عدد البيانات الحالية
+        function updateCurrentCount() {
+            const stickers = db.getAllStickers();
+            document.getElementById('currentCount').textContent = stickers.length;
+        }
+        
+        // حذف جميع البيانات
+        function deleteAllData() {
+            if (!confirm('هل أنت متأكد من حذف جميع البيانات الحالية؟\n\nهذا الإجراء لا يمكن التراجع عنه!')) {
+                return;
+            }
+            
+            try {
+                // حذف جميع البيانات من localStorage
+                localStorage.removeItem('stickers');
+                localStorage.removeItem('stickerStats');
+                localStorage.removeItem('stickerHistory');
+                
+                // إنشاء بيانات فارغة
+                localStorage.setItem('stickers', JSON.stringify([]));
+                
+                addLog('success', '✅ تم حذف جميع البيانات بنجاح');
+                updateCurrentCount();
+                updateProgress(0);
+                document.getElementById('processedCount').textContent = '0';
+            } catch (error) {
+                addLog('error', '❌ فشل حذف البيانات: ' + error.message);
+            }
+        }
+        
+        // استيراد البيانات
+        async function importData() {
+            if (newStickersData.length === 0) {
+                addLog('error', 'لا توجد بيانات للاستيراد. جاري التحميل...');
+                await loadNewData();
+                if (newStickersData.length === 0) {
+                    return;
+                }
+            }
+            
+            if (!confirm(`هل تريد استيراد ${newStickersData.length} ملصق؟`)) {
+                return;
+            }
+            
+            addLog('info', 'بدء عملية الاستيراد...');
+            
+            let imported = 0;
+            let failed = 0;
+            
+            // استيراد البيانات دفعة واحدة
+            try {
+                const stickers = [];
+                
+                for (let i = 0; i < newStickersData.length; i++) {
+                    const data = newStickersData[i];
+                    
+                    // تحويل البيانات إلى تنسيق النظام
+                    const sticker = {
+                        id: data.id,
+                        residentName: data.residentName,
+                        nationalId: data.nationalId,
+                        phoneNumber: '',
+                        unitType: data.unitType === 'A' ? 'شقة' : data.unitType === 'V' ? 'فلة' : 'شقة',
+                        building: data.building,
+                        apartment: data.apartment,
+                        licensePlate: data.licensePlate,
+                        vehicleType: data.vehicleType,
+                        vehicleMake: extractMake(data.vehicleType),
+                        vehicleModel: extractModel(data.vehicleType),
+                        vehicleColor: extractColor(data.vehicleType),
+                        vehicleYear: extractYear(data.vehicleType),
+                        status: data.status === 'active' ? 'فعال' : 'ملغي',
+                        issueDate: data.issueDate,
+                        expiryDate: calculateExpiryDate(data.issueDate),
+                        deliveryStatus: 'لا يوجد',
+                        notes: ''
+                    };
+                    
+                    stickers.push(sticker);
+                    imported++;
+                    
+                    // تحديث التقدم كل 100 ملصق
+                    if (i % 100 === 0) {
+                        updateProgress((i / newStickersData.length) * 100);
+                        document.getElementById('processedCount').textContent = imported;
+                        await new Promise(resolve => setTimeout(resolve, 10));
+                    }
+                }
+                
+                // حفظ جميع البيانات
+                localStorage.setItem('stickers', JSON.stringify(stickers));
+                
+                updateProgress(100);
+                document.getElementById('processedCount').textContent = imported;
+                addLog('success', `✅ تم استيراد ${imported} ملصق بنجاح`);
+                updateCurrentCount();
+                
+                // حساب الإحصائيات
+                updateStats(stickers);
+                
+            } catch (error) {
+                addLog('error', `❌ فشل الاستيراد: ${error.message}`);
+            }
+        }
+        
+        // استخراج معلومات السيارة من نص "نوع المركبة"
+        function extractMake(vehicleType) {
+            const parts = vehicleType.split(' ');
+            return parts[0] || '';
+        }
+        
+        function extractModel(vehicleType) {
+            const parts = vehicleType.split(' ');
+            return parts.slice(1, -2).join(' ') || '';
+        }
+        
+        function extractColor(vehicleType) {
+            const parts = vehicleType.split(' ');
+            return parts[parts.length - 2] || '';
+        }
+        
+        function extractYear(vehicleType) {
+            const parts = vehicleType.split(' ');
+            const lastPart = parts[parts.length - 1];
+            return lastPart && /^\d{4}$/.test(lastPart) ? lastPart : '';
+        }
+        
+        // حساب تاريخ الانتهاء (سنة واحدة من تاريخ الإصدار)
+        function calculateExpiryDate(issueDate) {
+            if (!issueDate) return '';
+            const date = new Date(issueDate);
+            date.setFullYear(date.getFullYear() + 1);
+            return date.toISOString().split('T')[0];
+        }
+        
+        // تحديث الإحصائيات
+        function updateStats(stickers) {
+            const stats = {
+                total: stickers.length,
+                active: stickers.filter(s => s.status === 'فعال').length,
+                inactive: stickers.filter(s => s.status === 'غير فعال').length,
+                cancelled: stickers.filter(s => s.status === 'ملغي').length,
+                violations: 0,
+                todayIssued: 0,
+                weekIssued: 0
+            };
+            
+            localStorage.setItem('stickerStats', JSON.stringify(stats));
+            addLog('info', `📊 الإحصائيات: فعال: ${stats.active}, ملغي: ${stats.cancelled}`);
+        }
+        
+        // عرض البيانات
+        function viewData() {
+            window.location.href = 'enhanced_stickers_management.html';
+        }
+        
+        // إضافة سجل
+        function addLog(type, message) {
+            const logContainer = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const time = new Date().toLocaleTimeString('ar-SA');
+            entry.textContent = `[${time}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        // تحديث شريط التقدم
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percent + '%';
+            progressBar.textContent = Math.round(percent) + '%';
+        }
+        
+        // تهيئة الصفحة
+        window.addEventListener('load', () => {
+            updateCurrentCount();
+            loadNewData();
+        });
+    </script>
+</body>
+</html>
