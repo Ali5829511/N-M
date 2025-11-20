@@ -1,0 +1,547 @@
+/* ==================== تحسينات خاصة للأجهزة المحمولة والأجهزة اللوحية ==================== */
+/* 
+ * Mobile & Tablet Enhancements
+ * يمكن تضمين هذا الملف في الصفحات التي تحتاج تحسينات إضافية للأجهزة المحمولة
+ */
+
+/* ==================== تحسينات عامة للأجهزة المحمولة ==================== */
+
+/* منع التكبير على iOS عند التركيز على المدخلات */
+@media (max-width: 768px) {
+    input,
+    textarea,
+    select {
+        font-size: 16px !important; /* منع التكبير التلقائي */
+    }
+}
+
+/* تحسين التمرير للأجهزة المحمولة */
+body {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* إزالة تأثير النقر على الأجهزة المحمولة */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+/* تحسين الخطوط للأجهزة المحمولة */
+@media (max-width: 768px) {
+    body {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* ==================== تحسينات الجداول للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    /* تحويل الجدول إلى بطاقات على الشاشات الصغيرة */
+    .table-mobile-cards {
+        display: block;
+        width: 100%;
+        overflow-x: visible;
+    }
+    
+    .table-mobile-cards thead {
+        display: none;
+    }
+    
+    .table-mobile-cards tbody {
+        display: block;
+    }
+    
+    .table-mobile-cards tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .table-mobile-cards td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border: none;
+        text-align: right !important;
+    }
+    
+    .table-mobile-cards td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #2d3748;
+        margin-left: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .table-mobile-cards td:not(:last-child) {
+        border-bottom: 1px solid #f7fafc;
+    }
+}
+
+/* ==================== تحسينات النماذج للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    /* تكديس العناصر في النماذج */
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    /* ملء العرض الكامل للمدخلات */
+    .form-mobile-full input,
+    .form-mobile-full select,
+    .form-mobile-full textarea {
+        width: 100%;
+    }
+    
+    /* تحسين أحجام الأزرار */
+    .form-mobile-full button,
+    .form-mobile-full .btn {
+        width: 100%;
+        min-height: 48px;
+        font-size: 1rem;
+    }
+    
+    /* تحسين مسافات العناوين */
+    .form-mobile-full label {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+}
+
+/* ==================== تحسينات الأزرار للأجهزة اللمسية ==================== */
+
+@media (hover: none) and (pointer: coarse) {
+    /* زيادة حجم الأزرار */
+    button,
+    .btn,
+    a.btn {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    /* تحسين المسافات بين الأزرار */
+    .btn-group button,
+    .btn-group .btn {
+        margin: 0.25rem;
+    }
+    
+    /* تحسين تأثير النقر */
+    button:active,
+    .btn:active {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+}
+
+/* ==================== تحسينات البطاقات للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    .card-mobile-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .card-mobile-full {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        border-radius: 0;
+    }
+    
+    .card-mobile-compact {
+        padding: 1rem;
+    }
+    
+    .card-mobile-compact .card-header {
+        padding: 0.75rem 0;
+        margin-bottom: 0.75rem;
+    }
+    
+    .card-mobile-compact .card-body {
+        padding: 0;
+    }
+}
+
+/* ==================== تحسينات التنقل للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    /* قائمة تنقل عمودية */
+    .nav-mobile-vertical {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .nav-mobile-vertical a,
+    .nav-mobile-vertical button {
+        width: 100%;
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    /* أزرار تنقل سفلية */
+    .nav-mobile-bottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+    
+    .nav-mobile-bottom a,
+    .nav-mobile-bottom button {
+        flex: 1;
+        padding: 0.75rem;
+        text-align: center;
+        border: none;
+        background: transparent;
+        color: #4a5568;
+        font-size: 0.875rem;
+    }
+    
+    .nav-mobile-bottom a.active,
+    .nav-mobile-bottom button.active {
+        color: #8B6F47;
+        font-weight: 600;
+    }
+}
+
+/* ==================== تحسينات المودال للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    .modal-mobile-fullscreen .modal-content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0;
+        border-radius: 0;
+        overflow-y: auto;
+    }
+    
+    .modal-mobile-bottom .modal-content {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 1rem 1rem 0 0;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* ==================== تحسينات الشبكة للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    .grid-mobile-1 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .grid-mobile-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .grid-tablet-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .grid-tablet-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* ==================== تحسينات النصوص للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    .text-mobile-sm {
+        font-size: 0.875rem !important;
+    }
+    
+    .text-mobile-base {
+        font-size: 1rem !important;
+    }
+    
+    .text-mobile-lg {
+        font-size: 1.125rem !important;
+    }
+    
+    .text-mobile-xl {
+        font-size: 1.25rem !important;
+    }
+    
+    .text-mobile-center {
+        text-align: center !important;
+    }
+    
+    .text-mobile-right {
+        text-align: right !important;
+    }
+}
+
+/* ==================== تحسينات المسافات للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    .p-mobile-0 { padding: 0 !important; }
+    .p-mobile-1 { padding: 0.5rem !important; }
+    .p-mobile-2 { padding: 1rem !important; }
+    .p-mobile-3 { padding: 1.5rem !important; }
+    
+    .px-mobile-0 { padding-left: 0 !important; padding-right: 0 !important; }
+    .px-mobile-1 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+    .px-mobile-2 { padding-left: 1rem !important; padding-right: 1rem !important; }
+    
+    .py-mobile-0 { padding-top: 0 !important; padding-bottom: 0 !important; }
+    .py-mobile-1 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+    .py-mobile-2 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+    
+    .m-mobile-0 { margin: 0 !important; }
+    .m-mobile-1 { margin: 0.5rem !important; }
+    .m-mobile-2 { margin: 1rem !important; }
+    .m-mobile-3 { margin: 1.5rem !important; }
+    
+    .mx-mobile-0 { margin-left: 0 !important; margin-right: 0 !important; }
+    .mx-mobile-1 { margin-left: 0.5rem !important; margin-right: 0.5rem !important; }
+    .mx-mobile-2 { margin-left: 1rem !important; margin-right: 1rem !important; }
+    
+    .my-mobile-0 { margin-top: 0 !important; margin-bottom: 0 !important; }
+    .my-mobile-1 { margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; }
+    .my-mobile-2 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
+}
+
+/* ==================== تحسينات الإخفاء/الإظهار ==================== */
+
+@media (max-width: 480px) {
+    .hide-mobile-sm {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+    
+    .show-mobile {
+        display: block !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .hide-desktop {
+        display: none !important;
+    }
+    
+    .show-desktop {
+        display: block !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hide-tablet {
+        display: none !important;
+    }
+    
+    .show-tablet {
+        display: block !important;
+    }
+}
+
+/* ==================== تحسينات الصور للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    .img-mobile-full {
+        width: 100%;
+        height: auto;
+    }
+    
+    .img-mobile-contain {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+    
+    .img-mobile-cover {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+}
+
+/* ==================== تحسينات الفيديو للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    .video-mobile-responsive {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+    }
+    
+    .video-container-mobile {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 */
+        height: 0;
+        overflow: hidden;
+    }
+    
+    .video-container-mobile iframe,
+    .video-container-mobile video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+/* ==================== تحسينات التمرير للأجهزة المحمولة ==================== */
+
+.scroll-mobile-horizontal {
+    @media (max-width: 768px) {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        gap: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        &::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 3px;
+        }
+    }
+}
+
+/* ==================== تحسينات القوائم المنسدلة للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    .dropdown-mobile-full {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        width: 100% !important;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-radius: 1rem 1rem 0 0;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+    }
+}
+
+/* ==================== تحسينات الإشعارات للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    .alert-mobile-fixed {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .toast-mobile {
+        position: fixed;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        padding: 1rem;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+}
+
+/* ==================== تحسينات الأداء للأجهزة المحمولة ==================== */
+
+@media (max-width: 768px) {
+    /* تقليل الرسوم المتحركة على الأجهزة الضعيفة */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+    
+    /* تحسين الأداء */
+    .card,
+    .btn,
+    img {
+        will-change: auto;
+    }
+}
+
+/* ==================== تحسينات إمكانية الوصول للأجهزة المحمولة ==================== */
+
+/* تحسين حجم النص للقراءة */
+@media (max-width: 768px) {
+    .accessible-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        letter-spacing: 0.01em;
+    }
+    
+    /* تحسين التباين */
+    .high-contrast {
+        color: #000;
+        background: #fff;
+    }
+    
+    /* تحسين مناطق اللمس */
+    .touch-friendly {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.75rem;
+    }
+}
+
+/* ==================== نهاية الملف ==================== */
