@@ -95,6 +95,10 @@ class DatabaseManager {
         const aliPassword = '056146';
         const hashedAliPassword = await CryptoUtils.hashPassword(aliPassword);
         
+        // كلمة مرور المدير الثاني (Alif)
+        const alifPassword = '053563';
+        const hashedAlifPassword = await CryptoUtils.hashPassword(alifPassword);
+        
         // توليد كلمات مرور قوية عشوائية للمستخدمين الآخرين
         const adminPassword = CryptoUtils.generateSecurePassword(16);
         const violationsPassword = CryptoUtils.generateSecurePassword(16);
@@ -111,6 +115,19 @@ class DatabaseManager {
                 username: 'Ali',
                 password: hashedAliPassword, // ✅ كلمة مرور مشفرة
                 name: 'علي - مدير النظام',
+                email: 'aliayashi522@gmail.com',
+                role: 'admin',
+                status: 'active',
+                createdDate: new Date().toISOString().split('T')[0],
+                lastLogin: new Date().toISOString(),
+                requirePasswordChange: false, // لا يحتاج تغيير كلمة المرور
+                tempPassword: null // كلمة مرور دائمة
+            },
+            {
+                id: 5,
+                username: 'Alif',
+                password: hashedAlifPassword, // ✅ كلمة مرور مشفرة
+                name: 'ayashi',
                 email: 'aliayashi522@gmail.com',
                 role: 'admin',
                 status: 'active',
