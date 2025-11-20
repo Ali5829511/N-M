@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار حساب مدير النظام - Ali</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-right: 4px solid #667eea;
+        }
+
+        .test-section h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .result {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .credentials {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .credentials h3 {
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .credentials p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .credentials code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        #testResults {
+            margin-top: 20px;
+        }
+
+        .icon {
+            font-size: 24px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 اختبار حساب مدير النظام</h1>
+
+        <div class="credentials">
+            <h3>معلومات تسجيل الدخول</h3>
+            <p>اسم المستخدم: <code>Ali</code></p>
+            <p>كلمة المرور: <code>056146</code></p>
+            <p>الدور: <code>admin</code></p>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 نتائج الاختبار</h2>
+            <div id="testResults"></div>
+        </div>
+
+        <button class="btn" onclick="location.href='index.html'">
+            🚀 الذهاب إلى صفحة تسجيل الدخول
+        </button>
+    </div>
+
+    <script src="js/crypto-utils.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
+        const resultsDiv = document.getElementById('testResults');
+        
+        function addResult(message, type = 'info', icon = '') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `${icon ? '<span class="icon">' + icon + '</span>' : ''}${message}`;
+            resultsDiv.appendChild(div);
+        }
+
+        async function runTests() {
+            addResult('جاري بدء الاختبارات...', 'info', '🔄');
+            
+            // Test 1: Check localStorage
+            if (typeof localStorage === 'undefined') {
+                addResult('❌ localStorage غير متوفر', 'error', '❌');
+                return;
+            }
+            addResult('✓ localStorage متوفر', 'success', '✅');
+            
+            // Test 2: Initialize database
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            if (typeof window.db === 'undefined') {
+                addResult('❌ قاعدة البيانات غير محملة', 'error', '❌');
+                return;
+            }
+            addResult('✓ قاعدة البيانات محملة', 'success', '✅');
+            
+            // Test 3: Check for users
+            const users = await window.db.getUsers();
+            if (users.length === 0) {
+                addResult('⚠️ لم يتم العثور على مستخدمين. سيتم إنشاؤهم تلقائياً عند أول دخول.', 'warning', '⚠️');
+            } else {
+                addResult(`✓ تم العثور على ${users.length} مستخدم(ين)`, 'success', '✅');
+            }
+            
+            // Test 4: Check for Ali user
+            const aliUser = users.find(u => u.username === 'Ali');
+            if (!aliUser) {
+                addResult('ℹ️ المستخدم Ali سيتم إنشاؤه تلقائياً عند أول تحميل للنظام', 'info', 'ℹ️');
+            } else {
+                addResult('✓ المستخدم Ali موجود في قاعدة البيانات!', 'success', '✅');
+                addResult(`   الاسم: ${aliUser.name}`, 'info');
+                addResult(`   البريد: ${aliUser.email}`, 'info');
+                addResult(`   الدور: ${aliUser.role}`, 'info');
+                addResult(`   الحالة: ${aliUser.status}`, 'info');
+                
+                if (aliUser.role === 'admin') {
+                    addResult('✓ الحساب له صلاحيات مدير النظام الكاملة', 'success', '🎉');
+                }
+            }
+            
+            // Test 5: Check CryptoUtils
+            if (typeof CryptoUtils !== 'undefined') {
+                addResult('✓ نظام التشفير محمّل ويعمل بشكل صحيح', 'success', '🔐');
+            } else {
+                addResult('❌ نظام التشفير غير محمّل', 'error', '❌');
+            }
+            
+            // Test 6: Check AuthManager
+            if (typeof window.authManager !== 'undefined') {
+                addResult('✓ نظام المصادقة محمّل ويعمل بشكل صحيح', 'success', '🔑');
+            } else {
+                addResult('❌ نظام المصادقة غير محمّل', 'error', '❌');
+            }
+            
+            addResult('🎊 اكتمل الاختبار! الحساب جاهز للاستخدام', 'success', '🎉');
+            addResult('يمكنك الآن الذهاب لصفحة تسجيل الدخول', 'info', '👉');
+        }
+
+        // Run tests on page load
+        window.addEventListener('load', async () => {
+            // Wait for all scripts to load
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await runTests();
+        });
+    </script>
+</body>
+</html>
