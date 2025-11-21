@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### 📝 Documentation - التوثيق
+
+#### Fixed - الإصلاحات
+- 📋 **توثيق رسالة الالتزام الأولية / Document Initial Commit Message**
+  - إضافة ملف COMMIT_MESSAGE_FIX.md / Add COMMIT_MESSAGE_FIX.md file
+  - توضيح محتويات الالتزام f6dbbef (الإعداد الأولي للمشروع) / Explain commit f6dbbef contents (initial project setup)
+  - توثيق سبب عدم إمكانية إعادة كتابة تاريخ Git / Document why Git history cannot be rewritten
+  - إرشادات لرسائل الالتزام المستقبلية / Guidelines for future commit messages
+
 ## [1.5.1] - 2025-11-17
 
 ### 🔄 Enhancement: Plate Recognizer Token Reset Link
