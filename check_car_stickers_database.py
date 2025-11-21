@@ -20,11 +20,22 @@ This script:
 import os
 import sys
 import json
+import traceback
 from datetime import datetime
 
+# Constants
+EXCEL_FILE = 'ملصقات السيارات.xlsx'
+JSON_REPORT = 'car_stickers_analysis.json'
+VERIFICATION_SCRIPT = 'verify_car_stickers_data.py'
+SCHEMA_FILE = 'database/schema.sql'
+ENV_FILE = '.env'
+
 def check_excel_file():
-    """التحقق من وجود ملف Excel"""
-    excel_file = 'ملصقات السيارات.xlsx'
+    """
+    التحقق من وجود ملف Excel
+    Check for Excel file existence and analyze its contents
+    """
+    excel_file = EXCEL_FILE
     
     print("\n" + "="*80)
     print("📄 التحقق من ملف البيانات الأصلي / Checking Source Data File")
@@ -56,7 +67,7 @@ def check_excel_file():
             return True, total_rows
             
         except ImportError:
-            print("   ⚠️  مكتبة openpyxl غير متوفرة - تثبيتها بـ: pip install openpyxl")
+            print("   ⚠️  مكتبة openpyxl غير متوفرة - يمكن تثبيتها بـ: pip install openpyxl")
             return True, 0
         except Exception as e:
             print(f"   ⚠️  خطأ في قراءة الملف: {str(e)}")
@@ -66,8 +77,11 @@ def check_excel_file():
         return False, 0
 
 def check_json_analysis():
-    """التحقق من ملف تحليل JSON"""
-    json_file = 'car_stickers_analysis.json'
+    """
+    التحقق من ملف تحليل JSON
+    Check for JSON analysis report
+    """
+    json_file = JSON_REPORT
     
     print("\n" + "="*80)
     print("📊 التحقق من تقرير التحليل / Checking Analysis Report")
@@ -93,12 +107,15 @@ def check_json_analysis():
             return True, None
     else:
         print(f"⚠️  تقرير التحليل غير موجود: {json_file}")
-        print(f"   💡 يمكنك إنشاءه بتشغيل: python verify_car_stickers_data.py")
+        print(f"   💡 يمكنك إنشاءه بتشغيل: python {VERIFICATION_SCRIPT}")
         return False, None
 
 def check_database_schema():
-    """التحقق من وجود schema قاعدة البيانات"""
-    schema_file = 'database/schema.sql'
+    """
+    التحقق من وجود schema قاعدة البيانات
+    Check database schema file
+    """
+    schema_file = SCHEMA_FILE
     
     print("\n" + "="*80)
     print("🗄️  التحقق من هيكل قاعدة البيانات / Checking Database Schema")
@@ -138,13 +155,16 @@ def check_database_schema():
         return False
 
 def check_database_connection():
-    """التحقق من الاتصال بقاعدة البيانات"""
+    """
+    التحقق من الاتصال بقاعدة البيانات
+    Check database connection configuration
+    """
     print("\n" + "="*80)
     print("🔌 التحقق من الاتصال بقاعدة البيانات / Checking Database Connection")
     print("="*80)
     
     # Check for .env file
-    env_file = '.env'
+    env_file = ENV_FILE
     if os.path.exists(env_file):
         print(f"✅ ملف الإعدادات موجود: {env_file}")
         try:
@@ -166,7 +186,10 @@ def check_database_connection():
         return False
 
 def generate_report(excel_exists, excel_rows, json_exists, json_data, schema_exists, db_config_exists):
-    """إنشاء تقرير شامل"""
+    """
+    إنشاء تقرير شامل
+    Generate comprehensive report based on all checks
+    """
     print("\n" + "="*80)
     print("📋 التقرير الشامل / Comprehensive Report")
     print("="*80)
@@ -225,7 +248,18 @@ def generate_report(excel_exists, excel_rows, json_exists, json_data, schema_exi
     print("\n" + "="*80)
 
 def main():
-    """الدالة الرئيسية"""
+    """
+    الدالة الرئيسية
+    Main function - orchestrates all verification checks
+    
+    Performs comprehensive verification of:
+    - Excel source data file
+    - JSON analysis report
+    - Database schema
+    - Database connection configuration
+    
+    Generates a detailed report of findings and recommendations.
+    """
     print("\n" + "="*80)
     print("🚗 التحقق من قاعدة بيانات ملصقات السيارات")
     print("Car Stickers Database Verification")
@@ -250,6 +284,5 @@ if __name__ == '__main__':
         sys.exit(0)
     except Exception as e:
         print(f"\n❌ خطأ: {str(e)}")
-        import traceback
         traceback.print_exc()
         sys.exit(1)
