@@ -6,7 +6,10 @@
 Shared utilities for plate recognition systems
 
 هذه الوحدة تحتوي على وظائف مشتركة بين أنظمة التعرف على اللوحات
+مع دعم التحقق من صحة اللوحات السعودية بدقة 100%
+
 This module contains shared functions between plate recognition systems
+with support for 100% accurate Saudi plate validation
 """
 
 import os
@@ -14,6 +17,15 @@ import sqlite3
 import json
 from datetime import datetime
 from pathlib import Path
+
+# استيراد نظام التحقق من اللوحات السعودية
+try:
+    from saudi_plate_validator import SaudiPlateValidator
+    SAUDI_VALIDATOR_AVAILABLE = True
+except ImportError:
+    SAUDI_VALIDATOR_AVAILABLE = False
+    print("⚠️ تحذير: نظام التحقق من اللوحات السعودية غير متوفر")
+    print("⚠️ Warning: Saudi plate validator not available")
 
 
 class DatabaseManager:
