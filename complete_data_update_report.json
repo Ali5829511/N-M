@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-11-21T14:24:27.916050",
+  "residents": {
+    "old_count": 0,
+    "new_count": 1057,
+    "villas": 114,
+    "apartments": 943
+  },
+  "stickers": {
+    "old_count": 2211,
+    "new_count": 2382,
+    "active": 2211,
+    "cancelled": 171
+  }
+}

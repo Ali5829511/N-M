@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-11-21T14:20:55.568082",
+  "adjustment": {
+    "target": 1020,
+    "before": 1011,
+    "added": 9,
+    "removed": 0,
+    "after": 1020
+  },
+  "final_statistics": {
+    "total_parking": 1293,
+    "private_parking": {
+      "total": 1020,
+      "old_buildings": 592,
+      "new_buildings": 428
+    },
+    "public_parking": 234,
+    "disabled_parking": 39,
+    "policy": {
+      "apartments": "موقف خاص واحد لكل شقة",
+      "villas": "مواقف داخلية خاصة خارج النظام المشترك",
+      "public": "مواقف عامة للزوار والاحتياجات المؤقتة",
+      "disabled": "مواقف خاصة لذوي الاحتياجات وفق المعايير الدولية"
+    }
+  }
+}
