@@ -208,6 +208,7 @@ class SaudiPlateValidator:
             return False, 'لوحة غير صحيحة: لا توجد أرقام', details
         
         # التحقق من الأحرف العربية
+        all_letters = ''
         if has_arabic:
             all_letters = ''.join(components['arabic_letters'])
             if len(all_letters) < 1 or len(all_letters) > 3:
@@ -222,6 +223,7 @@ class SaudiPlateValidator:
                     return False, f'حرف غير مسموح في اللوحات السعودية: {letter}', details
         
         # التحقق من الأحرف الإنجليزية (إن وجدت)
+        all_english = ''
         if has_english:
             all_english = ''.join(components['english_letters'])
             if len(all_english) < 1 or len(all_english) > 3:
@@ -315,15 +317,15 @@ def test_plate_validation():
     validator = SaudiPlateValidator()
     
     test_plates = [
-        'أ ب ج ١٢٣٤',     # لوحة صحيحة
-        'أبج1234',          # لوحة صحيحة بدون مسافات
-        'ABC1234',          # لوحة بأحرف إنجليزية
-        'س ص ٩٨٧',        # لوحة صحيحة
-        'ث خ ذ 123',       # أحرف غير مسموحة
+        'أ ب ح 1234',     # لوحة صحيحة
+        'أبح1234',          # لوحة صحيحة بدون مسافات
+        'ABJ1234',          # لوحة بأحرف إنجليزية
+        'س ص 987',        # لوحة صحيحة
+        'ت خ ذ 123',       # أحرف غير مسموحة
         'أب12345',          # أرقام زائدة
-        'أبجد123',          # أحرف زائدة
+        'أبحد123',          # أحرف زائدة
         '1234',             # لا توجد أحرف
-        'أبج',              # لا توجد أرقام
+        'أبح',              # لا توجد أرقام
     ]
     
     print("\n" + "="*70)
