@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-11-21T13:26:01.422116",
+  "old_data": {
+    "units": 835,
+    "residents": 835
+  },
+  "new_data": {
+    "total_units": 1134,
+    "villas": 114,
+    "apartments": 1020
+  },
+  "source_file": "/home/ubuntu/upload/الوحداتالسكنية.xlsx"
+}
