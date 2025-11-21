@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة الفلل - إسكان أعضاء هيئة التدريس</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         * {
             margin: 0;
@@ -485,6 +486,20 @@
             console.log('الصفحة جاهزة، بدء تحميل بيانات الفلل...');
             loadVillasData();
         });
+    </script>
+    
+    <script src="../js/print-template.js"></script>
+    <script>
+        // Initialize print template
+        PrintTemplate.init({
+            reportTitle: 'إدارة الفلل',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        
+        // Apply print preparation to tables
+        PrintTemplate.prepareTable('table');
     </script>
 </body>
 </html>

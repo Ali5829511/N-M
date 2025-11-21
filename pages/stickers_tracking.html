@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تتبع تسليم وتفعيل ملصقات السيارات</title>
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         * {
             margin: 0;
@@ -679,6 +680,21 @@
         window.addEventListener('load', async () => {
             await updateStats();
         });
+    </script>
+    
+    <script src="../js/print-template.js"></script>
+    <script>
+        // Initialize print template
+        PrintTemplate.init({
+            reportTitle: 'تتبع تسليم وتفعيل ملصقات السيارات',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        
+        // Apply print preparation to tables
+        PrintTemplate.prepareTable('table');
+        PrintTemplate.preventPageBreak('.stat-card, .sticker-card');
     </script>
 </body>
 </html>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المخالفين المتكررين - Repeat Offenders Tracker</title>
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         * {
             margin: 0;
@@ -531,6 +532,21 @@
         function exportReport() {
             alert('ميزة التصدير ستكون متاحة قريباً!\nExport feature coming soon!');
         }
+    </script>
+    
+    <script src="../js/print-template.js"></script>
+    <script>
+        // Initialize print template
+        PrintTemplate.init({
+            reportTitle: 'تقرير المخالفين المتكررين',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        
+        // Apply print preparation to tables
+        PrintTemplate.prepareTable('table');
+        PrintTemplate.preventPageBreak('.offender-card');
     </script>
 </body>
 </html>

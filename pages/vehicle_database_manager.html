@@ -6,6 +6,7 @@
     <title>إدارة قاعدة بيانات السيارات - وحدة إسكان هيئة التدريس</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         * {
             margin: 0;
@@ -783,6 +784,21 @@
             loadReports();
             alert('تم تحديث البيانات بنجاح!');
         }
+    </script>
+    
+    <script src="../js/print-template.js"></script>
+    <script>
+        // Initialize print template
+        PrintTemplate.init({
+            reportTitle: 'إدارة قاعدة بيانات السيارات',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        
+        // Apply print preparation to tables
+        PrintTemplate.prepareTable('table');
+        PrintTemplate.preventPageBreak('.stat-card');
     </script>
 </body>
 </html>
