@@ -508,12 +508,14 @@
         }
 
         // تحميل الإحصائيات
-        function loadStatistics() {
+        async function loadStatistics() {
             try {
                 // جلب البيانات من قاعدة البيانات
-                const violations = window.db.query('trafficViolations') || [];
-                const accidents = window.db.query('trafficAccidents') || [];
-                const immobilized = window.db.query('immobilizedCars') || [];
+                const violations = await window.db.getViolations() || [];
+                
+                // جلب بيانات الحوادث والسيارات المحجوزة من localStorage مباشرة
+                const accidents = JSON.parse(localStorage.getItem('trafficAccidents') || '[]');
+                const immobilized = JSON.parse(localStorage.getItem('immobilizedCars') || '[]');
                 
                 // تحديث الإحصائيات
                 document.getElementById('totalViolations').textContent = violations.length;
