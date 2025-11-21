@@ -13,7 +13,7 @@ The commit message appears to be accidental keyboard input rather than a meaning
 Commit `f6dbbef9830b728dd4721f6f82bdd117e49bc9a5` is the **initial project setup commit** that includes:
 
 ### Added Components:
-- Complete Traffic Management System (نظام المرور) structure
+- Complete Traffic Management System (نظام المرور - Traffic Management System) structure
 - All HTML pages (index.html and 70+ pages in /pages directory)
 - JavaScript modules (/js directory):
   - Authentication system (auth.js)
