@@ -1,7 +1,7 @@
 # 🚀 دليل التثبيت والإعداد - قاعدة بيانات نظام إدارة المرور
 
-**وحدة إسكان هيئة التدريس**  
-**جامعة الإمام محمد بن سعود الإسلامية**
+**نظام المرور - Traffic Management System**  
+**Neon PostgreSQL Database Setup**
 
 ---
 
@@ -11,357 +11,331 @@
 
 | المتطلب | الإصدار الموصى به | ملاحظات |
 |---------|-------------------|----------|
-| **MySQL** | 8.0+ | أو MariaDB 10.5+ |
-| **PHP** | 7.4+ | للواجهة الخلفية |
-| **Apache/Nginx** | أحدث إصدار | خادم الويب |
-| **Node.js** | 16+ | للأدوات الإضافية |
-| **مساحة القرص** | 5 GB | الحد الأدنى |
-| **الذاكرة RAM** | 2 GB | الحد الأدنى |
+| **Neon PostgreSQL** | Cloud-based | Serverless PostgreSQL |
+| **Node.js** | 18+ | للخادم والـ API |
+| **npm** | 8+ | مدير الحزم |
+| **حساب Neon** | مجاني | https://neon.tech |
+| **حساب Netlify** | مجاني (اختياري) | للنشر |
 
 ---
 
-## 📦 الخطوة 1: تثبيت MySQL
+## 🌐 الخطوة 1: إنشاء حساب Neon
 
-### على Ubuntu/Debian
+### 1. التسجيل في Neon
 
-```bash
-# تحديث النظام
-sudo apt update
-sudo apt upgrade -y
+1. اذهب إلى: https://neon.tech
+2. اضغط على "Sign Up" أو "Get Started"
+3. سجل باستخدام:
+   - GitHub
+   - Google
+   - أو البريد الإلكتروني
 
-# تثبيت MySQL Server
-sudo apt install mysql-server -y
+### 2. إنشاء مشروع جديد
 
-# تأمين التثبيت
-sudo mysql_secure_installation
-```
+1. بعد تسجيل الدخول، اضغط على "New Project"
+2. اختر:
+   - **Project Name**: `traffic-management-system` (أو أي اسم تفضله)
+   - **Region**: اختر أقرب منطقة (مثل: US East)
+   - **PostgreSQL Version**: 15 أو أحدث
+3. اضغط "Create Project"
 
-### على CentOS/RHEL
+### 3. الحصول على رابط الاتصال
 
-```bash
-# تثبيت MySQL Repository
-sudo yum install mysql-server -y
+1. في صفحة Project Dashboard
+2. اضغط على "Connection Details"
+3. انسخ "Connection string" - يبدأ بـ `postgresql://`
+4. احفظه في مكان آمن - ستحتاجه لاحقاً
 
-# تشغيل الخدمة
-sudo systemctl start mysqld
-sudo systemctl enable mysqld
-
-# تأمين التثبيت
-sudo mysql_secure_installation
-```
-
-### على Windows
-
-1. تحميل MySQL Installer من [الموقع الرسمي](https://dev.mysql.com/downloads/installer/)
-2. تشغيل الملف وتثبيت MySQL Server
-3. اختيار "Developer Default" للتثبيت الكامل
-4. تعيين كلمة مرور قوية لحساب root
+---
 
 ---
 
 ## 🔧 الخطوة 2: إنشاء قاعدة البيانات
 
-### 1. الاتصال بـ MySQL
+### 1. فتح SQL Editor في Neon
 
-```bash
-mysql -u root -p
-```
+1. في Neon Dashboard، اختر مشروعك
+2. اضغط على "SQL Editor" من القائمة الجانبية
+3. ستفتح واجهة تحرير SQL
 
-### 2. إنشاء قاعدة البيانات
+### 2. إنشاء قاعدة البيانات (تلقائي)
+
+قاعدة البيانات الافتراضية (`neondb`) موجودة مسبقاً، لكن يمكنك إنشاء قاعدة جديدة:
 
 ```sql
--- إنشاء قاعدة البيانات
-CREATE DATABASE IF NOT EXISTS traffic_management_system
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
+-- إنشاء قاعدة بيانات جديدة (اختياري)
+CREATE DATABASE traffic_management_system;
 
--- التحقق من الإنشاء
-SHOW DATABASES;
-
--- الخروج
-EXIT;
+-- أو استخدم قاعدة البيانات الافتراضية
+-- \c neondb
 ```
 
 ---
 
-## 📥 الخطوة 3: استيراد المخطط
+## 📥 الخطوة 3: استيراد المخطط (Schema)
 
-### الطريقة الأولى: عبر سطر الأوامر
+### الطريقة الأولى: عبر Neon SQL Editor (موصى بها)
+
+1. في Neon SQL Editor
+2. افتح ملف `database/schema.sql` من المشروع
+3. انسخ محتوى الملف بالكامل
+4. الصقه في SQL Editor
+5. اضغط "Run" أو Ctrl+Enter
+6. انتظر حتى يكتمل التنفيذ
+
+### الطريقة الثانية: عبر psql (سطر الأوامر)
+
+إذا كان لديك PostgreSQL مثبت محلياً:
 
 ```bash
 # الانتقال إلى مجلد قاعدة البيانات
 cd /path/to/N-M/database/
 
 # استيراد المخطط
-mysql -u root -p traffic_management_system < schema.sql
+psql "postgresql://[user]:[password]@[host]/[database]?sslmode=require" < schema.sql
 
-# التحقق من الاستيراد
-mysql -u root -p -e "USE traffic_management_system; SHOW TABLES;"
+# أو باستخدام متغير البيئة
+export DATABASE_URL="postgresql://[user]:[password]@[host]/[database]?sslmode=require"
+psql $DATABASE_URL < schema.sql
 ```
 
-### الطريقة الثانية: عبر phpMyAdmin
+### التحقق من إنشاء الجداول
 
-1. فتح phpMyAdmin في المتصفح
-2. اختيار قاعدة البيانات `traffic_management_system`
-3. الضغط على تبويب "Import"
-4. اختيار ملف `schema.sql`
-5. الضغط على "Go"
+```sql
+-- عرض جميع الجداول
+\dt
 
-### الطريقة الثالثة: عبر MySQL Workbench
+-- أو
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'public';
+```
 
-1. فتح MySQL Workbench
-2. الاتصال بالخادم
-3. اختيار قاعدة البيانات
-4. File → Run SQL Script
-5. اختيار ملف `schema.sql`
-6. تنفيذ السكريبت
+يجب أن ترى الجداول التالية:
+- `users` - المستخدمون
+- `violations` - المخالفات
+- `stickers` - الملصقات
+- `vehicles` - المركبات
+- `immobilized_cars` - السيارات المحجوزة
+- `activity_log` - سجل الأنشطة
 
 ---
 
-## 🎲 الخطوة 4: إدراج البيانات التجريبية (اختياري)
+## ⚙️ الخطوة 4: إعداد المتغيرات البيئية
+
+### للتطوير المحلي
+
+1. **انسخ ملف .env.example**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **حدّث DATABASE_URL**
+   ```env
+   DATABASE_URL=postgresql://[user]:[password]@[host]/[database]?sslmode=require
+   ```
+   استبدل القيمة برابط الاتصال من Neon
+
+3. **مثال**
+   ```env
+   DATABASE_URL=postgresql://myuser:mypass@ep-cool-darkness-123456.us-east-2.aws.neon.tech/neondb?sslmode=require
+   ```
+
+### للنشر على Netlify
+
+راجع الدليل الشامل: [NETLIFY_NEON_SETUP.md](../NETLIFY_NEON_SETUP.md)
+
+**طريقة سريعة:**
+1. ثبت Neon Extension من صفحة الإضافات في مشروعك: `https://app.netlify.com/sites/[your-site-name]/extensions`
+   - استبدل `[your-site-name]` باسم موقعك في Netlify
+2. أو أضف `DATABASE_URL` يدوياً في: Site settings > Environment variables
+
+---
+
+## 🔐 الخطوة 5: إنشاء المستخدمين الافتراضيين
+
+المستخدمون الافتراضيون يتم إنشاؤهم تلقائياً عند أول تشغيل للنظام، لكن يمكنك إنشاءهم يدوياً:
+
+### 1. عبر واجهة النظام (موصى به)
+
+1. شغّل النظام محلياً: `npm start`
+2. افتح المتصفح: http://localhost:8080
+3. عند أول تشغيل، سيتم إنشاء المستخدمين تلقائياً
+4. افتح Console المتصفح (F12) لرؤية كلمات المرور المولدة
+
+### 2. إنشاء مستخدم يدوياً (متقدم)
+
+```sql
+-- مثال: إنشاء مستخدم مدير
+INSERT INTO users (
+    username, password, name, email, role, status, 
+    require_password_change, created_date
+) VALUES (
+    'admin',
+    -- استخدم bcrypt أو SHA-256 لتشفير كلمة المرور
+    '$2a$10$...',  -- كلمة مرور مشفرة
+    'مدير النظام',
+    'admin@example.com',
+    'admin',
+    'active',
+    true,
+    CURRENT_TIMESTAMP
+);
+```
+
+**⚠️ ملاحظة مهمة:** لا تحفظ كلمات المرور بنص واضح! استخدم تشفير قوي.
+
+---
+
+## 🔍 الخطوة 6: اختبار الاتصال
+
+### 1. تشغيل خادم API
 
 ```bash
-# استيراد البيانات التجريبية
-mysql -u root -p traffic_management_system < sample_data.sql
+# تثبيت المتطلبات
+npm install
 
-# التحقق من البيانات
-mysql -u root -p traffic_management_system -e "
-SELECT 
-    (SELECT COUNT(*) FROM buildings) as buildings_count,
-    (SELECT COUNT(*) FROM residential_units) as units_count,
-    (SELECT COUNT(*) FROM residents) as residents_count,
-    (SELECT COUNT(*) FROM vehicles) as vehicles_count;
+# تشغيل خادم API
+npm run start:api
+```
+
+### 2. التحقق من رسائل Console
+
+ابحث عن:
+```
+✅ Neon database connection initialized
+✅ Database connection initialized
+```
+
+إذا رأيت خطأ:
+```
+❌ DATABASE_URL or NETLIFY_DATABASE_URL not found in environment variables
+```
+تأكد من إعداد المتغيرات البيئية بشكل صحيح.
+
+### 3. اختبار الاستعلامات
+
+اختبار بسيط باستخدام CommonJS (متوافق مع جميع إصدارات Node.js):
+
+```bash
+# اختبار الاتصال
+node --input-type=module -e "
+import('./database/neon-db.js').then(module => {
+    const { NeonDatabase } = module;
+    const db = new NeonDatabase();
+    return db.getUsers();
+}).then(users => {
+    console.log('عدد المستخدمين:', users.length);
+    console.log('✅ الاتصال يعمل بنجاح!');
+}).catch(err => {
+    console.error('❌ خطأ:', err.message);
+    console.log('💡 تأكد من إعداد DATABASE_URL في ملف .env');
+});
 "
 ```
 
----
-
-## 👤 الخطوة 5: إنشاء مستخدم قاعدة البيانات
-
-### إنشاء مستخدم للتطبيق
-
-```sql
--- الاتصال بـ MySQL
-mysql -u root -p
-
--- إنشاء المستخدم
-CREATE USER 'traffic_user'@'localhost' IDENTIFIED BY 'YourStrongPassword123!';
-
--- منح الصلاحيات
-GRANT ALL PRIVILEGES ON traffic_management_system.* TO 'traffic_user'@'localhost';
-
--- تطبيق التغييرات
-FLUSH PRIVILEGES;
-
--- التحقق من الصلاحيات
-SHOW GRANTS FOR 'traffic_user'@'localhost';
-
--- الخروج
-EXIT;
-```
-
-### للوصول عن بُعد (اختياري)
-
-```sql
--- إنشاء مستخدم للوصول عن بُعد
-CREATE USER 'traffic_user'@'%' IDENTIFIED BY 'YourStrongPassword123!';
-
--- منح الصلاحيات
-GRANT ALL PRIVILEGES ON traffic_management_system.* TO 'traffic_user'@'%';
-
--- تطبيق التغييرات
-FLUSH PRIVILEGES;
-```
-
-**⚠️ تحذير أمني:** استخدم الوصول عن بُعد فقط في بيئات آمنة ومع جدار ناري مناسب.
+**ملاحظة**: إذا واجهت مشاكل مع ES modules، تأكد من أن `package.json` يحتوي على `"type": "module"`
 
 ---
 
-## ⚙️ الخطوة 6: تكوين ملف الاتصال
+## 🎲 الخطوة 7: إدراج بيانات تجريبية (اختياري)
 
-### إنشاء ملف `config.php`
+### عبر Neon SQL Editor
 
-```php
-<?php
-// ملف تكوين قاعدة البيانات
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'traffic_management_system');
-define('DB_USER', 'traffic_user');
-define('DB_PASS', 'YourStrongPassword123!');
-define('DB_CHARSET', 'utf8mb4');
+```sql
+-- إضافة مخالفات تجريبية
+INSERT INTO violations (
+    violation_number, plate_number, violation_type,
+    violation_date, violation_time, location,
+    fine_amount, status
+) VALUES 
+    ('V-2024-001', 'ABC-1234', 'parking violation', 
+     '2024-01-15', '10:30:00', 'Building A - Zone 1',
+     100.00, 'pending'),
+    ('V-2024-002', 'XYZ-5678', 'speeding', 
+     '2024-01-16', '14:20:00', 'Main Gate',
+     200.00, 'paid');
 
-// إنشاء الاتصال
-try {
-    $pdo = new PDO(
-        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET,
-        DB_USER,
-        DB_PASS,
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
-        ]
-    );
-} catch (PDOException $e) {
-    die("خطأ في الاتصال بقاعدة البيانات: " . $e->getMessage());
-}
-?>
+-- إضافة مركبات تجريبية
+INSERT INTO vehicles (
+    plate_number, owner_name, vehicle_type, 
+    vehicle_make, vehicle_model, vehicle_color
+) VALUES 
+    ('ABC-1234', 'أحمد محمد', 'سيارة', 'Toyota', 'Camry', 'أبيض'),
+    ('XYZ-5678', 'فاطمة علي', 'سيارة', 'Honda', 'Accord', 'أسود');
 ```
 
 ---
 
-## 🔐 الخطوة 7: تأمين قاعدة البيانات
+## 📊 الخطوة 8: إعداد النسخ الاحتياطي
 
-### 1. تعيين كلمات مرور قوية
+### نسخ احتياطي من Neon
 
-```sql
--- تغيير كلمة مرور المستخدم
-ALTER USER 'traffic_user'@'localhost' IDENTIFIED BY 'NewStrongPassword456!';
-FLUSH PRIVILEGES;
-```
+1. **عبر لوحة التحكم**
+   - Neon تقوم بنسخ احتياطي تلقائي
+   - يمكنك استعادة قاعدة البيانات من: Project Settings > Backups
 
-### 2. تقييد الصلاحيات
+2. **نسخ احتياطي يدوي**
+   ```bash
+   # تصدير قاعدة البيانات
+   pg_dump "postgresql://[connection-string]" > backup_$(date +%Y%m%d).sql
+   
+   # نسخ احتياطي مضغوط
+   pg_dump "postgresql://[connection-string]" | gzip > backup_$(date +%Y%m%d).sql.gz
+   ```
 
-```sql
--- إلغاء صلاحيات غير ضرورية
-REVOKE ALL PRIVILEGES ON traffic_management_system.* FROM 'traffic_user'@'localhost';
-
--- منح الصلاحيات الضرورية فقط
-GRANT SELECT, INSERT, UPDATE, DELETE ON traffic_management_system.* TO 'traffic_user'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-### 3. تفعيل SSL (اختياري)
-
-```sql
--- التحقق من دعم SSL
-SHOW VARIABLES LIKE '%ssl%';
-
--- إجبار استخدام SSL
-ALTER USER 'traffic_user'@'localhost' REQUIRE SSL;
-FLUSH PRIVILEGES;
-```
+3. **استعادة من نسخة احتياطية**
+   ```bash
+   # استعادة عادية
+   psql "postgresql://[connection-string]" < backup_20240115.sql
+   
+   # استعادة من ملف مضغوط
+   gunzip < backup_20240115.sql.gz | psql "postgresql://[connection-string]"
+   ```
 
 ---
 
-## 🔍 الخطوة 8: اختبار قاعدة البيانات
+## 🔧 الخطوة 9: تحسين الأداء
 
-### 1. اختبار الاتصال
+### 1. مراقبة الأداء في Neon
 
-```bash
-# اختبار الاتصال بالمستخدم الجديد
-mysql -u traffic_user -p traffic_management_system
+1. اذهب إلى Neon Dashboard
+2. اضغط على "Monitoring"
+3. راقب:
+   - عدد الاتصالات
+   - وقت الاستجابة
+   - استخدام الذاكرة
 
-# تنفيذ استعلام تجريبي
-mysql -u traffic_user -p traffic_management_system -e "SELECT COUNT(*) FROM buildings;"
-```
-
-### 2. اختبار العروض (Views)
-
-```sql
--- اختبار عرض ملخص المباني
-SELECT * FROM v_buildings_summary LIMIT 5;
-
--- اختبار عرض السيارات مع السكان
-SELECT * FROM v_vehicles_with_residents LIMIT 5;
-
--- اختبار عرض المخالفات
-SELECT * FROM v_violations_detailed LIMIT 5;
-```
-
-### 3. اختبار الإجراءات المخزنة
+### 2. تحليل الاستعلامات البطيئة
 
 ```sql
--- اختبار تحديث إحصائيات المبنى
-CALL sp_update_building_statistics(1);
+-- عرض الاستعلامات النشطة
+SELECT pid, usename, state, query, query_start
+FROM pg_stat_activity
+WHERE state != 'idle'
+ORDER BY query_start;
 
--- اختبار البحث عن المخالفين المتكررين
-CALL sp_get_repeat_violators(2);
-
--- اختبار إحصائيات المخالفات حسب النوع
-CALL sp_violations_by_type('2023-01-01', '2023-12-31');
+-- إحصائيات الجداول
+SELECT schemaname, tablename, 
+       n_live_tup as rows,
+       n_tup_ins as inserts,
+       n_tup_upd as updates,
+       n_tup_del as deletes
+FROM pg_stat_user_tables
+ORDER BY n_live_tup DESC;
 ```
 
----
-
-## 📊 الخطوة 9: إعداد النسخ الاحتياطي
-
-### 1. نسخ احتياطي يدوي
-
-```bash
-# نسخ احتياطي كامل
-mysqldump -u root -p traffic_management_system > backup_$(date +%Y%m%d_%H%M%S).sql
-
-# نسخ احتياطي مضغوط
-mysqldump -u root -p traffic_management_system | gzip > backup_$(date +%Y%m%d_%H%M%S).sql.gz
-```
-
-### 2. نسخ احتياطي تلقائي (Cron Job)
-
-```bash
-# فتح محرر crontab
-crontab -e
-
-# إضافة مهمة نسخ احتياطي يومية في الساعة 2 صباحاً
-0 2 * * * mysqldump -u root -pYourPassword traffic_management_system | gzip > /backup/traffic_$(date +\%Y\%m\%d).sql.gz
-
-# حذف النسخ الاحتياطية الأقدم من 30 يوم
-0 3 * * * find /backup/ -name "traffic_*.sql.gz" -mtime +30 -delete
-```
-
-### 3. استعادة من النسخة الاحتياطية
-
-```bash
-# استعادة من ملف عادي
-mysql -u root -p traffic_management_system < backup_20231115.sql
-
-# استعادة من ملف مضغوط
-gunzip < backup_20231115.sql.gz | mysql -u root -p traffic_management_system
-```
-
----
-
-## 🔧 الخطوة 10: تحسين الأداء
-
-### 1. تحسين إعدادات MySQL
-
-```ini
-# تحرير ملف my.cnf أو my.ini
-[mysqld]
-# حجم ذاكرة التخزين المؤقت
-innodb_buffer_pool_size = 1G
-
-# حجم ملف السجل
-innodb_log_file_size = 256M
-
-# عدد الاتصالات المتزامنة
-max_connections = 200
-
-# تفعيل الاستعلامات البطيئة
-slow_query_log = 1
-slow_query_log_file = /var/log/mysql/slow-query.log
-long_query_time = 2
-
-# إعادة تشغيل MySQL
-sudo systemctl restart mysql
-```
-
-### 2. تحليل الجداول
+### 3. تحسين الفهارس
 
 ```sql
--- تحليل جميع الجداول
-ANALYZE TABLE buildings, residential_units, residents, vehicles, 
-              vehicle_stickers, traffic_violations, parking_spaces, 
-              analyzed_images, users, activity_log;
-```
+-- تحليل استخدام الفهارس
+SELECT schemaname, tablename, indexname, idx_scan, idx_tup_read
+FROM pg_stat_user_indexes
+ORDER BY idx_scan DESC;
 
-### 3. تحسين الجداول
-
-```sql
--- تحسين جميع الجداول
-OPTIMIZE TABLE buildings, residential_units, residents, vehicles, 
-               vehicle_stickers, traffic_violations, parking_spaces, 
-               analyzed_images, users, activity_log;
+-- إعادة بناء الفهارس (عند الحاجة)
+REINDEX TABLE violations;
+REINDEX TABLE vehicles;
 ```
 
 ---
@@ -370,165 +344,73 @@ OPTIMIZE TABLE buildings, residential_units, residents, vehicles,
 
 ### مشكلة: خطأ في الاتصال
 
-```bash
-# التحقق من حالة MySQL
-sudo systemctl status mysql
-
-# إعادة تشغيل MySQL
-sudo systemctl restart mysql
-
-# التحقق من السجلات
-sudo tail -f /var/log/mysql/error.log
 ```
+Error: Connection failed
+```
+
+**الحل:**
+1. تحقق من رابط DATABASE_URL
+2. تأكد من أن قاعدة البيانات في Neon نشطة (Active)
+3. تحقق من الاتصال بالإنترنت
+4. جرب الاتصال من Neon Dashboard
 
 ### مشكلة: خطأ في الصلاحيات
 
+```
+Error: permission denied for table users
+```
+
+**الحل:**
 ```sql
--- التحقق من الصلاحيات
-SHOW GRANTS FOR 'traffic_user'@'localhost';
-
--- إعادة منح الصلاحيات
-GRANT ALL PRIVILEGES ON traffic_management_system.* TO 'traffic_user'@'localhost';
-FLUSH PRIVILEGES;
+-- منح الصلاحيات للمستخدم
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO your_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO your_user;
 ```
 
-### مشكلة: خطأ في الترميز
+### مشكلة: الجداول غير موجودة
 
-```sql
--- التحقق من الترميز
-SHOW VARIABLES LIKE 'character_set%';
-SHOW VARIABLES LIKE 'collation%';
-
--- تغيير ترميز قاعدة البيانات
-ALTER DATABASE traffic_management_system 
-CHARACTER SET utf8mb4 
-COLLATE utf8mb4_unicode_ci;
+```
+Error: relation "users" does not exist
 ```
 
-### مشكلة: بطء الاستعلامات
+**الحل:**
+1. نفذ سكريبت schema.sql مرة أخرى
+2. تأكد من أنك متصل بقاعدة البيانات الصحيحة
 
-```sql
--- عرض الاستعلامات البطيئة
-SELECT * FROM mysql.slow_log ORDER BY query_time DESC LIMIT 10;
+### مشكلة: DATABASE_URL غير موجود
 
--- تحليل استعلام معين
-EXPLAIN SELECT * FROM v_vehicles_with_residents WHERE plate_number = 'ABC1234';
-
--- إضافة فهرس جديد إذا لزم الأمر
-CREATE INDEX idx_custom ON table_name(column_name);
+```
+Error: DATABASE_URL not found in environment variables
 ```
 
----
-
-## 📱 الخطوة 11: التكامل مع Plate Recognizer
-
-### 1. حفظ بيانات الاتصال
-
-```sql
--- إدراج إعدادات Plate Recognizer
-INSERT INTO system_settings (setting_key, setting_value, setting_type, description) VALUES
-('plate_recognizer_api_token', '22ba3cf7155a1ea730a0b64787f98ab5f9a3de94', 'string', 'API Token for Plate Recognizer'),
-('plate_recognizer_api_url', 'https://api.platerecognizer.com/v1/plate-reader/', 'string', 'API URL'),
-('parkpow_token', '7c13be422713a758a42a0bc453cf3331fbfd346', 'string', 'ParkPow Token'),
-('ftp_host', 'ftp.platerecognizer.com', 'string', 'FTP Host'),
-('ftp_username', 'aliayashi522', 'string', 'FTP Username'),
-('ftp_password', '708c4bbfdde0', 'string', 'FTP Password'),
-('timezone', 'Asia/Riyadh', 'string', 'System Timezone');
-```
-
-### 2. اختبار الاتصال
-
-```php
-<?php
-// اختبار Plate Recognizer API
-$api_token = '22ba3cf7155a1ea730a0b64787f98ab5f9a3de94';
-$api_url = 'https://api.platerecognizer.com/v1/plate-reader/';
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $api_url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Token ' . $api_token
-]);
-
-$response = curl_exec($ch);
-$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
-
-if ($http_code == 200) {
-    echo "✅ الاتصال بـ Plate Recognizer ناجح!";
-} else {
-    echo "❌ فشل الاتصال: HTTP " . $http_code;
-}
-?>
-```
-
----
-
-## 📈 الخطوة 12: المراقبة والصيانة
-
-### 1. مراقبة حجم قاعدة البيانات
-
-```sql
--- حجم قاعدة البيانات
-SELECT 
-    table_schema AS 'Database',
-    ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS 'Size (MB)'
-FROM information_schema.tables
-WHERE table_schema = 'traffic_management_system'
-GROUP BY table_schema;
-
--- حجم كل جدول
-SELECT 
-    table_name AS 'Table',
-    ROUND(((data_length + index_length) / 1024 / 1024), 2) AS 'Size (MB)'
-FROM information_schema.tables
-WHERE table_schema = 'traffic_management_system'
-ORDER BY (data_length + index_length) DESC;
-```
-
-### 2. مراقبة الأداء
-
-```sql
--- عدد الاتصالات الحالية
-SHOW STATUS LIKE 'Threads_connected';
-
--- عدد الاستعلامات
-SHOW STATUS LIKE 'Questions';
-
--- وقت التشغيل
-SHOW STATUS LIKE 'Uptime';
-```
-
-### 3. تنظيف البيانات القديمة
-
-```sql
--- حذف سجلات النشاط الأقدم من 6 أشهر
-DELETE FROM activity_log 
-WHERE created_at < DATE_SUB(NOW(), INTERVAL 6 MONTH);
-
--- حذف الإشعارات المقروءة الأقدم من 3 أشهر
-DELETE FROM notifications 
-WHERE is_read = TRUE 
-AND read_at < DATE_SUB(NOW(), INTERVAL 3 MONTH);
-```
+**الحل:**
+1. تأكد من وجود ملف .env
+2. تأكد من إضافة DATABASE_URL في Netlify (للنشر)
+3. أعد تشغيل الخادم
 
 ---
 
 ## ✅ قائمة التحقق النهائية
 
-- [ ] تثبيت MySQL بنجاح
-- [ ] إنشاء قاعدة البيانات
+- [ ] إنشاء حساب Neon
+- [ ] إنشاء مشروع في Neon
+- [ ] الحصول على رابط الاتصال (DATABASE_URL)
 - [ ] استيراد المخطط (schema.sql)
-- [ ] استيراد البيانات التجريبية (اختياري)
-- [ ] إنشاء مستخدم قاعدة البيانات
-- [ ] تكوين ملف الاتصال
+- [ ] إعداد المتغيرات البيئية (.env)
+- [ ] إنشاء المستخدمين الافتراضيين
 - [ ] اختبار الاتصال
-- [ ] اختبار العروض والإجراءات
-- [ ] إعداد النسخ الاحتياطي التلقائي
-- [ ] تحسين الأداء
-- [ ] التكامل مع Plate Recognizer
-- [ ] إعداد المراقبة
+- [ ] إضافة بيانات تجريبية (اختياري)
+- [ ] إعداد النسخ الاحتياطي
+- [ ] للنشر: ربط Neon مع Netlify
+
+---
+
+## 📚 موارد إضافية
+
+- **Neon Documentation**: https://neon.tech/docs
+- **PostgreSQL Manual**: https://www.postgresql.org/docs/
+- **Neon + Netlify Guide**: [NETLIFY_NEON_SETUP.md](../NETLIFY_NEON_SETUP.md)
+- **Node.js PostgreSQL**: https://node-postgres.com/
 
 ---
 
@@ -536,28 +418,23 @@ AND read_at < DATE_SUB(NOW(), INTERVAL 3 MONTH);
 
 في حال واجهت أي مشاكل:
 
-1. **مراجعة السجلات:**
+1. **راجع الوثائق:**
+   - [NETLIFY_NEON_SETUP.md](../NETLIFY_NEON_SETUP.md) - للنشر على Netlify
+   - [README.md](../README.md) - دليل المشروع
+
+2. **تحقق من السجلات:**
    ```bash
-   sudo tail -f /var/log/mysql/error.log
+   # سجلات الخادم المحلي
+   npm run start:api
+   
+   # سجلات Netlify
+   # في Netlify Dashboard: Deploys > [Latest Deploy] > Deploy log
    ```
 
-2. **التحقق من الحالة:**
-   ```bash
-   sudo systemctl status mysql
-   ```
-
-3. **التواصل مع الدعم:**
-   - البريد الإلكتروني: housing@imam.edu.sa
-   - الهاتف: +966-11-XXXXXXX
+3. **موارد Neon:**
+   - Neon Status: https://neon.tech/status
+   - Neon Support: https://neon.tech/docs/introduction/support
 
 ---
 
-## 📚 مصادر إضافية
-
-- [توثيق MySQL الرسمي](https://dev.mysql.com/doc/)
-- [Plate Recognizer API Documentation](https://docs.platerecognizer.com/)
-- [PHP PDO Tutorial](https://www.php.net/manual/en/book.pdo.php)
-
----
-
-**© 2025 جامعة الإمام محمد بن سعود الإسلامية - جميع الحقوق محفوظة**
+**© 2025 نظام المرور - Traffic Management System**
