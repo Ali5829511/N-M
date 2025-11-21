@@ -495,14 +495,12 @@
     <script>
         'use strict';
 
-        // التحقق من تسجيل الدخول والصلاحيات بشكل ذري
-        const hasAccess = window.authManager.requireAuth(['admin', 'inquiry']);
-        
-        // إذا لم يكن لديه صلاحية، سيتم إعادة التوجيه تلقائياً
-        // التحقق الإضافي من صلاحية التقارير
-        if (hasAccess) {
-            const currentUser = window.authManager.getCurrentUser();
-            if (currentUser && !window.authManager.hasPermission('canViewReports') && currentUser.role !== 'admin') {
+        // التحقق من تسجيل الدخول والصلاحيات
+        if (!window.authManager.requireAuth(['admin', 'inquiry'])) {
+            // سيتم إعادة التوجيه تلقائياً من requireAuth
+        } else {
+            // التحقق الإضافي من صلاحية التقارير
+            if (!window.authManager.hasPermission('canViewReports')) {
                 alert('عذراً، ليس لديك صلاحية الوصول إلى التقارير.');
                 window.location.href = 'traffic_dashboard.html';
             }
