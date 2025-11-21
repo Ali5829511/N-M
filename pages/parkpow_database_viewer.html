@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>قاعدة بيانات السيارات - ParkPow Database Viewer</title>
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         * {
             margin: 0;
@@ -493,6 +494,20 @@
         function reloadData() {
             location.reload();
         }
+    </script>
+    
+    <script src="../js/print-template.js"></script>
+    <script>
+        // Initialize print template
+        PrintTemplate.init({
+            reportTitle: 'قاعدة بيانات السيارات - ParkPow',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        
+        // Apply print preparation to tables
+        PrintTemplate.prepareTable('table');
     </script>
 </body>
 </html>

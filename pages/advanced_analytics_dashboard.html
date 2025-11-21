@@ -6,6 +6,7 @@
     <title>لوحة التحليلات المتقدمة - نظام المرور</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         * {
             margin: 0;
@@ -833,6 +834,21 @@
             initializeData();
             loadAnalytics();
         }, 30000);
+    </script>
+    
+    <script src="../js/print-template.js"></script>
+    <script>
+        // Initialize print template
+        PrintTemplate.init({
+            reportTitle: 'لوحة التحليلات المتقدمة',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        
+        // Apply print preparation to tables and cards
+        PrintTemplate.prepareTable('table');
+        PrintTemplate.preventPageBreak('.stat-card, .chart-card');
     </script>
 </body>
 </html>
