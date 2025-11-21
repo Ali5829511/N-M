@@ -20,6 +20,15 @@ const ALLOWED_ARABIC_LETTERS = {
     'ى': 'V'
 };
 
+// معايير تنسيق اللوحات السعودية
+// Saudi plate format standards
+const PLATE_FORMAT = {
+    MIN_LETTERS: 1,
+    MAX_LETTERS: 3,
+    MIN_NUMBERS: 1,
+    MAX_NUMBERS: 4
+};
+
 // الأحرف الإنجليزية المقابلة (للأنظمة التي تستخدم الحروف الإنجليزية)
 const ENGLISH_TO_ARABIC = {};
 for (const [arabic, english] of Object.entries(ALLOWED_ARABIC_LETTERS)) {
@@ -142,8 +151,8 @@ class SaudiPlateValidator {
         let allLetters = '';
         if (hasArabic) {
             allLetters = components.arabicLetters.join('');
-            if (allLetters.length < 1 || allLetters.length > 3) {
-                details.errors.push(`عدد الأحرف غير صحيح: ${allLetters.length} (المسموح: 1-3)`);
+            if (allLetters.length < PLATE_FORMAT.MIN_LETTERS || allLetters.length > PLATE_FORMAT.MAX_LETTERS) {
+                details.errors.push(`عدد الأحرف غير صحيح: ${allLetters.length} (المسموح: ${PLATE_FORMAT.MIN_LETTERS}-${PLATE_FORMAT.MAX_LETTERS})`);
                 return {
                     isValid: false,
                     message: `عدد الأحرف غير صحيح: ${allLetters.length}`,
@@ -169,8 +178,8 @@ class SaudiPlateValidator {
         let allEnglish = '';
         if (hasEnglish) {
             allEnglish = components.englishLetters.join('');
-            if (allEnglish.length < 1 || allEnglish.length > 3) {
-                details.errors.push(`عدد الأحرف الإنجليزية غير صحيح: ${allEnglish.length} (المسموح: 1-3)`);
+            if (allEnglish.length < PLATE_FORMAT.MIN_LETTERS || allEnglish.length > PLATE_FORMAT.MAX_LETTERS) {
+                details.errors.push(`عدد الأحرف الإنجليزية غير صحيح: ${allEnglish.length} (المسموح: ${PLATE_FORMAT.MIN_LETTERS}-${PLATE_FORMAT.MAX_LETTERS})`);
             }
 
             // التحقق من أن جميع الأحرف لها مقابل عربي
@@ -183,8 +192,8 @@ class SaudiPlateValidator {
 
         // التحقق من الأرقام
         const allNumbers = components.numbers.join('');
-        if (allNumbers.length < 1 || allNumbers.length > 4) {
-            details.errors.push(`عدد الأرقام غير صحيح: ${allNumbers.length} (المسموح: 1-4)`);
+        if (allNumbers.length < PLATE_FORMAT.MIN_NUMBERS || allNumbers.length > PLATE_FORMAT.MAX_NUMBERS) {
+            details.errors.push(`عدد الأرقام غير صحيح: ${allNumbers.length} (المسموح: ${PLATE_FORMAT.MIN_NUMBERS}-${PLATE_FORMAT.MAX_NUMBERS})`);
             return {
                 isValid: false,
                 message: `عدد الأرقام غير صحيح: ${allNumbers.length}`,
@@ -253,18 +262,23 @@ class SaudiPlateValidator {
      */
     generateRandomPlate() {
         // اختيار 1-3 أحرف عشوائية من القائمة المسموحة
-        const letterCount = Math.floor(Math.random() * 3) + 1; // 1 to 3
+        const letterCount = Math.floor(Math.random() * PLATE_FORMAT.MAX_LETTERS) + PLATE_FORMAT.MIN_LETTERS;
         let letters = '';
         for (let i = 0; i < letterCount; i++) {
             const randomIndex = Math.floor(Math.random() * this.allowedLettersArray.length);
             letters += this.allowedLettersArray[randomIndex];
         }
 
-        // اختيار 1-4 أرقام عشوائية
-        const numberCount = Math.floor(Math.random() * 4) + 1; // 1 to 4
+        // اختيار 1-4 أرقام عشوائية (تجنب البدء بصفر)
+        const numberCount = Math.floor(Math.random() * PLATE_FORMAT.MAX_NUMBERS) + PLATE_FORMAT.MIN_NUMBERS;
         let numbers = '';
         for (let i = 0; i < numberCount; i++) {
-            numbers += Math.floor(Math.random() * 10);
+            // للرقم الأول، استخدم 1-9 لتجنب البدء بصفر
+            if (i === 0 && numberCount > 1) {
+                numbers += Math.floor(Math.random() * 9) + 1;
+            } else {
+                numbers += Math.floor(Math.random() * 10);
+            }
         }
 
         // تنسيق اللوحة: أحرف ثم أرقام مع مسافة
@@ -301,7 +315,8 @@ class SaudiPlateValidator {
         const numbers = components.numbers.join('');
 
         // التحقق من صحة التنسيق
-        if (letters.length >= 1 && letters.length <= 3 && numbers.length >= 1 && numbers.length <= 4) {
+        if (letters.length >= PLATE_FORMAT.MIN_LETTERS && letters.length <= PLATE_FORMAT.MAX_LETTERS && 
+            numbers.length >= PLATE_FORMAT.MIN_NUMBERS && numbers.length <= PLATE_FORMAT.MAX_NUMBERS) {
             return `${letters} ${numbers}`;
         }
 
