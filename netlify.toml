@@ -10,6 +10,31 @@
 [build.environment]
   NODE_VERSION = "18"
 
+# Neon Database Integration
+# قاعدة البيانات Neon
+# 
+# To connect Neon database to Netlify:
+# لربط قاعدة بيانات Neon مع Netlify:
+#
+# 1. Install Neon extension from: https://app.netlify.com/projects/n-m-m/extensions/neon
+#    قم بتثبيت إضافة Neon من الرابط أعلاه
+#
+# 2. The extension will automatically add DATABASE_URL to your environment variables
+#    ستقوم الإضافة بإضافة DATABASE_URL تلقائياً إلى المتغيرات البيئية
+#
+# 3. Alternatively, manually add in Netlify Dashboard:
+#    أو قم بالإضافة يدوياً من لوحة تحكم Netlify:
+#    Site settings > Environment variables > Add a variable
+#    - Key: DATABASE_URL
+#    - Value: Your Neon PostgreSQL connection string from https://console.neon.tech
+#    - القيمة: رابط الاتصال من حساب Neon الخاص بك
+#
+# Connection string format:
+# postgresql://[user]:[password]@[host]/[database]?sslmode=require
+#
+# For more information, see: database/INSTALLATION_GUIDE.md
+# للمزيد من المعلومات، راجع: database/INSTALLATION_GUIDE.md
+
 [[headers]]
   for = "/*"
   [headers.values]
