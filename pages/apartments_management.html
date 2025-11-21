@@ -400,14 +400,13 @@
                 // دمج بيانات السكان مع الشقق
                 apartmentsData = apartments.map(apt => {
                     const resident = data.residents.find(r => 
-                        r.unit_name === apt.name || 
                         (r.building_type === apt.building_number && r.unit_number === apt.unit_number)
                     );
                     
                     return {
                         'رقم الشقة': apt.unit_number,
                         'رقم المبنى': apt.building_number,
-                        'نوع المبنى': apt.description,
+                        'نوع المبنى': apt.building_category,
                         'اسم_الساكن': resident ? resident.name : 'شاغرة',
                         'حالة الشقة': resident ? 'مشغولة' : 'شاغرة',
                         'رقم الهاتف': resident ? resident.phone : '-'
