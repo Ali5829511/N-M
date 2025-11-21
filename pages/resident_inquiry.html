@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>استعلام عن ساكن - نظام إدارة إسكان هيئة التدريس</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         :root {
             --primary: #8B6F47;
@@ -409,11 +411,7 @@
             }
         }
 
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
+        /* Print styles are now in print-template.css */
 
             .search-section {
                 display: none;
@@ -915,6 +913,19 @@
                 document.getElementById('unitNumber').setAttribute('required', 'required');
             }
         });
+    </script>
+
+    <script src="../js/print-template.js"></script>
+    <script>
+        PrintTemplate.init({
+            reportTitle: 'استعلام السكان',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        PrintTemplate.prepareTable('table');
+        PrintTemplate.preventPageBreak('.stat-card');
+        PrintTemplate.preventPageBreak('.report-section');
     </script>
 </body>
 </html>

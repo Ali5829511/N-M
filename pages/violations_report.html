@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تقرير المخالفات - وحدة إسكان هيئة التدريس</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         * {
             margin: 0;
@@ -246,24 +247,7 @@
             color: #7b1fa2;
         }
 
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-
-            .action-buttons,
-            .search-section,
-            .back-btn {
-                display: none;
-            }
-
-            .header,
-            .table-container {
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-        }
+        /* Print styles are now in print-template.css */
 
         @media (max-width: 768px) {
             .header h1 {
@@ -1202,5 +1186,20 @@
             </div>
         </div>
     </div>
+    
+    <script src="../js/print-template.js"></script>
+    <script>
+        // Initialize print template
+        PrintTemplate.init({
+            reportTitle: 'تقرير المخالفات المرورية',
+            reportSubtitle: 'وحدة إسكان هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        
+        // Apply print preparation to tables
+        PrintTemplate.prepareTable('table');
+        PrintTemplate.preventPageBreak('.stat-card');
+    </script>
 </body>
 </html>

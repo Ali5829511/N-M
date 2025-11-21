@@ -1,0 +1,366 @@
+/**
+ * Standardized Print Template for All Reports
+ * Based on template from commit 4c6eb987 (صفحة.pdf)
+ * 
+ * This template provides consistent, professional formatting for all printed reports
+ * in the Housing Management System (نظام إدارة إسكان أعضاء هيئة التدريس)
+ */
+
+/* ========================================
+   General Print Styles
+   ======================================== */
+
+@media print {
+    /* Page setup */
+    @page {
+        size: A4;
+        margin: 2cm 1.5cm;
+    }
+
+    /* Body and background */
+    body {
+        background: white !important;
+        color: #000 !important;
+        font-family: 'Traditional Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12pt;
+        line-height: 1.6;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Hide interactive elements */
+    .no-print,
+    .action-buttons,
+    .action-btn,
+    .back-btn,
+    .search-section,
+    .filter-section,
+    .btn,
+    button,
+    .modal,
+    nav,
+    .navigation,
+    .sidebar,
+    input[type="button"],
+    input[type="submit"] {
+        display: none !important;
+    }
+
+    /* ========================================
+       Print Header Section
+       ======================================== */
+    
+    .print-header {
+        display: block !important;
+        text-align: center;
+        padding: 10px 0 20px 0;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #6B5536;
+        page-break-inside: avoid;
+    }
+
+    .print-header .logo {
+        max-width: 80px;
+        max-height: 80px;
+        margin: 0 auto 10px;
+    }
+
+    .print-header .university-name {
+        font-size: 16pt;
+        font-weight: bold;
+        color: #6B5536;
+        margin: 5px 0;
+    }
+
+    .print-header .department-name {
+        font-size: 13pt;
+        color: #333;
+        margin: 5px 0;
+    }
+
+    .print-header .report-title {
+        font-size: 18pt;
+        font-weight: bold;
+        color: #000;
+        margin: 15px 0 10px 0;
+    }
+
+    .print-header .report-date {
+        font-size: 11pt;
+        color: #666;
+        margin: 5px 0;
+    }
+
+    /* ========================================
+       Main Content Styles
+       ======================================== */
+
+    .header,
+    .report-header,
+    .report-section,
+    .table-container,
+    .stat-card,
+    .report-preview {
+        box-shadow: none !important;
+        background: white !important;
+        page-break-inside: avoid;
+    }
+
+    /* Remove gradients and backgrounds */
+    * {
+        background-image: none !important;
+        background-color: white !important;
+        color: #000 !important;
+    }
+
+    /* Preserve specific colors for important elements */
+    h1, h2, h3, h4, h5, h6 {
+        color: #6B5536 !important;
+        page-break-after: avoid;
+        margin-top: 10pt;
+        margin-bottom: 5pt;
+    }
+
+    /* ========================================
+       Table Styles
+       ======================================== */
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        page-break-inside: auto;
+        font-size: 10pt;
+    }
+
+    thead {
+        display: table-header-group;
+        page-break-inside: avoid;
+    }
+
+    thead th {
+        background-color: #6B5536 !important;
+        color: white !important;
+        padding: 8px 6px;
+        font-weight: bold;
+        text-align: center;
+        border: 1px solid #333;
+    }
+
+    tbody {
+        display: table-row-group;
+    }
+
+    tbody tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    tbody td {
+        padding: 6px;
+        border: 1px solid #666;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Alternate row colors for better readability */
+    tbody tr:nth-child(even) {
+        background-color: #f9f9f9 !important;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: white !important;
+    }
+
+    /* ========================================
+       Statistics and Cards
+       ======================================== */
+
+    .stat-card,
+    .stats-grid,
+    .statistics-section {
+        border: 1px solid #666 !important;
+        padding: 10px !important;
+        margin: 10px 0 !important;
+        page-break-inside: avoid;
+    }
+
+    .stat-card h3,
+    .stat-value {
+        color: #6B5536 !important;
+        font-size: 16pt !important;
+        font-weight: bold;
+    }
+
+    .stat-card p,
+    .stat-label {
+        color: #333 !important;
+        font-size: 11pt !important;
+    }
+
+    /* ========================================
+       Charts and Graphics
+       ======================================== */
+
+    canvas,
+    .chart-container {
+        max-width: 100%;
+        page-break-inside: avoid;
+        margin: 15px 0;
+    }
+
+    /* ========================================
+       Print Footer
+       ======================================== */
+
+    .print-footer {
+        display: block !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 9pt;
+        color: #666;
+        padding: 10px 0;
+        border-top: 1px solid #ccc;
+    }
+
+    /* Page numbers */
+    .page-number:after {
+        content: counter(page);
+    }
+
+    /* ========================================
+       Report Sections
+       ======================================== */
+
+    .report-section {
+        margin: 20px 0;
+        page-break-inside: avoid;
+    }
+
+    .report-section h4 {
+        color: #6B5536 !important;
+        border-bottom: 2px solid #6B5536;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        page-break-after: avoid;
+    }
+
+    /* ========================================
+       Page Breaks
+       ======================================== */
+
+    .page-break-before {
+        page-break-before: always;
+    }
+
+    .page-break-after {
+        page-break-after: always;
+    }
+
+    .no-page-break {
+        page-break-inside: avoid;
+    }
+
+    /* ========================================
+       Links and URLs
+       ======================================== */
+
+    a {
+        text-decoration: none;
+        color: #000 !important;
+    }
+
+    a[href]:after {
+        content: none;
+    }
+
+    /* ========================================
+       Images and Icons
+       ======================================== */
+
+    img {
+        max-width: 100%;
+        page-break-inside: avoid;
+    }
+
+    .fa, .fas, .far, .fab {
+        display: none !important;
+    }
+
+    /* Show specific icons for headers */
+    .print-header .logo {
+        display: block !important;
+    }
+
+    /* ========================================
+       Summary and Totals
+       ======================================== */
+
+    .summary-section,
+    .totals-section {
+        border: 2px solid #6B5536 !important;
+        padding: 15px !important;
+        margin: 20px 0 !important;
+        page-break-inside: avoid;
+        background-color: #f5f5f5 !important;
+    }
+
+    .summary-section h3,
+    .totals-section h3 {
+        color: #6B5536 !important;
+        margin-top: 0;
+    }
+
+    /* ========================================
+       Responsive Print Adjustments
+       ======================================== */
+
+    /* Reduce font sizes if needed for landscape */
+    @page landscape {
+        size: A4 landscape;
+    }
+
+    /* Ensure proper spacing */
+    p {
+        margin: 5px 0;
+        text-align: justify;
+    }
+
+    /* ========================================
+       Additional Utility Classes
+       ======================================== */
+
+    .print-only {
+        display: block !important;
+    }
+
+    .screen-only {
+        display: none !important;
+    }
+
+    /* Signature and approval section */
+    .signature-section {
+        margin-top: 40px;
+        page-break-inside: avoid;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .signature-box {
+        width: 45%;
+        border-top: 1px solid #333;
+        padding-top: 10px;
+        text-align: center;
+    }
+
+    /* Date and time stamp */
+    .timestamp {
+        font-size: 9pt;
+        color: #666 !important;
+        text-align: left;
+        margin-top: 20px;
+    }
+}

@@ -6,6 +6,7 @@
   <title>تقرير ملصقات السيارات الشامل - جامعة الإمام محمد بن سعود الإسلامية</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/print-template.css">
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -118,14 +119,7 @@
       border-radius: 10px;
       margin-bottom: 20px;
     }
-    @media print {
-      .no-print {
-        display: none !important;
-      }
-      body {
-        background: white;
-      }
-    }
+    /* Print styles are now in print-template.css */
     @media (max-width: 768px) {
       .stat-card h3 {
         font-size: 1.8em;
@@ -1265,6 +1259,22 @@
         alert('❌ حدث خطأ أثناء التصدير إلى PDF');
       }
     }
+  </script>
+  
+  <script src="../js/print-template.js"></script>
+  <script>
+    // Initialize print template
+    PrintTemplate.init({
+      reportTitle: 'تقرير ملصقات السيارات الشامل',
+      reportSubtitle: 'جامعة الإمام محمد بن سعود الإسلامية',
+      showDate: true,
+      showLogo: true
+    });
+    
+    // Apply print preparation
+    PrintTemplate.prepareTable('table');
+    PrintTemplate.preventPageBreak('.stat-card');
+    PrintTemplate.preventPageBreak('.report-section');
   </script>
 </body>
 </html>
