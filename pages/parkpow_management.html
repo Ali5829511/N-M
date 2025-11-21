@@ -728,16 +728,14 @@
                 <head>
                     <meta charset="UTF-8">
                     <title>تقرير ParkPow</title>
-                    <style>
+                    
+    <link rel="stylesheet" href="../css/print-template.css">
+    <style>
                         @page {
                             margin: 0;
                             size: A4 landscape;
                         }
-                        @media print {
-                            body {
-                                margin: 0;
-                                padding: 20mm;
-                            }
+                        /* Print styles are now in print-template.css */
                             header, footer {
                                 display: none !important;
                             }
@@ -869,7 +867,6 @@
                             `).join('')}
                         </tbody>
                     </table>
-                </body>
                 </html>
                 `;
                 
@@ -891,6 +888,19 @@
 
         // تهيئة عند تحميل الصفحة
         window.addEventListener('DOMContentLoaded', initPage);
+    </script>
+
+    <script src="../js/print-template.js"></script>
+    <script>
+        PrintTemplate.init({
+            reportTitle: 'إدارة نظام ParkPow',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        PrintTemplate.prepareTable('table');
+        PrintTemplate.preventPageBreak('.stat-card');
+        PrintTemplate.preventPageBreak('.report-section');
     </script>
 </body>
 </html>

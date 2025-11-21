@@ -6,6 +6,8 @@
     <title>لوحة التحكم الموحدة - وحدة إسكان أعضاء هيئة التدريس</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tajawal:700,400&display=swap">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         * {
             margin: 0;
@@ -405,25 +407,8 @@
             box-shadow: 0 15px 40px rgba(240, 147, 251, 0.5);
         }
 
-        /* تصميم الطباعة */
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-            body::before {
-                display: none;
-            }
-            .header, .tabs, .controls, .back-btn {
-                display: none;
-            }
-            .tab-content {
-                display: block !important;
-            }
-            .report-table {
-                box-shadow: none;
-            }
-        }
+        /* Print styles are now in print-template.css */
+    </style>
 
         @media (max-width: 768px) {
             .header h1 {
@@ -777,6 +762,19 @@
             // تحديث الإحصائيات كل 30 ثانية
             setInterval(loadStatistics, 30000);
         });
+    </script>
+
+    <script src="../js/print-template.js"></script>
+    <script>
+        PrintTemplate.init({
+            reportTitle: 'لوحة التحكم الموحدة',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        PrintTemplate.prepareTable('table');
+        PrintTemplate.preventPageBreak('.stat-card');
+        PrintTemplate.preventPageBreak('.report-section');
     </script>
 </body>
 </html>

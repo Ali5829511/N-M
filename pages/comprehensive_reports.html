@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>التقارير الشاملة - نظام إدارة الإسكان</title>
     <link rel="stylesheet" href="../css/responsive-style.css">
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         .reports-container {
             max-width: 1400px;
@@ -226,24 +227,7 @@
             opacity: 0.9;
         }
 
-        @media print {
-            .report-header,
-            .report-types,
-            .report-options,
-            .action-buttons {
-                display: none !important;
-            }
-
-            .report-preview {
-                display: block !important;
-                box-shadow: none;
-                padding: 0;
-            }
-
-            body {
-                background: white;
-            }
-        }
+        /* Print styles are now in print-template.css */
 
         @media (max-width: 768px) {
             .report-header h1 {
@@ -699,6 +683,22 @@
         function printReport() {
             window.print();
         }
+    </script>
+    
+    <script src="../js/print-template.js"></script>
+    <script>
+        // Initialize print template
+        PrintTemplate.init({
+            reportTitle: 'التقارير الشاملة',
+            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        
+        // Apply print preparation
+        PrintTemplate.prepareTable('table');
+        PrintTemplate.preventPageBreak('.report-section');
+        PrintTemplate.preventPageBreak('.stat-card');
     </script>
 </body>
 </html>

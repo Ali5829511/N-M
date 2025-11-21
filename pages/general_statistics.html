@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تقرير الإحصائيات العامة - وحدة إسكان هيئة التدريس</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/print-template.css">
     <style>
         * {
             margin: 0;
@@ -248,23 +249,7 @@
             box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
         }
 
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-
-            .action-buttons,
-            .back-btn {
-                display: none;
-            }
-
-            .header,
-            .stats-container {
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-        }
+        /* Print styles are now in print-template.css */
 
         @media (max-width: 768px) {
             .header h1 {
@@ -543,6 +528,17 @@
 
         // Load data on page load
         document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+    
+    <script src="../js/print-template.js"></script>
+    <script>
+        PrintTemplate.init({
+            reportTitle: 'تقرير الإحصائيات العامة',
+            reportSubtitle: 'وحدة إسكان هيئة التدريس',
+            showDate: true,
+            showLogo: true
+        });
+        PrintTemplate.preventPageBreak('.stat-card');
     </script>
 </body>
 </html>
