@@ -165,28 +165,33 @@ class PrintTemplate {
      * Format date in Arabic format
      */
     static formatDate(date) {
-        const options = {
+        // First, get the Gregorian date
+        const gregorianDate = date.toLocaleDateString('ar-SA', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric',
-            calendar: 'islamic-umalqura'
-        };
+            day: 'numeric'
+        });
         
+        // Try to get Hijri date with feature detection
         try {
-            const hijriDate = date.toLocaleDateString('ar-SA-u-ca-islamic', options);
-            const gregorianDate = date.toLocaleDateString('ar-SA', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            return `${gregorianDate} (${hijriDate})`;
+            // Check if Intl.DateTimeFormat supports islamic calendar
+            const supportsIslamic = typeof Intl !== 'undefined' && 
+                                   typeof Intl.DateTimeFormat !== 'undefined';
+            
+            if (supportsIslamic) {
+                const hijriDate = date.toLocaleDateString('ar-SA-u-ca-islamic', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                return `${gregorianDate} (${hijriDate})`;
+            } else {
+                return gregorianDate;
+            }
         } catch (e) {
             // Fallback if Islamic calendar is not supported
-            return date.toLocaleDateString('ar-SA', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
+            console.warn('Islamic calendar not supported, using Gregorian only');
+            return gregorianDate;
         }
     }
 
