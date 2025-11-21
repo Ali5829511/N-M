@@ -395,13 +395,12 @@
                 // دمج بيانات السكان مع الفلل
                 villasData = villas.map(villa => {
                     const resident = data.residents.find(r => 
-                        r.unit_name === villa.name || 
                         (r.building_type === villa.building_number && r.unit_number === villa.unit_number)
                     );
                     
                     return {
                         'رقم الفلة': villa.building_number,
-                        'الوصف': villa.description,
+                        'الوصف': villa.building_description,
                         'اسم_الساكن': resident ? resident.name : 'شاغرة',
                         'حالة الفلة': resident ? 'مشغولة' : 'شاغرة',
                         'رقم الهاتف': resident ? resident.phone : '-'
