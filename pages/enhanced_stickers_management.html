@@ -1438,8 +1438,18 @@
         // تحميل البيانات الحقيقية
         async function loadRealData() {
             try {
-                const response = await fetch('stickers_data.json');
-                const realData = await response.json();
+                const response = await fetch('../data/stickers_data.json');
+                const data = await response.json();
+                
+                // Validate and extract stickers array
+                let realData;
+                if (data && data.stickers && Array.isArray(data.stickers)) {
+                    realData = data.stickers;
+                } else if (Array.isArray(data)) {
+                    realData = data;
+                } else {
+                    throw new Error('تنسيق البيانات غير صحيح / Invalid data format');
+                }
                 
                 // تحويل البيانات للتنسيق المطلوب
                 const formattedData = realData.map(item => ({
