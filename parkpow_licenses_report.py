@@ -51,6 +51,15 @@ class ParkPowLicensesReport:
         }
         self.licenses.append(license_data)
     
+    def _ensure_directory_exists(self, filepath):
+        """
+        تأكد من وجود المجلد للملف المحدد
+        
+        Args:
+            filepath (str): مسار الملف
+        """
+        Path(os.path.dirname(filepath)).mkdir(parents=True, exist_ok=True)
+    
     def attach_thumbnails(self, df):
         """
         ربط الصور المصغرة تلقائياً بناءً على مفتاح الترخيص
@@ -100,9 +109,7 @@ class ParkPowLicensesReport:
             print("⚠️ لا توجد بيانات للتصدير")
             return
         
-        # إنشاء مجلد data إذا لم يكن موجوداً
-        Path(os.path.dirname(filename)).mkdir(parents=True, exist_ok=True)
-        
+        self._ensure_directory_exists(filename)
         df.to_excel(filename, index=False, engine='openpyxl')
         print(f"✅ تم تصدير التقرير إلى Excel: {filename}")
     
@@ -118,9 +125,7 @@ class ParkPowLicensesReport:
             print("⚠️ لا توجد بيانات للتصدير")
             return
         
-        # إنشاء مجلد data إذا لم يكن موجوداً
-        Path(os.path.dirname(filename)).mkdir(parents=True, exist_ok=True)
-        
+        self._ensure_directory_exists(filename)
         df.to_csv(filename, index=False, encoding='utf-8-sig')
         print(f"✅ تم تصدير التقرير إلى CSV: {filename}")
     
@@ -136,8 +141,7 @@ class ParkPowLicensesReport:
             print("⚠️ لا توجد بيانات للتصدير")
             return
         
-        # إنشاء مجلد data إذا لم يكن موجوداً
-        Path(os.path.dirname(filename)).mkdir(parents=True, exist_ok=True)
+        self._ensure_directory_exists(filename)
         
         # إنشاء HTML مع تنسيق
         html_content = f"""
@@ -240,8 +244,7 @@ class ParkPowLicensesReport:
             print("⚠️ لا توجد بيانات للتصدير")
             return
         
-        # إنشاء مجلد data إذا لم يكن موجوداً
-        Path(os.path.dirname(filename)).mkdir(parents=True, exist_ok=True)
+        self._ensure_directory_exists(filename)
         
         # تحويل إلى JSON
         report_data = {
