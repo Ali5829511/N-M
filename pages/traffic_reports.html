@@ -495,23 +495,24 @@
     <script>
         'use strict';
 
-        // التحقق من تسجيل الدخول
-        if (!window.authManager.isAuthenticated()) {
-            window.location.href = '../index.html';
-        }
-
-        // التحقق من صلاحية الوصول للتقارير
-        const currentUser = window.authManager.getCurrentUser();
-        if (!currentUser || (!window.authManager.hasPermission('canViewReports') && currentUser.role !== 'admin')) {
-            alert('عذراً، ليس لديك صلاحية الوصول إلى التقارير.');
-            window.location.href = 'traffic_dashboard.html';
+        // التحقق من تسجيل الدخول والصلاحيات بشكل ذري
+        const hasAccess = window.authManager.requireAuth(['admin', 'inquiry']);
+        
+        // إذا لم يكن لديه صلاحية، سيتم إعادة التوجيه تلقائياً
+        // التحقق الإضافي من صلاحية التقارير
+        if (hasAccess) {
+            const currentUser = window.authManager.getCurrentUser();
+            if (currentUser && !window.authManager.hasPermission('canViewReports') && currentUser.role !== 'admin') {
+                alert('عذراً، ليس لديك صلاحية الوصول إلى التقارير.');
+                window.location.href = 'traffic_dashboard.html';
+            }
         }
 
         // تحميل الإحصائيات
         async function loadStatistics() {
             try {
                 // جلب البيانات من قاعدة البيانات
-                const violations = await window.db.getViolations() || [];
+                const violations = await window.db.getViolations();
                 
                 // جلب بيانات الحوادث والسيارات المحجوزة من localStorage مباشرة
                 const accidents = JSON.parse(localStorage.getItem('trafficAccidents') || '[]');
