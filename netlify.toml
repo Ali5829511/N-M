@@ -16,8 +16,11 @@
 # To connect Neon database to Netlify:
 # لربط قاعدة بيانات Neon مع Netlify:
 #
-# 1. Install Neon extension from: https://app.netlify.com/projects/n-m-m/extensions/neon
-#    قم بتثبيت إضافة Neon من الرابط أعلاه
+# 1. Install Neon extension from your Netlify project extensions page:
+#    https://app.netlify.com/sites/[your-site-name]/extensions/neon
+#    قم بتثبيت إضافة Neon من صفحة الإضافات في مشروعك
+#    (Replace [your-site-name] with your actual Netlify site name)
+#    (استبدل [your-site-name] باسم موقعك الفعلي في Netlify)
 #
 # 2. The extension will automatically add DATABASE_URL to your environment variables
 #    ستقوم الإضافة بإضافة DATABASE_URL تلقائياً إلى المتغيرات البيئية

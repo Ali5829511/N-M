@@ -146,7 +146,8 @@ WHERE table_schema = 'public';
 راجع الدليل الشامل: [NETLIFY_NEON_SETUP.md](../NETLIFY_NEON_SETUP.md)
 
 **طريقة سريعة:**
-1. ثبت Neon Extension: https://app.netlify.com/projects/n-m-m/extensions/neon
+1. ثبت Neon Extension من صفحة الإضافات في مشروعك: `https://app.netlify.com/sites/[your-site-name]/extensions`
+   - استبدل `[your-site-name]` باسم موقعك في Netlify
 2. أو أضف `DATABASE_URL` يدوياً في: Site settings > Environment variables
 
 ---
@@ -214,19 +215,26 @@ npm run start:api
 
 ### 3. اختبار الاستعلامات
 
+اختبار بسيط باستخدام CommonJS (متوافق مع جميع إصدارات Node.js):
+
 ```bash
-# اختبار بسيط
-node -e "
-import { NeonDatabase } from './database/neon-db.js';
-const db = new NeonDatabase();
-db.getUsers().then(users => {
+# اختبار الاتصال
+node --input-type=module -e "
+import('./database/neon-db.js').then(module => {
+    const { NeonDatabase } = module;
+    const db = new NeonDatabase();
+    return db.getUsers();
+}).then(users => {
     console.log('عدد المستخدمين:', users.length);
     console.log('✅ الاتصال يعمل بنجاح!');
 }).catch(err => {
     console.error('❌ خطأ:', err.message);
+    console.log('💡 تأكد من إعداد DATABASE_URL في ملف .env');
 });
 "
 ```
+
+**ملاحظة**: إذا واجهت مشاكل مع ES modules، تأكد من أن `package.json` يحتوي على `"type": "module"`
 
 ---
 

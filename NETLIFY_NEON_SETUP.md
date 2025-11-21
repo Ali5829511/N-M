@@ -27,12 +27,14 @@
 هذه الطريقة الموصى بها وهي الأسرع والأكثر أماناً.
 
 1. **افتح لوحة تحكم Netlify**
-   - اذهب إلى: https://app.netlify.com/projects/n-m-m/extensions
+   - اذهب إلى صفحة الإضافات في مشروعك
+   - الرابط: `https://app.netlify.com/sites/[your-site-name]/extensions`
+   - **ملاحظة**: استبدل `[your-site-name]` باسم موقعك الفعلي في Netlify
 
 2. **ابحث عن إضافة Neon**
    - في صفحة الإضافات (Extensions)
    - ابحث عن "Neon"
-   - أو استخدم الرابط المباشر: https://app.netlify.com/projects/n-m-m/extensions/neon
+   - أو اذهب مباشرة إلى صفحة الإضافات واختر Neon من القائمة
 
 3. **ثبت الإضافة**
    - اضغط على زر "Install" أو "Enable"
@@ -172,12 +174,14 @@ This guide explains how to connect Neon PostgreSQL database with Netlify for the
 This is the recommended method - fastest and most secure.
 
 1. **Open Netlify Dashboard**
-   - Go to: https://app.netlify.com/projects/n-m-m/extensions
+   - Go to your project's extensions page
+   - URL: `https://app.netlify.com/sites/[your-site-name]/extensions`
+   - **Note**: Replace `[your-site-name]` with your actual Netlify site name
 
 2. **Find Neon Extension**
    - In the Extensions page
    - Search for "Neon"
-   - Or use direct link: https://app.netlify.com/projects/n-m-m/extensions/neon
+   - Or go directly to the extensions page and select Neon from the list
 
 3. **Install Extension**
    - Click "Install" or "Enable" button
