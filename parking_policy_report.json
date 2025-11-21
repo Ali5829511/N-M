@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-11-21T14:10:07.155927",
+  "policy": {
+    "apartments": "موقف واحد لكل شقة (باسم المبنى ورقم الشقة)",
+    "villas": "بدون مواقف"
+  },
+  "before": {
+    "total_parking": 1011,
+    "villas_parking": 0,
+    "apartments_parking": 1011
+  },
+  "after": {
+    "total_parking": 1011,
+    "villas_parking": 0,
+    "apartments_parking": 1011
+  },
+  "removed": {
+    "villas_parking": 0,
+    "duplicates": 0
+  }
+}
