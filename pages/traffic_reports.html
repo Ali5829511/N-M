@@ -495,15 +495,19 @@
     <script>
         'use strict';
 
+        // عدد التقارير المتاحة
+        const TOTAL_AVAILABLE_REPORTS = 6;
+
         // التحقق من تسجيل الدخول والصلاحيات
         if (!window.authManager.requireAuth(['admin', 'inquiry'])) {
-            // سيتم إعادة التوجيه تلقائياً من requireAuth
-        } else {
-            // التحقق الإضافي من صلاحية التقارير
-            if (!window.authManager.hasPermission('canViewReports')) {
-                alert('عذراً، ليس لديك صلاحية الوصول إلى التقارير.');
-                window.location.href = 'traffic_dashboard.html';
-            }
+            return; // سيتم إعادة التوجيه تلقائياً من requireAuth
+        }
+        
+        // التحقق الإضافي من صلاحية التقارير
+        if (!window.authManager.hasPermission('canViewReports')) {
+            alert('عذراً، ليس لديك صلاحية الوصول إلى التقارير.');
+            window.location.href = 'traffic_dashboard.html';
+            return;
         }
 
         // تحميل الإحصائيات
@@ -513,6 +517,7 @@
                 const violations = await window.db.getViolations();
                 
                 // جلب بيانات الحوادث والسيارات المحجوزة من localStorage مباشرة
+                // ملاحظة: هذه البيانات لا تتوفر حالياً في database.js ويتم تخزينها في localStorage مباشرة
                 const accidents = JSON.parse(localStorage.getItem('trafficAccidents') || '[]');
                 const immobilized = JSON.parse(localStorage.getItem('immobilizedCars') || '[]');
                 
@@ -520,14 +525,14 @@
                 document.getElementById('totalViolations').textContent = violations.length;
                 document.getElementById('totalAccidents').textContent = accidents.length;
                 document.getElementById('totalImmobilized').textContent = immobilized.length;
-                document.getElementById('totalReports').textContent = '6'; // عدد التقارير المتاحة
+                document.getElementById('totalReports').textContent = TOTAL_AVAILABLE_REPORTS;
             } catch (error) {
                 console.error('Error loading statistics:', error);
                 // عرض قيم افتراضية في حالة الخطأ
                 document.getElementById('totalViolations').textContent = '-';
                 document.getElementById('totalAccidents').textContent = '-';
                 document.getElementById('totalImmobilized').textContent = '-';
-                document.getElementById('totalReports').textContent = '6';
+                document.getElementById('totalReports').textContent = TOTAL_AVAILABLE_REPORTS;
             }
         }
 
