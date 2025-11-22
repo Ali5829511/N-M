@@ -45,8 +45,7 @@ class ParkPowAPI {
             // Try multiple possible paths based on where the script is loaded from
             const paths = [
                 '../config/parkpow_config.json',  // من داخل مجلد pages
-                'config/parkpow_config.json',     // من المجلد الجذر
-                './config/parkpow_config.json'    // مسار آخر محتمل
+                'config/parkpow_config.json'      // من المجلد الجذر
             ];
             
             for (const path of paths) {
@@ -58,7 +57,8 @@ class ParkPowAPI {
                         return config;
                     }
                 } catch (e) {
-                    // Try next path
+                    // Log error and try next path
+                    console.debug(`⚠ فشل تحميل التكوين من ${path}:`, e.message);
                     continue;
                 }
             }
