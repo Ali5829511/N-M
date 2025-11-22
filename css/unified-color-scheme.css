@@ -44,6 +44,11 @@
     --error: #ef4444;
     --info: #3b82f6;
     
+    /* انتقالات سلسة - Smooth Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
     /* الظلال - Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -91,6 +96,14 @@ body {
     font-family: var(--font-family);
     background: var(--bg-gradient);
     color: var(--text-primary);
+    transition: background var(--transition-normal), color var(--transition-normal);
+}
+
+/* انتقالات سلسة لجميع العناصر */
+* {
+    transition: background-color var(--transition-normal), 
+                color var(--transition-normal), 
+                border-color var(--transition-normal);
 }
 
 /* الرأس - Header */
