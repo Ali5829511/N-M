@@ -46,7 +46,8 @@ services:
       - ./images:/app/images:ro
     networks:
       - plate_recognizer_network
-    # Command can be overridden
+    # Command can be overridden to specify a different images file or camera ID
+    # Example with camera ID (optional parameter):
     # command: python snapshot_to_postgres.py images.txt camera_001
 
 volumes:

@@ -17,7 +17,7 @@ import sys
 import json
 import time
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 from dotenv import load_dotenv
@@ -239,12 +239,12 @@ def insert_snapshot_record(conn: Connection, data: Dict[str, Any], image_source:
             
             # If no timestamp from API, use current time
             if not captured_at:
-                captured_at = datetime.utcnow()
+                captured_at = datetime.now(timezone.utc)
             
             # Prepare metadata
             meta = {
                 'source': image_source,
-                'processed_at': datetime.utcnow().isoformat()
+                'processed_at': datetime.now(timezone.utc).isoformat()
             }
             
             cursor.execute(
