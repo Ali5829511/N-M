@@ -26,6 +26,7 @@ from tqdm import tqdm
 import psycopg2
 from psycopg2 import Binary
 from psycopg2.extras import Json, register_uuid
+from psycopg2 import Binary
 from datetime import datetime
 
 # Load environment variables
@@ -372,9 +373,9 @@ def insert_into_db(conn, record, image_data=None):
             record["captured_at"],
             record["plate_text"],
             record["plate_confidence"],
-            Json(record["makes_models"]),
-            Json(record["colors"]),
-            Json(record["bbox"]),
+            Json(record["makes_models"]) if record["makes_models"] else None,
+            Json(record["colors"]) if record["colors"] else None,
+            Json(record["bbox"]) if record["bbox"] else None,
             Json(record["raw_response"]),
             record["image_url"],
             Binary(image_data) if image_data else None,

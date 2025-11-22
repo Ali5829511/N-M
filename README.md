@@ -130,6 +130,118 @@ npm install && npm start
 
 ---
 
+## 🚗 Plate Recognizer Snapshot Integration
+
+**Automatic vehicle detection and license plate recognition using Plate Recognizer API**
+
+This system automatically processes vehicle images, detects license plates, and stores metadata in PostgreSQL with flexible image storage options (S3 or database).
+
+### ✨ Features:
+- 🔍 **Automatic plate detection** using Plate Recognizer Snapshot API
+- 📦 **Flexible image storage**: S3 (default) or PostgreSQL bytea
+- 🔐 **Secure**: SHA256 hashing, no hardcoded credentials
+- 🎯 **Confidence filtering**: Only store high-quality detections
+- 🔄 **Retry mechanism**: Handles network errors gracefully
+- 🐳 **Docker support**: Easy deployment with docker-compose
+
+### 🚀 Quick Setup:
+
+1. **Create database and apply schema:**
+   ```bash
+   psql $DATABASE_URL < db_schema.sql
+   ```
+
+2. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your credentials:
+   # - PLATE_API_KEY (from https://app.platerecognizer.com/)
+   # - DATABASE_URL
+   # - STORE_IMAGES=s3 (or "db" for small tests)
+   # - S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY (if using S3)
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Prepare image list:**
+   ```bash
+   # Create images.txt with one image path or URL per line
+   echo "path/to/image1.jpg" > images.txt
+   echo "https://example.com/image2.jpg" >> images.txt
+   ```
+
+5. **Run the script:**
+   ```bash
+   python snapshot_to_postgres.py \
+     --images images.txt \
+     --delay 1.0 \
+     --confidence-threshold 0.7
+   ```
+
+### 🐳 Docker Deployment:
+
+```bash
+# Set environment variables in .env
+docker-compose up -d
+```
+
+### 📝 Image Storage Options:
+
+#### **Option 1: S3 Storage (Default, Recommended)**
+- Stores images in S3/MinIO object storage with **private ACL** for security
+- Saves only metadata and S3 URL (s3://bucket/key format) in database
+- Use presigned URLs when you need temporary access to images
+- Best for production with many images
+- **Requirements**: Set `STORE_IMAGES=s3` and configure AWS credentials
+
+#### **Option 2: Database Storage (For Testing)**
+- Stores image bytes directly in PostgreSQL (bytea column)
+- Useful for small tests or when S3 is not available
+- **Requirements**: Set `STORE_IMAGES=db`
+
+### 🧪 Local Testing with MinIO:
+
+MinIO provides S3-compatible storage for local development:
+
+```bash
+# Run MinIO locally
+docker run -p 9000:9000 -p 9001:9001 \
+  -e MINIO_ROOT_USER=minioadmin \
+  -e MINIO_ROOT_PASSWORD=minioadmin \
+  minio/minio server /data --console-address ":9001"
+
+# Configure .env for MinIO:
+# S3_BUCKET=test-bucket
+# AWS_ACCESS_KEY_ID=minioadmin
+# AWS_SECRET_ACCESS_KEY=minioadmin
+# AWS_REGION=us-east-1
+```
+
+### ⚠️ Privacy & Legal Warnings:
+
+**Important considerations when using automated license plate recognition:**
+
+- 📋 **Data Privacy**: Comply with GDPR, CCPA, and local privacy laws
+- 🔒 **Secure Storage**: Encrypt sensitive data, use secure connections
+- ⚖️ **Legal Compliance**: Check local laws regarding ALPR (Automated License Plate Recognition)
+- 👤 **User Consent**: Obtain consent where required for image capture
+- 🗑️ **Data Retention**: Implement appropriate retention and deletion policies
+- 🚫 **Access Control**: Restrict access to authorized personnel only
+
+**This system is designed for private property management. Users are responsible for ensuring compliance with all applicable laws and regulations.**
+
+### 📚 Related Files:
+- `snapshot_to_postgres.py` - Main ingestion script
+- `db_schema.sql` - Database schema with indexes
+- `docker-compose.yml` - Docker orchestration
+- `Dockerfile.snapshot` - Container image
+- `.env.example` - Configuration template
+
+---
+
 ## 📊 حالة النظام - System Status
 
 | المكون | الحالة | التفاصيل |
