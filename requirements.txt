@@ -16,3 +16,10 @@ openpyxl>=3.1.0
 
 # Image Processing
 Pillow>=10.0.0
+
+# Plate Recognizer Snapshot to PostgreSQL
+# متطلبات Plate Recognizer Snapshot إلى PostgreSQL
+python-dotenv
+psycopg2-binary
+tqdm
+sqlalchemy
