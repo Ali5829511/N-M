@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير احترافي - وحدة إسكان أعضاء هيئة التدريس</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tajawal:700,400&display=swap">
+    <link rel="stylesheet" href="../css/professional-report.css">
+</head>
+<body>
+    <!-- أزرار الإجراءات -->
+    <div class="action-buttons no-print">
+        <button class="action-btn btn-print" onclick="window.print()">
+            <i class="fas fa-print"></i> طباعة التقرير
+        </button>
+        <button class="action-btn btn-export" onclick="exportToPDF()">
+            <i class="fas fa-file-pdf"></i> تصدير PDF
+        </button>
+        <button class="action-btn btn-back" onclick="window.history.back()">
+            <i class="fas fa-arrow-right"></i> رجوع
+        </button>
+    </div>
+
+    <!-- حاوية التقرير -->
+    <div class="report-container">
+        <!-- رأس الصفحة الرسمي -->
+        <div class="official-header">
+            <div class="header-content">
+                <!-- الجانب الأيسر (بالإنجليزية) -->
+                <div class="header-left">
+                    <h4>Kingdom of Saudi Arabia</h4>
+                    <p>Ministry of Education</p>
+                    <p>Imam Mohammad Ibn Saud Islamic University</p>
+                    <p>General Directorate of Security and Safety</p>
+                </div>
+
+                <!-- المنتصف (الشعارات) -->
+                <div class="header-center">
+                    <div class="header-logos">
+                        <!-- شعار الجامعة -->
+                        <svg class="university-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="30" y="20" width="40" height="60" fill="#1a365d" rx="5"/>
+                            <circle cx="50" cy="50" r="15" fill="#DAA520"/>
+                            <text x="50" y="55" text-anchor="middle" fill="white" font-size="12" font-family="Arial">IMAMU</text>
+                        </svg>
+                        
+                        <!-- شعار رؤية 2030 -->
+                        <svg class="vision-logo" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+                            <text x="60" y="30" text-anchor="middle" fill="#1a365d" font-size="16" font-weight="bold" font-family="Arial">VISION</text>
+                            <text x="60" y="55" text-anchor="middle" fill="#00A651" font-size="32" font-weight="bold" font-family="Arial">2030</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="bismillah">بسم الله الرحمن الرحيم</div>
+                </div>
+
+                <!-- الجانب الأيمن (بالعربية) -->
+                <div class="header-right">
+                    <h3>المملكة العربية السعودية</h3>
+                    <h4>وزارة التعليم</h4>
+                    <p>جامعة الإمام محمد بن سعود الإسلامية</p>
+                    <p>الإدارة العامة للأمن والسلامة</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- محتوى التقرير -->
+        <div class="report-content">
+            <!-- عنوان التقرير -->
+            <div class="report-title">
+                <h1>تقرير شامل عن الوحدات السكنية والمواقف</h1>
+                <div class="report-date">
+                    التاريخ: <span id="reportDate"></span> | 
+                    الوقت: <span id="reportTime"></span>
+                </div>
+            </div>
+
+            <!-- معلومات التقرير -->
+            <div class="report-info">
+                <div class="info-row">
+                    <div class="info-label">رقم التقرير:</div>
+                    <div class="info-value" id="reportNumber">RPT-2025-001</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">نوع التقرير:</div>
+                    <div class="info-value">تقرير إحصائي شامل</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">الجهة المعنية:</div>
+                    <div class="info-value">وحدة إسكان أعضاء هيئة التدريس</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">معد التقرير:</div>
+                    <div class="info-value" id="reportPreparer">النظام الإلكتروني</div>
+                </div>
+            </div>
+
+            <!-- الإحصائيات الرئيسية -->
+            <h2 style="color: #1a365d; margin: 25px 0 15px; font-size: 18px; border-bottom: 2px solid #DAA520; padding-bottom: 10px;">
+                الإحصائيات الرئيسية
+            </h2>
+            
+            <div class="statistics-grid">
+                <div class="stat-box">
+                    <div class="stat-label">إجمالي الوحدات السكنية</div>
+                    <div class="stat-value" id="totalUnits">1,134</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">عدد الفلل</div>
+                    <div class="stat-value" id="totalVillas">114</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">عدد الشقق</div>
+                    <div class="stat-value" id="totalApartments">1,020</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">إجمالي السكان</div>
+                    <div class="stat-value" id="totalResidents">1,057</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">إجمالي المواقف</div>
+                    <div class="stat-value" id="totalParking">1,285</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">إجمالي الملصقات</div>
+                    <div class="stat-value" id="totalStickers">2,382</div>
+                </div>
+            </div>
+
+            <!-- جدول تفصيلي -->
+            <h2 style="color: #1a365d; margin: 25px 0 15px; font-size: 18px; border-bottom: 2px solid #DAA520; padding-bottom: 10px;">
+                التفاصيل
+            </h2>
+            
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>البيان</th>
+                        <th>العدد</th>
+                        <th>النسبة</th>
+                        <th>الملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>الوحدات المشغولة</td>
+                        <td>1,057</td>
+                        <td>93.2%</td>
+                        <td>نسبة إشغال ممتازة</td>
+                    </tr>
+                    <tr>
+                        <td>الوحدات الشاغرة</td>
+                        <td>77</td>
+                        <td>6.8%</td>
+                        <td>متاحة للحجز</td>
+                    </tr>
+                    <tr>
+                        <td>مواقف خاصة</td>
+                        <td>1,012</td>
+                        <td>78.8%</td>
+                        <td>موقف لكل شقة</td>
+                    </tr>
+                    <tr>
+                        <td>مواقف عامة</td>
+                        <td>234</td>
+                        <td>18.2%</td>
+                        <td>للزوار</td>
+                    </tr>
+                    <tr>
+                        <td>مواقف ذوي الاحتياجات</td>
+                        <td>39</td>
+                        <td>3.0%</td>
+                        <td>حسب المعايير الدولية</td>
+                    </tr>
+                    <tr>
+                        <td>ملصقات فعالة</td>
+                        <td>2,211</td>
+                        <td>92.8%</td>
+                        <td>سارية المفعول</td>
+                    </tr>
+                    <tr>
+                        <td>ملصقات ملغاة</td>
+                        <td>171</td>
+                        <td>7.2%</td>
+                        <td>تم إلغاؤها</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- التوقيع والختم -->
+            <div class="signature-section">
+                <div class="signature-box">
+                    <div class="signature-title">معد التقرير</div>
+                    <div class="signature-line">
+                        <p style="margin-top: 5px; font-size: 12px;">النظام الإلكتروني</p>
+                    </div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-title">مدير الإدارة</div>
+                    <div class="signature-line">
+                        <p style="margin-top: 5px; font-size: 12px;">الاسم والتوقيع</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ذيل الصفحة الرسمي -->
+        <div class="official-footer">
+            <div class="footer-content">
+                <p>الرياض ص.ب: ١١٤٣٢ الرياض ٥٧٠١ - هاتف: ٠٠٨٠٠ ٢٥٨١١١١ - ٩٦٦١١ - بريد إلكتروني: security@imamu.edu.sa</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تحديث التاريخ والوقت
+        function updateDateTime() {
+            const now = new Date();
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
+            
+            document.getElementById('reportDate').textContent = now.toLocaleDateString('ar-SA', dateOptions);
+            document.getElementById('reportTime').textContent = now.toLocaleTimeString('ar-SA', timeOptions);
+        }
+
+        // تصدير إلى PDF
+        function exportToPDF() {
+            window.print();
+        }
+
+        // تحميل البيانات من localStorage
+        function loadDataFromStorage() {
+            try {
+                const realData = JSON.parse(localStorage.getItem('real_data')) || {};
+                const stats = realData.statistics || {};
+                
+                // تحديث الإحصائيات
+                if (stats.total_units) document.getElementById('totalUnits').textContent = stats.total_units.toLocaleString('ar-SA');
+                if (stats.total_villas) document.getElementById('totalVillas').textContent = stats.total_villas.toLocaleString('ar-SA');
+                if (stats.total_apartments) document.getElementById('totalApartments').textContent = stats.total_apartments.toLocaleString('ar-SA');
+                if (stats.total_residents) document.getElementById('totalResidents').textContent = stats.total_residents.toLocaleString('ar-SA');
+                if (stats.total_parking) document.getElementById('totalParking').textContent = stats.total_parking.toLocaleString('ar-SA');
+                if (stats.total_stickers) document.getElementById('totalStickers').textContent = stats.total_stickers.toLocaleString('ar-SA');
+            } catch (error) {
+                console.error('خطأ في تحميل البيانات:', error);
+            }
+        }
+
+        // تشغيل عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            loadDataFromStorage();
+        });
+    </script>
+</body>
+</html>
