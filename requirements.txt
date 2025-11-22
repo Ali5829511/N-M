@@ -4,6 +4,9 @@
 # Plate Recognition API
 requests>=2.31.0
 
+# PostgreSQL Database Driver
+psycopg2-binary>=2.9.9
+
 # PDF Generation
 fpdf>=1.7.2
 
@@ -20,4 +23,4 @@ python-dotenv
 psycopg2-binary
 tqdm
 sqlalchemy
-boto3  # AWS S3 SDK for Python (object storage)
+boto3  # For S3 image storage

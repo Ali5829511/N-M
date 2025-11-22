@@ -81,6 +81,10 @@ output_reports/
 # Cache
 .cache/
 
-# Image lists for Plate Recognizer
-images.txt
-images_*.txt
+# Plate Recognizer Snapshot Integration
+retrieved_images/
+docker-volumes/
+postgres_data/
+
+# Docker
+.dockerignore

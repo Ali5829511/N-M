@@ -1,17 +1,12 @@
-# Example images.txt file
-# Add one image path or URL per line
-# Lines starting with # are ignored
+# مثال لملف images.txt
+# ضع رابط أو مسار صورة في كل سطر
+# الأسطر التي تبدأ بـ # تُتجاهل
 
-# Example with URLs:
-# https://example.com/vehicle1.jpg
-# https://example.com/vehicle2.jpg
-# https://example.com/vehicle3.jpg
+# أمثلة لروابط صور عبر الإنترنت:
+# https://example.com/car1.jpg
+# https://example.com/car2.png
 
-# Example with local files:
-# /path/to/image1.jpg
-# /path/to/image2.jpg
-# /path/to/image3.jpg
-
-# You can mix URLs and local paths:
-# https://example.com/remote-vehicle.jpg
-# /local/path/vehicle.jpg
+# أمثلة لملفات محلية:
+# /path/to/local/car1.jpg
+# /path/to/local/car2.png
+# ./relative/path/car3.jpg
