@@ -1,0 +1,11 @@
+# Sample image list for Plate Recognizer Snapshot testing
+# Each line should contain either a local file path or HTTP/HTTPS URL
+# Lines starting with # are comments and will be ignored
+
+# Example URLs (replace with actual image URLs):
+# https://example.com/vehicle1.jpg
+# https://example.com/vehicle2.jpg
+
+# Example local paths:
+# /path/to/local/image1.jpg
+# /path/to/local/image2.jpg

@@ -30,43 +30,17 @@ from datetime import datetime
 
 load_dotenv()
 
-# Required environment variables
-PLATE_API_KEY = os.getenv("PLATE_API_KEY")
-SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")
-DATABASE_URL = os.getenv("DATABASE_URL")
-STORE_IMAGES = os.getenv("STORE_IMAGES", "s3")  # Default: s3, alternative: db
-
-# AWS/S3 configuration (only needed if STORE_IMAGES == "s3")
-S3_BUCKET = os.getenv("S3_BUCKET")
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
-
-if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
-    print("ERROR: Required environment variables not set: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
-    sys.exit(1)
-
-# Import boto3 only if needed
+# Configuration will be loaded in main() to allow --help to work without env vars
+PLATE_API_KEY = None
+SNAPSHOT_API_URL = None
+DATABASE_URL = None
+STORE_IMAGES = None
+S3_BUCKET = None
+AWS_ACCESS_KEY_ID = None
+AWS_SECRET_ACCESS_KEY = None
+AWS_REGION = None
+HEADERS = {}
 boto3_client = None
-if STORE_IMAGES == "s3":
-    if not S3_BUCKET or not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
-        print("ERROR: STORE_IMAGES=s3 requires S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
-        sys.exit(1)
-    try:
-        import boto3
-        boto3_client = boto3.client(
-            's3',
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            region_name=AWS_REGION
-        )
-    except ImportError:
-        print("ERROR: boto3 not installed. Run: pip install boto3")
-        sys.exit(1)
-
-HEADERS = {
-    "Authorization": f"Token {PLATE_API_KEY}"
-}
 
 def compute_image_metadata(image_bytes):
     """Compute SHA256 hash, MIME type, and size for image bytes."""
@@ -93,19 +67,29 @@ def upload_to_s3(image_bytes, sha256_hash, mime_type):
     if not boto3_client:
         raise RuntimeError("S3 client not initialized")
     
+    # Determine file extension from MIME type
+    ext_map = {
+        'image/jpeg': '.jpg',
+        'image/png': '.png',
+        'image/gif': '.gif',
+        'image/webp': '.webp'
+    }
+    ext = ext_map.get(mime_type, '.bin')
+    
     # Use SHA256 as filename to avoid duplicates
-    key = f"vehicle-images/{sha256_hash[:2]}/{sha256_hash}.jpg"
+    key = f"vehicle-images/{sha256_hash[:2]}/{sha256_hash}{ext}"
     
     try:
+        # Upload with private ACL for security
         boto3_client.put_object(
             Bucket=S3_BUCKET,
             Key=key,
             Body=image_bytes,
             ContentType=mime_type,
-            ACL='public-read'  # Make publicly readable, or use presigned URLs
+            ACL='private'  # Keep private, use presigned URLs if access needed
         )
-        # Generate public URL
-        url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{key}"
+        # Generate private URL (access requires presigned URL)
+        url = f"s3://{S3_BUCKET}/{key}"
         return url
     except Exception as e:
         print(f"ERROR uploading to S3: {e}")
@@ -170,8 +154,10 @@ def parse_and_normalize_response(resp, confidence_threshold):
         # Extract plate information
         plate = r0.get("plate") or r0.get("plate_info") or {}
         if isinstance(plate, dict):
-            out["plate_text"] = plate.get("plate") or plate.get("number") or out["plate_text"]
-            out["plate_confidence"] = plate.get("score") or plate.get("confidence") or out["plate_confidence"]
+            if not out["plate_text"]:
+                out["plate_text"] = plate.get("plate") or plate.get("number")
+            if out["plate_confidence"] is None:
+                out["plate_confidence"] = plate.get("score") or plate.get("confidence")
         
         # Check confidence threshold
         if confidence_threshold and out["plate_confidence"] is not None:
@@ -194,10 +180,14 @@ def parse_and_normalize_response(resp, confidence_threshold):
             out["bbox"] = bbox
         
         # Extract timestamp
-        if r0.get("timestamp"):
+        timestamp = r0.get("timestamp")
+        if timestamp:
             try:
-                out["captured_at"] = datetime.fromisoformat(r0.get("timestamp").replace('Z', '+00:00'))
-            except Exception:
+                # Handle ISO format with 'Z' timezone indicator
+                if isinstance(timestamp, str):
+                    timestamp_str = timestamp.replace('Z', '+00:00')
+                    out["captured_at"] = datetime.fromisoformat(timestamp_str)
+            except (ValueError, AttributeError):
                 out["captured_at"] = None
         
         if r0.get("image_url"):
@@ -258,6 +248,45 @@ def main():
         help="Minimum confidence threshold (0-1) to store results (default: None, store all)"
     )
     args = parser.parse_args()
+
+    # Load environment variables after parsing args (to allow --help to work)
+    global PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL, STORE_IMAGES
+    global S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+    global HEADERS, boto3_client
+    
+    PLATE_API_KEY = os.getenv("PLATE_API_KEY")
+    SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    STORE_IMAGES = os.getenv("STORE_IMAGES", "s3")
+    
+    if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
+        print("ERROR: Required environment variables not set: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
+        sys.exit(1)
+    
+    HEADERS = {"Authorization": f"Token {PLATE_API_KEY}"}
+    
+    # AWS/S3 configuration (only needed if STORE_IMAGES == "s3")
+    if STORE_IMAGES == "s3":
+        S3_BUCKET = os.getenv("S3_BUCKET")
+        AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+        AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+        AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+        
+        if not S3_BUCKET or not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
+            print("ERROR: STORE_IMAGES=s3 requires S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
+            sys.exit(1)
+        
+        try:
+            import boto3
+            boto3_client = boto3.client(
+                's3',
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                region_name=AWS_REGION
+            )
+        except ImportError:
+            print("ERROR: boto3 not installed. Run: pip install boto3")
+            sys.exit(1)
 
     print(f"Configuration:")
     print(f"  STORE_IMAGES: {STORE_IMAGES}")

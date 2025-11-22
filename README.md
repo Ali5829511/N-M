@@ -191,8 +191,9 @@ docker-compose up -d
 ### 📝 Image Storage Options:
 
 #### **Option 1: S3 Storage (Default, Recommended)**
-- Stores images in S3/MinIO object storage
-- Saves only metadata and S3 URL in database
+- Stores images in S3/MinIO object storage with **private ACL** for security
+- Saves only metadata and S3 URL (s3://bucket/key format) in database
+- Use presigned URLs when you need temporary access to images
 - Best for production with many images
 - **Requirements**: Set `STORE_IMAGES=s3` and configure AWS credentials
 
