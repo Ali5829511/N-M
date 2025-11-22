@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """
-سكربت لإرسال صور/روابط إلى Plate Recognizer Snapshot API وتخزين النتائج في PostgreSQL.
+سكربت لإرسال صور/روابط إلى Plate Recognizer API وتخزين النتائج في PostgreSQL.
 يدعم تخزين الصور في S3 أو قاعدة البيانات مباشرة.
 
+يدعم نوعين من API:
+1. Snapshot API (السحابي): للاستخدام مع خدمة Plate Recognizer السحابية
+2. SDK/Server (المحلي): للاستخدام مع Plate Recognizer SDK المستضاف محلياً
+
 ملاحظات:
-- عدّل SNAPSHOT_API_URL حسب الوثائق الرسمية (https://guides.platerecognizer.com/docs/snapshot/getting-started).
-- يدعم السكربت إرسال قائمة روابط صور من ملف نصي أو مسارات ملفات محلية.
+- عدّل PLATE_API_TYPE لتحديد نوع API (snapshot أو sdk)
+- للـ Snapshot API: راجع https://guides.platerecognizer.com/docs/snapshot/getting-started
+- للـ SDK/Server: راجع https://guides.platerecognizer.com/docs/tech-references/server
+- يدعم السكربت إرسال قائمة روابط صور من ملف نصي أو مسارات ملفات محلية
 - الوضع الافتراضي لتخزين الصور هو S3 (STORE_IMAGES=s3)
 """
 
@@ -31,7 +37,9 @@ load_dotenv()
 
 # Required environment variables (will be validated in main())
 PLATE_API_KEY = os.getenv("PLATE_API_KEY")
+PLATE_API_TYPE = os.getenv("PLATE_API_TYPE", "snapshot").lower()  # "snapshot" or "sdk"
 SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")
+SDK_API_URL = os.getenv("SDK_API_URL", "http://localhost:8080/v1/plate-reader/")
 DATABASE_URL = os.getenv("DATABASE_URL")
 STORE_IMAGES = os.getenv("STORE_IMAGES", "s3").lower()  # "s3" or "db"
 S3_BUCKET = os.getenv("S3_BUCKET")
@@ -42,6 +50,7 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 # Global variables initialized in main()
 boto3_client = None
 HEADERS = {}
+API_URL = None  # Will be set based on PLATE_API_TYPE
 
 
 def get_image_bytes(path_or_url):
@@ -117,7 +126,8 @@ def upload_to_s3(image_bytes, filename, mime_type):
 
 def send_to_plate_recognizer(image_bytes, mime_type='image/jpeg'):
     """
-    Send image to Plate Recognizer API and return response.
+    Send image to Plate Recognizer API (Snapshot or SDK) and return response.
+    Supports both cloud-based Snapshot API and on-premise SDK/Server.
     """
     # Determine file extension from mime type
     ext = mime_type.split('/')[-1] if '/' in mime_type else 'jpg'
@@ -130,7 +140,7 @@ def send_to_plate_recognizer(image_bytes, mime_type='image/jpeg'):
     for attempt in range(max_retries):
         try:
             response = requests.post(
-                SNAPSHOT_API_URL,
+                API_URL,  # Uses either SNAPSHOT_API_URL or SDK_API_URL
                 headers=HEADERS,
                 files=files,
                 timeout=60
@@ -249,15 +259,24 @@ def insert_into_db(conn, record, image_data=None):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Send images to Plate Recognizer snapshot and store results",
+        description="Send images to Plate Recognizer (Snapshot API or SDK/Server) and store results",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Example usage:
   python snapshot_to_postgres.py --images images.txt --delay 1.0 --confidence-threshold 0.8
 
 Environment variables required:
-  PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL
-  For S3: S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+  PLATE_API_KEY, DATABASE_URL
+  PLATE_API_TYPE (snapshot or sdk, default: snapshot)
+  
+  For Snapshot API (cloud):
+    SNAPSHOT_API_URL (default: https://api.platerecognizer.com/v1/plate-reader/)
+  
+  For SDK/Server (on-premise):
+    SDK_API_URL (default: http://localhost:8080/v1/plate-reader/)
+  
+  For S3 storage: 
+    S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
         """
     )
     parser.add_argument("--images", required=True, help="ملف نصي يحتوي على مسار/URL لكل صورة في سطر مستقل")
@@ -267,15 +286,51 @@ Environment variables required:
     args = parser.parse_args()
     
     # Validate environment variables after parsing args (so --help works without env vars)
-    global boto3_client, HEADERS
+    global boto3_client, HEADERS, API_URL
     
-    if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
-        print("ERROR: Please set required environment variables: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
+    # Validate API type
+    if PLATE_API_TYPE not in ["snapshot", "sdk"]:
+        print(f"ERROR: PLATE_API_TYPE must be 'snapshot' or 'sdk', got '{PLATE_API_TYPE}'")
         sys.exit(1)
     
-    HEADERS = {
-        "Authorization": f"Token {PLATE_API_KEY}"
-    }
+    # Validate required environment variables based on API type
+    if not DATABASE_URL:
+        print("ERROR: DATABASE_URL is required")
+        sys.exit(1)
+    
+    # Set API URL and validate credentials based on type
+    if PLATE_API_TYPE == "snapshot":
+        if not SNAPSHOT_API_URL:
+            print("ERROR: SNAPSHOT_API_URL must be set when PLATE_API_TYPE=snapshot")
+            sys.exit(1)
+        if not PLATE_API_KEY:
+            print("ERROR: PLATE_API_KEY must be set when PLATE_API_TYPE=snapshot")
+            sys.exit(1)
+        API_URL = SNAPSHOT_API_URL
+        # Set authentication header for Snapshot API
+        HEADERS = {
+            "Authorization": f"Token {PLATE_API_KEY}"
+        }
+    else:  # sdk
+        if not SDK_API_URL:
+            print("ERROR: SDK_API_URL must be set when PLATE_API_TYPE=sdk")
+            sys.exit(1)
+        # Validate SDK_LICENSE_TOKEN for documentation purposes
+        # Note: The token is actually used by the SDK Docker container, not by this script
+        SDK_LICENSE_TOKEN = os.getenv("SDK_LICENSE_TOKEN")
+        if not SDK_LICENSE_TOKEN:
+            print("WARNING: SDK_LICENSE_TOKEN is not set. Make sure your SDK container is configured correctly.")
+            print("         The SDK Docker container requires LICENSE_TOKEN to be set as an environment variable.")
+        API_URL = SDK_API_URL
+        # SDK/Server may not require authentication header, but we include a dummy one for compatibility
+        HEADERS = {
+            "Authorization": f"Token {PLATE_API_KEY or 'sdk-no-auth-needed'}"
+        }
+    
+    print(f"Using Plate Recognizer API type: {PLATE_API_TYPE}")
+    print(f"API endpoint: {API_URL}")
+    print()
+
     
     # Initialize boto3 only if using S3
     if STORE_IMAGES == "s3":

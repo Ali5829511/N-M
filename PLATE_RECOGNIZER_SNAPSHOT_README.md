@@ -1,9 +1,21 @@
-# Plate Recognizer Snapshot Integration with PostgreSQL
+# Plate Recognizer Integration with PostgreSQL
 
-This feature enables ingestion of vehicle images using the [Plate Recognizer Snapshot API](https://platerecognizer.com/) and stores the recognition results along with image metadata in PostgreSQL.
+This feature enables ingestion of vehicle images using [Plate Recognizer](https://platerecognizer.com/) and stores the recognition results along with image metadata in PostgreSQL.
+
+## Deployment Options
+
+This integration supports two Plate Recognizer deployment types:
+
+1. **Snapshot API (Cloud)**: Cloud-based API, no installation required
+   - Documentation: https://guides.platerecognizer.com/docs/snapshot/api-reference/
+   
+2. **SDK/Server (On-Premise)**: Self-hosted solution on your infrastructure
+   - Documentation: https://guides.platerecognizer.com/docs/tech-references/server/
+   - Setup Guide: [PLATE_RECOGNIZER_SDK_GUIDE.md](PLATE_RECOGNIZER_SDK_GUIDE.md)
 
 ## Features
 
+- **Dual API Support**: Use either Snapshot API (cloud) or SDK/Server (on-premise)
 - **Flexible Image Storage**: Choose between S3 object storage (default) or PostgreSQL bytea (for small tests)
 - **Comprehensive Metadata**: Stores plate text, confidence, vehicle make/model, colors, bounding boxes
 - **Deduplication**: Uses SHA-256 hashing to avoid storing duplicate images
@@ -12,6 +24,20 @@ This feature enables ingestion of vehicle images using the [Plate Recognizer Sna
 - **Confidence Filtering**: Filter results by confidence threshold
 
 ## Architecture
+
+### API Deployment Modes
+
+1. **Snapshot API (Cloud)**
+   - Hosted by Plate Recognizer
+   - Pay-per-use pricing
+   - No infrastructure management
+   - Best for: Variable workloads, quick setup
+
+2. **SDK/Server (On-Premise)**
+   - Self-hosted via Docker
+   - One-time license fee
+   - Full data privacy and control
+   - Best for: High volume, offline operation, privacy requirements
 
 ### Storage Modes
 
@@ -30,8 +56,26 @@ This feature enables ingestion of vehicle images using the [Plate Recognizer Sna
 
 - Python 3.11+
 - PostgreSQL 15+ with uuid-ossp extension
-- Plate Recognizer API account and API key
+- **For Snapshot API**: Plate Recognizer account and API key
+- **For SDK/Server**: Plate Recognizer SDK license token
 - (Optional) AWS S3 bucket or MinIO for image storage
+
+## Choosing Between Snapshot API and SDK/Server
+
+| Consideration | Choose Snapshot API | Choose SDK/Server |
+|--------------|---------------------|-------------------|
+| **Setup Complexity** | Simple (cloud-based) | Complex (requires deployment) |
+| **Cost Model** | Pay-per-API-call | One-time license fee |
+| **Privacy** | Data sent to cloud | Data stays on-premise |
+| **Internet Required** | Yes | No |
+| **Scalability** | Automatic | Limited by hardware |
+| **Latency** | Higher (network) | Lower (local) |
+| **Maintenance** | Managed by Plate Recognizer | Self-managed |
+| **Best For** | Variable workloads, quick start | High volume, privacy, offline |
+
+**Recommendation**: 
+- Start with **Snapshot API** for proof-of-concept and testing
+- Move to **SDK/Server** for production if you need privacy, offline operation, or process >10,000 images/month
 
 ## Setup Instructions
 
@@ -57,10 +101,15 @@ Copy the example environment file and configure it:
 cp .env.example .env
 ```
 
+#### For Snapshot API (Cloud):
+
 Edit `.env` and fill in your credentials:
 
 ```bash
-# Required for all modes
+# API Type
+PLATE_API_TYPE=snapshot
+
+# Required for Snapshot API
 PLATE_API_KEY=your_plate_recognizer_api_key_here
 SNAPSHOT_API_URL=https://api.platerecognizer.com/v1/plate-reader/
 DATABASE_URL=postgresql://user:pass@localhost:5432/platenet
@@ -74,6 +123,32 @@ AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_REGION=us-east-1
 ```
+
+#### For SDK/Server (On-Premise):
+
+Edit `.env` for SDK deployment:
+
+```bash
+# API Type
+PLATE_API_TYPE=sdk
+
+# Required for SDK/Server
+PLATE_API_KEY=dummy_key_for_compatibility  # Not used by SDK but keep for compatibility
+SDK_API_URL=http://localhost:8080/v1/plate-reader/
+SDK_LICENSE_TOKEN=your_sdk_license_token_here
+DATABASE_URL=postgresql://user:pass@localhost:5432/platenet
+
+# Storage mode: "s3" (default) or "db"
+STORE_IMAGES=s3
+
+# Required when STORE_IMAGES=s3
+S3_BUCKET=your-bucket-name
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_REGION=us-east-1
+```
+
+**📖 For complete SDK setup instructions, see**: [PLATE_RECOGNIZER_SDK_GUIDE.md](PLATE_RECOGNIZER_SDK_GUIDE.md)
 
 ### 3. Install Dependencies
 

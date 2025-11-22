@@ -35,7 +35,9 @@ services:
     environment:
       # Plate Recognizer API (required)
       PLATE_API_KEY: ${PLATE_API_KEY}
+      PLATE_API_TYPE: ${PLATE_API_TYPE:-snapshot}
       SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
+      SDK_API_URL: ${SDK_API_URL:-http://plate-recognizer-sdk:8080/v1/plate-reader/}
       
       # Database
       DATABASE_URL: postgres://user:pass@db:5432/platenet
@@ -57,10 +59,52 @@ services:
     # Remove the default CMD from Dockerfile to allow interactive use
     command: tail -f /dev/null
 
+  # Plate Recognizer SDK/Server (optional, for on-premise deployment)
+  # خادم Plate Recognizer SDK المحلي (اختياري، للنشر المحلي)
+  # Uncomment this service to run Plate Recognizer SDK locally
+  # قم بإلغاء التعليق لتشغيل SDK محلياً
+  #
+  # Note: You need a valid SDK license token from Plate Recognizer
+  # ملاحظة: تحتاج إلى رمز ترخيص SDK صالح من Plate Recognizer
+  # Reference: https://guides.platerecognizer.com/docs/tech-references/server/
+  #
+  # plate-recognizer-sdk:
+  #   image: platerecognizer/alpr:latest
+  #   container_name: plate_recognizer_sdk
+  #   environment:
+  #     # SDK License Token (required for SDK/Server)
+  #     # رمز ترخيص SDK (مطلوب لـ SDK/Server)
+  #     LICENSE_TOKEN: ${SDK_LICENSE_TOKEN}
+  #   ports:
+  #     - "8080:8080"
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8080/v1/plate-reader/"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
 volumes:
   db-data:
 
 # Usage:
-# 1. Copy .env.example to .env and fill in your credentials
-# 2. Run: docker-compose -f docker-compose.snapshot.yml up -d
-# 3. Execute the script: docker-compose -f docker-compose.snapshot.yml exec app python snapshot_to_postgres.py --images images.txt
+# استخدام:
+#
+# For Snapshot API (cloud-based):
+# للاستخدام مع Snapshot API (السحابي):
+# 1. Copy .env.example to .env and set PLATE_API_TYPE=snapshot
+#    انسخ .env.example إلى .env وضع PLATE_API_TYPE=snapshot
+# 2. Fill in PLATE_API_KEY and other credentials
+#    املأ PLATE_API_KEY والبيانات الأخرى
+# 3. Run: docker-compose -f docker-compose.snapshot.yml up -d
+# 4. Execute: docker-compose -f docker-compose.snapshot.yml exec app python snapshot_to_postgres.py --images images.txt
+#
+# For SDK/Server (on-premise):
+# للاستخدام مع SDK/Server (المحلي):
+# 1. Copy .env.example to .env and set PLATE_API_TYPE=sdk
+#    انسخ .env.example إلى .env وضع PLATE_API_TYPE=sdk
+# 2. Uncomment the plate-recognizer-sdk service above
+#    قم بإلغاء التعليق عن خدمة plate-recognizer-sdk أعلاه
+# 3. Set SDK_LICENSE_TOKEN in .env
+#    ضع SDK_LICENSE_TOKEN في .env
+# 4. Run: docker-compose -f docker-compose.snapshot.yml up -d
+# 5. Execute: docker-compose -f docker-compose.snapshot.yml exec app python snapshot_to_postgres.py --images images.txt
