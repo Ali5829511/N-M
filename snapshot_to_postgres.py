@@ -35,35 +35,11 @@ SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")
 DATABASE_URL = os.getenv("DATABASE_URL")
 STORE_IMAGES = os.getenv("STORE_IMAGES", "s3").lower()  # "s3" or "db"
 S3_BUCKET = os.getenv("S3_BUCKET")
-AWS_REGION = os.getenv("AWS_REGION")
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-
-# S3 configuration (only if STORE_IMAGES=s3)
-S3_BUCKET = os.getenv("S3_BUCKET")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 
-# Initialize boto3 client only if STORE_IMAGES is s3
+# Global variables initialized in main()
 boto3_client = None
-if STORE_IMAGES == "s3":
-    if not S3_BUCKET or not AWS_REGION:
-        print("الرجاء ضبط المتغيرات البيئية: S3_BUCKET و AWS_REGION عند استخدام STORE_IMAGES=s3")
-        sys.exit(1)
-    try:
-        import boto3
-        boto3_client = boto3.client(
-            's3',
-            region_name=AWS_REGION,
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY
-        )
-    except ImportError:
-        print("خطأ: يرجى تثبيت boto3 باستخدام: pip install boto3")
-        sys.exit(1)
-
-HEADERS = {
-    "Authorization": f"Token {PLATE_API_KEY}"
-}
+HEADERS = {}
 
 def get_image_bytes(path_or_url):
     """
@@ -306,19 +282,19 @@ def main():
     elif STORE_IMAGES == "db":
         print("Using database storage for images")
     else:
-        print(f"WARNING: Unknown STORE_IMAGES value '{STORE_IMAGES}', defaulting to 's3'")
-        STORE_IMAGES = "s3"
+        print(f"ERROR: Unknown STORE_IMAGES value '{STORE_IMAGES}'. Must be 's3' or 'db'")
+        sys.exit(1)
 
     # Read images list
     try:
         with open(args.images, "r") as f:
-            items = [line.strip() for line in f if line.strip()]
+            items = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
     except FileNotFoundError:
         print(f"ERROR: Images file not found: {args.images}")
         sys.exit(1)
     
     if not items:
-        print("ERROR: No images found in file")
+        print("ERROR: No images found in file (empty or all lines are comments)")
         sys.exit(1)
     
     print(f"Processing {len(items)} images...")
