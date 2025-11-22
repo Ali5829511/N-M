@@ -1,0 +1,10 @@
+# Example images.txt file
+# Add one image path or URL per line
+# 
+# Examples:
+# /path/to/local/image1.jpg
+# /path/to/local/image2.png
+# https://example.com/vehicle-images/car1.jpg
+# https://example.com/vehicle-images/car2.png
+#
+# Note: Lines starting with # are treated as comments and will be skipped
