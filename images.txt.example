@@ -1,0 +1,10 @@
+# Example images file for snapshot_to_postgres.py
+# Add one image URL or local path per line
+# 
+# Examples:
+# https://example.com/vehicle1.jpg
+# https://example.com/vehicle2.png
+# /path/to/local/image.jpg
+#
+# Remove the '#' from the lines below to use them:
+# https://platerecognizer.com/static/demo.jpg
