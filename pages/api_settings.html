@@ -585,7 +585,7 @@
             showAlert('info', 'جاري اختبار الاتصال بـ Snapshot Cloud... ⏳');
 
             try {
-                // اختبار الاتصال بـ Snapshot Cloud API
+                // اختبار الاتصال بـ Snapshot Cloud API - استخدام نقطة النهاية للإحصائيات
                 const response = await fetch('https://api.platerecognizer.com/v1/statistics/', {
                     method: 'GET',
                     headers: {
@@ -595,7 +595,10 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    showAlert('success', `✅ الاتصال بـ Snapshot Cloud ناجح! لديك ${data.usage.calls} استدعاء متبقي من ${data.usage.max_calls}`);
+                    // التحقق من وجود البيانات المتوقعة
+                    const calls = data?.usage?.calls ?? 'غير متاح';
+                    const maxCalls = data?.usage?.max_calls ?? 'غير متاح';
+                    showAlert('success', `✅ الاتصال بـ Snapshot Cloud ناجح! لديك ${calls} استدعاء متبقي من ${maxCalls}`);
                     document.getElementById('snapshotConnectionStatus').className = 'status-badge status-connected';
                     document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
                 } else {
