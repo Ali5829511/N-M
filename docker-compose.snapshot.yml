@@ -25,7 +25,9 @@ services:
     environment:
       # Plate Recognizer API (required)
       PLATE_API_KEY: ${PLATE_API_KEY}
-      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL}
+      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
+      
+      # Database
       DATABASE_URL: postgres://user:pass@db:5432/platenet
       STORE_IMAGES: ${STORE_IMAGES:-s3}
       S3_BUCKET: ${S3_BUCKET}

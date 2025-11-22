@@ -81,9 +81,66 @@ if STORE_IMAGES == "s3" and not S3_BUCKET:
     print("الرجاء ضبط S3_BUCKET عند استخدام STORE_IMAGES=s3")
     sys.exit(1)
 
-HEADERS = {
-    "Authorization": f"Token {PLATE_API_KEY}"
-}
+def upload_to_s3(image_bytes, sha256_hash, mime_type, config):
+    """رفع الصورة إلى S3 وإرجاع URL"""
+    try:
+        # Check if boto3 is available
+        try:
+            import boto3
+        except ImportError:
+            raise RuntimeError("الرجاء تثبيت boto3: pip install boto3")
+        
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=config['AWS_ACCESS_KEY_ID'],
+            aws_secret_access_key=config['AWS_SECRET_ACCESS_KEY'],
+            region_name=config['AWS_REGION']
+        )
+        
+        # استخدام SHA256 كاسم الملف لتجنب التكرار
+        ext = mimetypes.guess_extension(mime_type) or '.jpg'
+        key = f"vehicle-snapshots/{sha256_hash}{ext}"
+        
+        # استخدام ACL خاص (private) للأمان - استخدم presigned URLs للوصول المؤقت
+        s3_client.put_object(
+            Bucket=config['S3_BUCKET'],
+            Key=key,
+            Body=image_bytes,
+            ContentType=mime_type
+            # ACL='private' is default - removed public-read for security
+        )
+        
+        # إنشاء presigned URL للوصول المؤقت (صالح لمدة ساعة)
+        # يمكن تعديل المدة حسب الحاجة
+        use_presigned = config.get('S3_USE_PRESIGNED_URLS', 'true').lower() == 'true'
+        if use_presigned:
+            url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': config['S3_BUCKET'], 'Key': key},
+                ExpiresIn=3600  # ساعة واحدة
+            )
+        else:
+            # للاستخدام مع buckets عامة فقط
+            url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': config['S3_BUCKET'], 'Key': key},
+                ExpiresIn=0  # URL دائم (يتطلب bucket عام)
+            )
+        
+        return url
+    except Exception as e:
+        print(f"خطأ في رفع الصورة إلى S3: {e}")
+        raise
+
+def fetch_image_bytes(path_or_url):
+    """جلب بايتات الصورة من URL أو ملف محلي"""
+    if urlparse(path_or_url).scheme in ("http", "https"):
+        response = requests.get(path_or_url, timeout=30)
+        response.raise_for_status()
+        return response.content
+    else:
+        with open(path_or_url, "rb") as f:
+            return f.read()
 
 def get_image_bytes(path_or_url):
     """
@@ -394,7 +451,18 @@ def process_image(item, confidence_threshold=0.0):
     return record
 
 def main():
-    parser = argparse.ArgumentParser(description="Send images to Plate Recognizer snapshot and store results")
+    parser = argparse.ArgumentParser(
+        description="Send images to Plate Recognizer snapshot and store results",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Example usage:
+  python snapshot_to_postgres.py --images images.txt --delay 1.0 --confidence-threshold 0.8
+
+Environment variables required:
+  PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL
+  For S3: S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+        """
+    )
     parser.add_argument("--images", required=True, help="ملف نصي يحتوي على مسار/URL لكل صورة في سطر مستقل")
     parser.add_argument("--delay", type=float, default=0.5, help="تأخير بين الطلبات بالثواني")
     parser.add_argument("--confidence-threshold", type=float, default=0.0, 
