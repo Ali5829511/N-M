@@ -1,0 +1,19 @@
+# Images file for Plate Recognizer Snapshot Processor
+# ملف الصور لمعالج Plate Recognizer Snapshot
+#
+# Add image paths or URLs here, one per line
+# أضف مسارات أو روابط الصور هنا، واحد في كل سطر
+#
+# Examples / أمثلة:
+#
+# Local files / ملفات محلية:
+# /path/to/image1.jpg
+# /home/user/pictures/car.png
+# ./images/vehicle001.jpg
+#
+# Remote URLs / روابط بعيدة:
+# https://example.com/parking/car1.jpg
+# https://your-cdn.com/images/vehicle.png
+#
+# Lines starting with # are comments and will be ignored
+# الأسطر التي تبدأ بـ # هي تعليقات وسيتم تجاهلها

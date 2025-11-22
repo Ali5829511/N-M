@@ -1,0 +1,69 @@
+# Docker Compose for Plate Recognizer Snapshot System
+# Docker Compose لنظام Plate Recognizer Snapshot
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  # قاعدة بيانات PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: snapshot_postgres
+    environment:
+      POSTGRES_DB: vehicle_snapshots
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme123}
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist database data
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize schema on first run
+      - ./snapshot_db_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - snapshot_network
+
+  # Snapshot Collector Application
+  # تطبيق جامع اللقطات
+  app:
+    build:
+      context: .
+      dockerfile: snapshot.Dockerfile
+    container_name: snapshot_collector
+    environment:
+      # API Configuration
+      PLATE_API_KEY: ${PLATE_API_KEY}
+      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
+      
+      # Database Configuration
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-changeme123}@db:5432/vehicle_snapshots
+      
+      # Processing Configuration
+      REQUEST_DELAY: ${REQUEST_DELAY:-1.0}
+      MAX_RETRIES: ${MAX_RETRIES:-3}
+    volumes:
+      # Mount images file from host
+      - ./images.txt:/app/images.txt:ro
+      # Mount directory for local images (optional)
+      - ./images:/app/images:ro
+      # Persist logs
+      - ./logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - snapshot_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  snapshot_network:
+    driver: bridge
