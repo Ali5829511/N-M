@@ -124,8 +124,8 @@ body {
 
 /* ========== محتوى التقرير ========== */
 .report-content {
-    padding: 30px 40px;
-    min-height: calc(297mm - 200px);
+    padding: 0;
+    min-height: auto;
 }
 
 /* عنوان التقرير */
