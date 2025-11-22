@@ -108,7 +108,7 @@ body {
 
 /* الرأس - Header */
 .header {
-    background: var(--gradient-primary);
+    background: var(--primary-blue);
     color: var(--text-white);
     box-shadow: var(--shadow-lg);
 }
@@ -116,7 +116,7 @@ body {
 /* البطاقات - Cards */
 .page-card,
 .card {
-    background: var(--gradient-card);
+    background: var(--bg-primary);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
     border: 2px solid rgba(139, 111, 71, 0.1);
@@ -131,14 +131,14 @@ body {
 /* الأيقونات - Icons */
 .page-icon,
 .icon {
-    background: var(--gradient-gold);
+    background: var(--gold-dark);
     color: var(--text-white);
     box-shadow: var(--shadow-gold);
 }
 
 /* الأزرار - Buttons */
 .btn-primary {
-    background: var(--gradient-gold);
+    background: var(--gold-dark);
     color: var(--text-white);
     border: none;
     box-shadow: var(--shadow-gold);
@@ -147,6 +147,7 @@ body {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(139, 111, 71, 0.5);
+    background: var(--gold);
 }
 
 .btn-secondary {
@@ -194,7 +195,7 @@ table {
 }
 
 th {
-    background: var(--gradient-primary);
+    background: var(--primary-blue);
     color: var(--text-white);
 }
 

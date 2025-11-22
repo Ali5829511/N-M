@@ -94,11 +94,6 @@ class ThemeManager {
         root.style.setProperty('--gray-800', '#e0e0e0');
         root.style.setProperty('--gray-900', '#f0f0f0');
         
-        // التدرجات
-        root.style.setProperty('--gradient-primary', 'linear-gradient(135deg, #2d5f8d 0%, #4a90e2 50%, #1a1a1a 100%)');
-        root.style.setProperty('--gradient-gold', 'linear-gradient(135deg, #b8922b 0%, #f0c14b 50%, #b8922b 100%)');
-        root.style.setProperty('--gradient-card', 'linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%)');
-        
         // إضافة class للـ body
         document.body.classList.add('dark-mode');
         document.body.classList.remove('light-mode');
@@ -136,10 +131,6 @@ class ThemeManager {
         root.style.setProperty('--gray-700', '#374151');
         root.style.setProperty('--gray-800', '#1f2937');
         root.style.setProperty('--gray-900', '#111827');
-        
-        root.style.setProperty('--gradient-primary', 'linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #1f2937 100%)');
-        root.style.setProperty('--gradient-gold', 'linear-gradient(135deg, #8B6F47 0%, #d4af37 50%, #8B6F47 100%)');
-        root.style.setProperty('--gradient-card', 'linear-gradient(135deg, #ffffff 0%, #fafbfc 100%)');
         
         // إضافة class للـ body
         document.body.classList.add('light-mode');

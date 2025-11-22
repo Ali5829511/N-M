@@ -12,7 +12,7 @@
     height: 50px;
     border-radius: 50%;
     border: none;
-    background: var(--gradient-gold);
+    background: var(--gold-dark);
     color: var(--text-white);
     font-size: 20px;
     cursor: pointer;
@@ -27,6 +27,7 @@
 .theme-toggle-btn:hover {
     transform: scale(1.1) rotate(15deg);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    background: var(--gold);
 }
 
 .theme-toggle-btn:active {
@@ -166,14 +167,15 @@
 }
 
 .btn-apply {
-    background: var(--gradient-gold);
+    background: var(--gold-dark);
     color: var(--text-white);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 15px rgba(139, 111, 71, 0.3);
 }
 
 .btn-apply:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 6px 20px rgba(139, 111, 71, 0.5);
+    background: var(--gold);
 }
 
 .btn-reset {
@@ -247,18 +249,19 @@
 
 /* أزرار ملونة */
 .btn-primary {
-    background: var(--gradient-gold);
+    background: var(--gold-dark);
     color: var(--text-white);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 15px rgba(139, 111, 71, 0.3);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 6px 20px rgba(139, 111, 71, 0.5);
+    background: var(--gold);
 }
 
 .btn-secondary {
-    background: var(--gradient-primary);
+    background: var(--primary-blue);
     color: var(--text-white);
     box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3);
 }
@@ -266,10 +269,11 @@
 .btn-secondary:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(26, 54, 93, 0.5);
+    background: var(--primary-blue-light);
 }
 
 .btn-success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: var(--success);
     color: var(--text-white);
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
@@ -277,10 +281,11 @@
 .btn-success:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    background: #0ea672;
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    background: var(--error);
     color: var(--text-white);
     box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
 }
@@ -288,10 +293,11 @@
 .btn-danger:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+    background: #dc2626;
 }
 
 .btn-warning {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    background: var(--warning);
     color: var(--text-white);
     box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
 }
@@ -299,10 +305,11 @@
 .btn-warning:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    background: #d97706;
 }
 
 .btn-info {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    background: var(--info);
     color: var(--text-white);
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
@@ -310,6 +317,7 @@
 .btn-info:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+    background: #2563eb;
 }
 
 /* أزرار مسطحة */
