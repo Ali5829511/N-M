@@ -80,3 +80,7 @@ output_reports/
 
 # Cache
 .cache/
+
+# Image lists for Plate Recognizer
+images.txt
+images_*.txt
