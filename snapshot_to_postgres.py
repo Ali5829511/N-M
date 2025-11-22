@@ -28,7 +28,8 @@ import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
 import psycopg2
-from psycopg2.extras import Json, register_uuid, Binary
+from psycopg2 import Binary
+from psycopg2.extras import Json, register_uuid
 from datetime import datetime
 
 load_dotenv()
@@ -43,39 +44,45 @@ AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 
-# Validate required environment variables
-if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
-    print("❌ الرجاء ضبط المتغيرات البيئية: PLATE_API_KEY و SNAPSHOT_API_URL و DATABASE_URL")
-    print("❌ Please set environment variables: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
-    sys.exit(1)
+HEADERS = None
 
-# Import boto3 only if S3 storage is enabled
-if STORE_IMAGES == "s3":
-    if not S3_BUCKET or not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
-        print("❌ عند استخدام STORE_IMAGES=s3، يجب تعيين: S3_BUCKET و AWS_ACCESS_KEY_ID و AWS_SECRET_ACCESS_KEY")
-        print("❌ When using STORE_IMAGES=s3, must set: S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
-        sys.exit(1)
-    try:
-        import boto3
-        from botocore.exceptions import ClientError
-    except ImportError:
-        print("❌ boto3 غير مثبت. قم بتثبيته باستخدام: pip install boto3")
-        print("❌ boto3 not installed. Install it with: pip install boto3")
+
+def validate_environment():
+    """Validate required environment variables"""
+    if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
+        print("❌ الرجاء ضبط المتغيرات البيئية: PLATE_API_KEY و SNAPSHOT_API_URL و DATABASE_URL")
+        print("❌ Please set environment variables: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
         sys.exit(1)
 
-HEADERS = {
-    "Authorization": f"Token {PLATE_API_KEY}"
-}
+    # Import boto3 only if S3 storage is enabled
+    if STORE_IMAGES == "s3":
+        if not S3_BUCKET or not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
+            print("❌ عند استخدام STORE_IMAGES=s3، يجب تعيين: S3_BUCKET و AWS_ACCESS_KEY_ID و AWS_SECRET_ACCESS_KEY")
+            print("❌ When using STORE_IMAGES=s3, must set: S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
+            sys.exit(1)
+        try:
+            global boto3, ClientError, s3_client
+            import boto3
+            from botocore.exceptions import ClientError
+            # Initialize S3 client
+            s3_client = boto3.client(
+                's3',
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                region_name=AWS_REGION
+            )
+        except ImportError:
+            print("❌ boto3 غير مثبت. قم بتثبيته باستخدام: pip install boto3")
+            print("❌ boto3 not installed. Install it with: pip install boto3")
+            sys.exit(1)
+    
+    global HEADERS
+    HEADERS = {
+        "Authorization": f"Token {PLATE_API_KEY}"
+    }
 
-# Initialize S3 client if needed
+# Initialize S3 client (will be set in validate_environment)
 s3_client = None
-if STORE_IMAGES == "s3":
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        region_name=AWS_REGION
-    )
 
 
 def get_image_bytes(path_or_url):
@@ -286,6 +293,7 @@ def insert_into_db(conn, record):
         return new_id
 
 def main():
+    # Parse arguments first to allow --help without env vars
     parser = argparse.ArgumentParser(
         description="Send images to Plate Recognizer Snapshot API and store results in PostgreSQL",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -308,6 +316,9 @@ Examples / أمثلة:
     parser.add_argument("--confidence-threshold", type=float, default=None,
                        help="الحد الأدنى لثقة اللوحة (0-1) / Minimum plate confidence threshold (0-1)")
     args = parser.parse_args()
+
+    # Validate environment after parsing args (allows --help to work)
+    validate_environment()
 
     # Print configuration
     print("=" * 60)
