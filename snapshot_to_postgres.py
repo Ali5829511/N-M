@@ -125,12 +125,16 @@ def upload_to_s3(image_bytes, sha256_hash, mime_type):
         raise
 
 
-def send_to_plate_recognizer(image_bytes):
+def send_to_plate_recognizer(image_bytes, mime_type='image/jpeg'):
     """
     Send image to Plate Recognizer Snapshot API.
     Returns the API response.
     """
-    files = {"upload": ("image.jpg", image_bytes, "image/jpeg")}
+    # Determine file extension from mime type
+    ext = mime_type.split('/')[-1] if '/' in mime_type else 'jpg'
+    filename = f"image.{ext}"
+    
+    files = {"upload": (filename, image_bytes, mime_type)}
     
     # Retry logic
     max_retries = 3
@@ -177,7 +181,10 @@ def parse_plate_recognizer_response(resp, confidence_threshold=0.0):
         
         # Extract plate information
         plate = result.get("plate", {})
-        plate_text = plate
+        if isinstance(plate, dict):
+            plate_text = plate.get("plate") or plate.get("text") or plate.get("number")
+        else:
+            plate_text = str(plate) if plate else None
         plate_confidence = result.get("score", 0.0)
         
         # Apply confidence threshold
@@ -247,13 +254,34 @@ def insert_into_db(conn, record):
         return new_id
 
 
+def check_duplicate(conn, sha256_hash):
+    """
+    Check if an image with the same SHA-256 hash already exists.
+    Returns the existing record ID if found, None otherwise.
+    """
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT id FROM vehicle_snapshots WHERE image_sha256 = %s LIMIT 1",
+            (sha256_hash,)
+        )
+        result = cur.fetchone()
+        return result[0] if result else None
+
+
 def process_image(path_or_url, conn, confidence_threshold, delay):
     """
     Process a single image: fetch, upload/store, recognize plate, and save to DB.
+    Includes deduplication check.
     """
     try:
         # Fetch image bytes
         image_bytes, mime_type, size, sha256_hash = fetch_image_bytes(path_or_url)
+        
+        # Check for duplicates
+        existing_id = check_duplicate(conn, sha256_hash)
+        if existing_id:
+            print(f"  Skipped (duplicate): {path_or_url} (existing ID: {existing_id})")
+            return existing_id
         
         # Prepare record
         record = {
@@ -275,7 +303,7 @@ def process_image(path_or_url, conn, confidence_threshold, delay):
             record["image_data"] = image_bytes
         
         # Send to Plate Recognizer API
-        api_response = send_to_plate_recognizer(image_bytes)
+        api_response = send_to_plate_recognizer(image_bytes, mime_type)
         
         # Parse response
         parsed = parse_plate_recognizer_response(api_response, confidence_threshold)
@@ -323,9 +351,9 @@ def main():
     )
     args = parser.parse_args()
     
-    # Read image paths/URLs
+    # Read image paths/URLs (ignore comments and empty lines)
     with open(args.images, "r") as f:
-        items = [line.strip() for line in f if line.strip()]
+        items = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
     
     print(f"Processing {len(items)} images...")
     print(f"Storage mode: {STORE_IMAGES}")
