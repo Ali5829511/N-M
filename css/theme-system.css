@@ -1,0 +1,723 @@
+/**
+ * نظام السمات المحسّن - Enhanced Theme System
+ * يتضمن الوضع الليلي وأنماط محسّنة للأزرار والنماذج والجداول
+ */
+
+/* ===================== زر تبديل السمة ===================== */
+.theme-toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: var(--gold-dark);
+    color: var(--text-white);
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    background: var(--gold);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+/* ===================== نافذة تخصيص الألوان ===================== */
+.color-customizer-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.color-customizer-content {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { 
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.color-customizer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--gray-200);
+    padding-bottom: 15px;
+}
+
+.color-customizer-header h2 {
+    color: var(--text-primary);
+    font-size: 24px;
+    margin: 0;
+}
+
+.close-modal {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-modal:hover {
+    background: var(--error);
+    color: white;
+    transform: rotate(90deg);
+}
+
+.color-customizer-body {
+    margin-bottom: 25px;
+}
+
+.color-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-sm);
+    transition: all 0.3s ease;
+}
+
+.color-option:hover {
+    background: var(--bg-tertiary);
+    transform: translateX(-5px);
+}
+
+.color-option label {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.color-option input[type="color"] {
+    width: 60px;
+    height: 40px;
+    border: 2px solid var(--gray-300);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.color-option input[type="color"]:hover {
+    border-color: var(--gold);
+    transform: scale(1.05);
+}
+
+.color-customizer-footer {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+}
+
+.color-customizer-footer button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-apply {
+    background: var(--gold-dark);
+    color: var(--text-white);
+    box-shadow: 0 4px 15px rgba(139, 111, 71, 0.3);
+}
+
+.btn-apply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 111, 71, 0.5);
+    background: var(--gold);
+}
+
+.btn-reset {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--gray-300);
+}
+
+.btn-reset:hover {
+    background: var(--error);
+    color: white;
+    border-color: var(--error);
+}
+
+/* ===================== أنماط الأزرار المحسّنة ===================== */
+
+/* زر أساسي */
+.btn {
+    padding: 12px 24px;
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* أزرار بأحجام مختلفة */
+.btn-sm {
+    padding: 8px 16px;
+    font-size: var(--font-size-sm);
+}
+
+.btn-lg {
+    padding: 16px 32px;
+    font-size: var(--font-size-lg);
+}
+
+.btn-xl {
+    padding: 20px 40px;
+    font-size: var(--font-size-xl);
+}
+
+/* أزرار ملونة */
+.btn-primary {
+    background: var(--gold-dark);
+    color: var(--text-white);
+    box-shadow: 0 4px 15px rgba(139, 111, 71, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 111, 71, 0.5);
+    background: var(--gold);
+}
+
+.btn-secondary {
+    background: var(--primary-blue);
+    color: var(--text-white);
+    box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26, 54, 93, 0.5);
+    background: var(--primary-blue-light);
+}
+
+.btn-success {
+    background: var(--success);
+    color: var(--text-white);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    background: #0ea672;
+}
+
+.btn-danger {
+    background: var(--error);
+    color: var(--text-white);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+    background: #dc2626;
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: var(--text-white);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    background: #d97706;
+}
+
+.btn-info {
+    background: var(--info);
+    color: var(--text-white);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+    background: #2563eb;
+}
+
+/* أزرار مسطحة */
+.btn-outline-primary {
+    background: transparent;
+    color: var(--gold-dark);
+    border: 2px solid var(--gold-dark);
+}
+
+.btn-outline-primary:hover {
+    background: var(--gold-dark);
+    color: var(--text-white);
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--primary-blue);
+    color: var(--text-white);
+}
+
+/* زر معطل */
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* مجموعة أزرار */
+.btn-group {
+    display: inline-flex;
+    gap: 0;
+}
+
+.btn-group .btn {
+    border-radius: 0;
+    margin-left: -1px;
+}
+
+.btn-group .btn:first-child {
+    border-radius: var(--border-radius-sm) 0 0 var(--border-radius-sm);
+}
+
+.btn-group .btn:last-child {
+    border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+}
+
+/* ===================== أنماط النماذج المحسّنة ===================== */
+
+/* مجموعة النماذج */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: var(--font-size-base);
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--gray-300);
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+    transform: translateY(-2px);
+}
+
+.form-control:hover {
+    border-color: var(--gold-dark);
+}
+
+.form-control::placeholder {
+    color: var(--text-tertiary);
+}
+
+/* أحجام مختلفة للحقول */
+.form-control-sm {
+    padding: 8px 12px;
+    font-size: var(--font-size-sm);
+}
+
+.form-control-lg {
+    padding: 16px 20px;
+    font-size: var(--font-size-lg);
+}
+
+/* حقل نصي متعدد الأسطر */
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* قائمة منسدلة */
+select.form-control {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+    padding-left: 40px;
+}
+
+/* تعديل لون السهم في الوضع الليلي */
+body.dark-mode select.form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ccc' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+}
+
+/* checkbox و radio */
+.form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+    accent-color: var(--gold);
+}
+
+.form-check-label {
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* حقل مع أيقونة */
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-tertiary);
+    font-size: 18px;
+    pointer-events: none;
+}
+
+.input-group .form-control {
+    padding-left: 45px;
+}
+
+/* رسالة المساعدة */
+.form-text {
+    display: block;
+    margin-top: 6px;
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+}
+
+/* حالات التحقق */
+.form-control.is-valid {
+    border-color: var(--success);
+}
+
+.form-control.is-invalid {
+    border-color: var(--error);
+}
+
+.valid-feedback {
+    display: block;
+    margin-top: 6px;
+    font-size: var(--font-size-sm);
+    color: var(--success);
+}
+
+.invalid-feedback {
+    display: block;
+    margin-top: 6px;
+    font-size: var(--font-size-sm);
+    color: var(--error);
+}
+
+/* ===================== أنماط الجداول المحسّنة ===================== */
+
+.table-container {
+    overflow-x: auto;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+}
+
+.table thead {
+    background: var(--gradient-primary);
+}
+
+.table thead th {
+    color: var(--text-white);
+    font-weight: 700;
+    text-align: right;
+    padding: 16px;
+    font-size: var(--font-size-base);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--gray-200);
+    transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background: var(--gold-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table tbody tr:nth-child(even) {
+    background: var(--bg-secondary);
+}
+
+.table tbody tr:nth-child(even):hover {
+    background: var(--gold-light);
+}
+
+.table tbody td {
+    padding: 14px 16px;
+    color: var(--text-primary);
+    text-align: right;
+}
+
+.table tbody td:first-child {
+    font-weight: 600;
+}
+
+/* جدول مخطط */
+.table-striped tbody tr:nth-child(odd) {
+    background: var(--bg-primary);
+}
+
+.table-striped tbody tr:nth-child(even) {
+    background: var(--bg-secondary);
+}
+
+/* جدول مع حدود */
+.table-bordered {
+    border: 2px solid var(--gray-300);
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid var(--gray-300);
+}
+
+/* جدول بدون حدود */
+.table-borderless th,
+.table-borderless td {
+    border: none;
+}
+
+/* جدول مضغوط */
+.table-sm th,
+.table-sm td {
+    padding: 8px 12px;
+    font-size: var(--font-size-sm);
+}
+
+/* أيقونات الإجراءات في الجدول */
+.table-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.table-action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: var(--font-size-sm);
+}
+
+.table-action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.table-action-edit {
+    background: var(--info);
+    color: white;
+}
+
+.table-action-delete {
+    background: var(--error);
+    color: white;
+}
+
+.table-action-view {
+    background: var(--success);
+    color: white;
+}
+
+/* ===================== الوضع الليلي ===================== */
+
+body.dark-mode {
+    background: var(--bg-gradient);
+}
+
+/* تعديلات إضافية للوضع الليلي */
+body.dark-mode .table-container {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .form-control {
+    background: var(--bg-secondary);
+}
+
+body.dark-mode .btn-outline-primary {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+body.dark-mode .btn-outline-primary:hover {
+    background: var(--gold);
+    color: var(--text-primary);
+}
+
+/* ===================== تحسينات الاستجابة ===================== */
+
+@media (max-width: 768px) {
+    .theme-toggle-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+
+    .color-customizer-content {
+        padding: 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+    }
+
+    .form-control {
+        padding: 10px 14px;
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: 10px 12px;
+        font-size: var(--font-size-sm);
+    }
+
+    .table-container {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .theme-toggle-btn {
+        top: 10px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .btn-group .btn {
+        border-radius: var(--border-radius-sm);
+        margin-left: 0;
+        margin-top: -1px;
+    }
+
+    .btn-group .btn:first-child {
+        border-radius: var(--border-radius-sm);
+        margin-top: 0;
+    }
+}

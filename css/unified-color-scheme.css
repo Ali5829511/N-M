@@ -4,15 +4,15 @@
  */
 
 :root {
-    /* الألوان الأساسية - Primary Colors */
-    --primary-blue: #1a365d;
-    --primary-blue-light: #2c5282;
-    --primary-blue-dark: #0f2744;
+    /* الألوان الأساسية - Primary Colors (من الشعار) */
+    --primary-blue: #3a5a7a;
+    --primary-blue-light: #bad8f2;
+    --primary-blue-dark: #1c2a3a;
     
-    /* الألوان الذهبية - Gold Colors */
-    --gold: #d4af37;
-    --gold-dark: #8B6F47;
-    --gold-light: #f4e4b7;
+    /* الألوان الذهبية - Gold Colors (من الشعار) */
+    --gold: #c9a961;
+    --gold-dark: #7b6840;
+    --gold-light: #e8d4a8;
     
     /* الألوان الثانوية - Secondary Colors */
     --gray-50: #f9fafb;
@@ -43,6 +43,11 @@
     --warning: #f59e0b;
     --error: #ef4444;
     --info: #3b82f6;
+    
+    /* انتقالات سلسة - Smooth Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
     
     /* الظلال - Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -91,11 +96,19 @@ body {
     font-family: var(--font-family);
     background: var(--bg-gradient);
     color: var(--text-primary);
+    transition: background var(--transition-normal), color var(--transition-normal);
+}
+
+/* انتقالات سلسة لجميع العناصر */
+* {
+    transition: background-color var(--transition-normal), 
+                color var(--transition-normal), 
+                border-color var(--transition-normal);
 }
 
 /* الرأس - Header */
 .header {
-    background: var(--gradient-primary);
+    background: var(--primary-blue);
     color: var(--text-white);
     box-shadow: var(--shadow-lg);
 }
@@ -103,7 +116,7 @@ body {
 /* البطاقات - Cards */
 .page-card,
 .card {
-    background: var(--gradient-card);
+    background: var(--bg-primary);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
     border: 2px solid rgba(139, 111, 71, 0.1);
@@ -118,14 +131,14 @@ body {
 /* الأيقونات - Icons */
 .page-icon,
 .icon {
-    background: var(--gradient-gold);
+    background: var(--gold-dark);
     color: var(--text-white);
     box-shadow: var(--shadow-gold);
 }
 
 /* الأزرار - Buttons */
 .btn-primary {
-    background: var(--gradient-gold);
+    background: var(--gold-dark);
     color: var(--text-white);
     border: none;
     box-shadow: var(--shadow-gold);
@@ -134,6 +147,7 @@ body {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(139, 111, 71, 0.5);
+    background: var(--gold);
 }
 
 .btn-secondary {
@@ -181,7 +195,7 @@ table {
 }
 
 th {
-    background: var(--gradient-primary);
+    background: var(--primary-blue);
     color: var(--text-white);
 }
 
