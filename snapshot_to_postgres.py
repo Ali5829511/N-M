@@ -23,52 +23,25 @@ import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
 import psycopg2
-from psycopg2.extras import Json, register_uuid, Binary
+from psycopg2 import Binary
+from psycopg2.extras import Json, register_uuid
 from datetime import datetime
 
 load_dotenv()
 
-# Required environment variables
+# Required environment variables (will be validated in main())
 PLATE_API_KEY = os.getenv("PLATE_API_KEY")
 SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")
 DATABASE_URL = os.getenv("DATABASE_URL")
 STORE_IMAGES = os.getenv("STORE_IMAGES", "s3").lower()  # Default to S3
 
-if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
-    print("ERROR: Please set required environment variables: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
-    sys.exit(1)
-
 # S3 configuration (only if STORE_IMAGES=s3)
 S3_BUCKET = os.getenv("S3_BUCKET")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 
-# Initialize boto3 only if using S3
+# Will be initialized in main() if needed
 s3_client = None
-if STORE_IMAGES == "s3":
-    try:
-        import boto3
-        s3_client = boto3.client(
-            's3',
-            region_name=AWS_REGION,
-            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
-        )
-        if not S3_BUCKET:
-            print("ERROR: S3_BUCKET must be set when STORE_IMAGES=s3")
-            sys.exit(1)
-        print(f"Using S3 storage: {S3_BUCKET}")
-    except ImportError:
-        print("ERROR: boto3 is required when STORE_IMAGES=s3. Install it with: pip install boto3")
-        sys.exit(1)
-elif STORE_IMAGES == "db":
-    print("Using database storage for images")
-else:
-    print(f"WARNING: Unknown STORE_IMAGES value '{STORE_IMAGES}', defaulting to 's3'")
-    STORE_IMAGES = "s3"
-
-HEADERS = {
-    "Authorization": f"Token {PLATE_API_KEY}"
-}
+HEADERS = None
 
 def fetch_image_bytes(path_or_url):
     """
@@ -343,6 +316,40 @@ Environment Variables:
     parser.add_argument("--confidence-threshold", type=float, default=0.0,
                        help="Minimum plate confidence threshold (0.0-1.0, default: 0.0)")
     args = parser.parse_args()
+    
+    # Validate environment variables after parsing args (so --help works without env vars)
+    global s3_client, HEADERS
+    
+    if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
+        print("ERROR: Please set required environment variables: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
+        sys.exit(1)
+    
+    HEADERS = {
+        "Authorization": f"Token {PLATE_API_KEY}"
+    }
+    
+    # Initialize boto3 only if using S3
+    if STORE_IMAGES == "s3":
+        try:
+            import boto3
+            s3_client = boto3.client(
+                's3',
+                region_name=AWS_REGION,
+                aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+                aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+            )
+            if not S3_BUCKET:
+                print("ERROR: S3_BUCKET must be set when STORE_IMAGES=s3")
+                sys.exit(1)
+            print(f"Using S3 storage: {S3_BUCKET}")
+        except ImportError:
+            print("ERROR: boto3 is required when STORE_IMAGES=s3. Install it with: pip install boto3")
+            sys.exit(1)
+    elif STORE_IMAGES == "db":
+        print("Using database storage for images")
+    else:
+        print(f"WARNING: Unknown STORE_IMAGES value '{STORE_IMAGES}', defaulting to 's3'")
+        STORE_IMAGES = "s3"
 
     # Read images list
     try:
