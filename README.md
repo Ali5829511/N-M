@@ -280,6 +280,44 @@ docker run -p 9000:9000 -p 9001:9001 \
 
 ---
 
+## 🔄 Stream Integration with ParkPow
+
+**Automatic data synchronization with ParkPow webhook receiver using Stream**
+
+This system supports Stream integration to automatically push vehicle and violation data to ParkPow's webhook endpoint.
+
+### 🎯 Features:
+- 🔄 **Automatic sync**: Real-time data streaming to ParkPow
+- 🖼️ **Image support**: Sends vehicle images automatically
+- 🔐 **Secure authentication**: Token-based authorization
+- 📝 **Configuration file**: Simple INI-based setup
+
+### 🚀 Quick Setup:
+
+**API Token:** `YOUR_PARKPOW_API_TOKEN_HERE`
+
+Add to your Stream `config.ini`:
+
+```ini
+[webhooks]
+[[parkpow]]
+url = https://app.parkpow.com/api/v1/webhook-receiver/
+header = Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE
+image = yes
+image_type = car
+```
+
+### 📚 Documentation:
+- 📖 **[Stream Integration Guide (Full)](STREAM_INTEGRATION_GUIDE.md)** - Complete setup and configuration
+- 🚀 **[Quick Start Guide](STREAM_QUICK_START.md)** - Get started in 5 minutes
+- 📝 **[Configuration File](config.ini)** - Ready-to-use config template
+
+### 🔗 Related:
+- **ParkPow API**: https://app.parkpow.com/api/v1/
+- **Webhook Endpoint**: https://app.parkpow.com/api/v1/webhook-receiver/
+
+---
+
 ## 📊 حالة النظام - System Status
 
 | المكون | الحالة | التفاصيل |
