@@ -15,10 +15,15 @@ CREATE TABLE IF NOT EXISTS vehicle_snapshots (
   bbox jsonb,
   raw_response jsonb,
   image_url text,
+  image_data bytea,
+  image_mime text,
+  image_size integer,
+  image_sha256 text,
   meta jsonb,
   created_at timestamptz DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS idx_vehicle_plate_text ON vehicle_snapshots (plate_text);
 CREATE INDEX IF NOT EXISTS idx_vehicle_created_at ON vehicle_snapshots (created_at);
-CREATE INDEX IF NOT EXISTS idx_vehicle_plate_jsonb ON vehicle_snapshots USING gin (makes_models);
+CREATE INDEX IF NOT EXISTS idx_vehicle_makes_models_jsonb ON vehicle_snapshots USING gin (makes_models);
+CREATE INDEX IF NOT EXISTS idx_vehicle_image_sha256 ON vehicle_snapshots (image_sha256);
