@@ -79,12 +79,8 @@ def compute_image_metadata(image_bytes, original_source):
     sha256_hash = hashlib.sha256(image_bytes).hexdigest()
     size = len(image_bytes)
     
-    # Determine MIME type
-    mime_type = None
-    if urlparse(original_source).scheme in ("http", "https"):
-        mime_type = mimetypes.guess_type(original_source)[0]
-    else:
-        mime_type = mimetypes.guess_type(original_source)[0]
+    # Determine MIME type from filename/URL
+    mime_type = mimetypes.guess_type(original_source)[0]
     
     # Fallback to detecting from magic bytes
     if not mime_type:
@@ -157,6 +153,7 @@ def send_request(image_bytes):
     Send image bytes to Plate Recognizer API.
     Returns the API response.
     """
+    # Note: 'upload' is the field name required by Plate Recognizer API
     files = {"upload": BytesIO(image_bytes)}
     max_retries = 3
     retry_delay = 2
@@ -294,77 +291,78 @@ def main():
         items = [line.strip() for line in f if line.strip()]
 
     conn = psycopg2.connect(DATABASE_URL)
-    register_uuid()
+    register_uuid(conn=conn)
 
     processed = 0
     errors = 0
 
-    for item in tqdm(items, desc="Processing images"):
-        try:
-            # Fetch image bytes
-            image_bytes, original_source = fetch_image_bytes(item)
+    try:
+        for item in tqdm(items, desc="Processing images"):
+            try:
+                # Fetch image bytes
+                image_bytes, original_source = fetch_image_bytes(item)
+                
+                # Compute metadata
+                sha256_hash, mime_type, size = compute_image_metadata(image_bytes, original_source)
+                
+                # Check if image already processed (by SHA256)
+                with conn.cursor() as cur:
+                    cur.execute(
+                        "SELECT id FROM vehicle_snapshots WHERE image_sha256 = %s LIMIT 1",
+                        (sha256_hash,)
+                    )
+                    if cur.fetchone():
+                        print(f"Image {item} already processed (SHA256: {sha256_hash}), skipping")
+                        time.sleep(args.delay)
+                        continue
+                
+                # Store image based on configuration
+                image_url = None
+                image_data = None
+                
+                if STORE_IMAGES == "s3":
+                    image_url = upload_to_s3(image_bytes, sha256_hash, mime_type)
+                elif STORE_IMAGES == "db":
+                    image_data = psycopg2.Binary(image_bytes)
+                    print(f"Storing image {item} in database ({size} bytes)")
+                else:
+                    print(f"WARNING: Unknown STORE_IMAGES value '{STORE_IMAGES}', defaulting to s3")
+                    image_url = upload_to_s3(image_bytes, sha256_hash, mime_type)
+                
+                # Send to Plate Recognizer API
+                resp = send_request(image_bytes)
+                
+                # Parse response
+                record = parse_and_normalize_response(resp)
+                
+                # Apply confidence threshold
+                if args.confidence_threshold > 0 and record.get("plate_confidence"):
+                    if record["plate_confidence"] < args.confidence_threshold:
+                        print(f"Plate confidence {record['plate_confidence']:.2f} below threshold {args.confidence_threshold}, skipping")
+                        time.sleep(args.delay)
+                        continue
+                
+                # Add image metadata to record
+                record["snapshot_ref"] = record["snapshot_ref"] or sha256_hash
+                record["image_url"] = image_url or record.get("image_url") or (item if urlparse(item).scheme in ("http", "https") else None)
+                record["image_data"] = image_data
+                record["image_mime"] = mime_type
+                record["image_size"] = size
+                record["image_sha256"] = sha256_hash
+                
+                # Insert into database
+                new_id = insert_into_db(conn, record)
+                processed += 1
+                print(f"Processed {item} -> ID: {new_id}, Plate: {record.get('plate_text', 'N/A')}")
+                
+            except Exception as e:
+                print(f"ERROR processing {item}: {e}")
+                errors += 1
+                conn.rollback()
             
-            # Compute metadata
-            sha256_hash, mime_type, size = compute_image_metadata(image_bytes, original_source)
-            
-            # Check if image already processed (by SHA256)
-            with conn.cursor() as cur:
-                cur.execute(
-                    "SELECT id FROM vehicle_snapshots WHERE image_sha256 = %s LIMIT 1",
-                    (sha256_hash,)
-                )
-                if cur.fetchone():
-                    print(f"Image {item} already processed (SHA256: {sha256_hash}), skipping")
-                    time.sleep(args.delay)
-                    continue
-            
-            # Store image based on configuration
-            image_url = None
-            image_data = None
-            
-            if STORE_IMAGES == "s3":
-                image_url = upload_to_s3(image_bytes, sha256_hash, mime_type)
-            elif STORE_IMAGES == "db":
-                image_data = psycopg2.Binary(image_bytes)
-                print(f"Storing image {item} in database ({size} bytes)")
-            else:
-                print(f"WARNING: Unknown STORE_IMAGES value '{STORE_IMAGES}', defaulting to s3")
-                image_url = upload_to_s3(image_bytes, sha256_hash, mime_type)
-            
-            # Send to Plate Recognizer API
-            resp = send_request(image_bytes)
-            
-            # Parse response
-            record = parse_and_normalize_response(resp)
-            
-            # Apply confidence threshold
-            if args.confidence_threshold > 0 and record.get("plate_confidence"):
-                if record["plate_confidence"] < args.confidence_threshold:
-                    print(f"Plate confidence {record['plate_confidence']:.2f} below threshold {args.confidence_threshold}, skipping")
-                    time.sleep(args.delay)
-                    continue
-            
-            # Add image metadata to record
-            record["snapshot_ref"] = record["snapshot_ref"] or sha256_hash
-            record["image_url"] = image_url or record.get("image_url") or (item if urlparse(item).scheme in ("http", "https") else None)
-            record["image_data"] = image_data
-            record["image_mime"] = mime_type
-            record["image_size"] = size
-            record["image_sha256"] = sha256_hash
-            
-            # Insert into database
-            new_id = insert_into_db(conn, record)
-            processed += 1
-            print(f"Processed {item} -> ID: {new_id}, Plate: {record.get('plate_text', 'N/A')}")
-            
-        except Exception as e:
-            print(f"ERROR processing {item}: {e}")
-            errors += 1
-            conn.rollback()
-        
-        time.sleep(args.delay)
-
-    conn.close()
+            time.sleep(args.delay)
+    finally:
+        conn.close()
     
     print()
     print(f"Summary:")
