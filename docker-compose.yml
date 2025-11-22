@@ -38,6 +38,7 @@ services:
         condition: service_healthy
     volumes:
       - .:/app
+    # Note: Ensure images.txt exists in the project directory before running
     command: ["python", "snapshot_to_postgres.py", "--images", "images.txt", "--delay", "1"]
 
 volumes:

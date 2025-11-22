@@ -153,13 +153,16 @@ def send_request(image_bytes):
     Send image bytes to Plate Recognizer API.
     Returns the API response.
     """
-    # Note: 'upload' is the field name required by Plate Recognizer API
-    files = {"upload": BytesIO(image_bytes)}
     max_retries = 3
     retry_delay = 2
     
     for attempt in range(max_retries):
         try:
+            # Note: 'upload' is the field name required by Plate Recognizer API
+            # Create new BytesIO for each retry attempt
+            image_io = BytesIO(image_bytes)
+            image_io.seek(0)
+            files = {"upload": image_io}
             r = requests.post(SNAPSHOT_API_URL, headers=HEADERS, files=files, timeout=60)
             r.raise_for_status()
             return r.json()
@@ -313,7 +316,6 @@ def main():
                     )
                     if cur.fetchone():
                         print(f"Image {item} already processed (SHA256: {sha256_hash}), skipping")
-                        time.sleep(args.delay)
                         continue
                 
                 # Store image based on configuration
@@ -326,8 +328,7 @@ def main():
                     image_data = psycopg2.Binary(image_bytes)
                     print(f"Storing image {item} in database ({size} bytes)")
                 else:
-                    print(f"WARNING: Unknown STORE_IMAGES value '{STORE_IMAGES}', defaulting to s3")
-                    image_url = upload_to_s3(image_bytes, sha256_hash, mime_type)
+                    raise ValueError(f"Invalid STORE_IMAGES value '{STORE_IMAGES}'. Must be 's3' or 'db'")
                 
                 # Send to Plate Recognizer API
                 resp = send_request(image_bytes)
@@ -344,7 +345,15 @@ def main():
                 
                 # Add image metadata to record
                 record["snapshot_ref"] = record["snapshot_ref"] or sha256_hash
-                record["image_url"] = image_url or record.get("image_url") or (item if urlparse(item).scheme in ("http", "https") else None)
+                # Determine image URL: use S3 URL if available, otherwise API response URL, or original URL
+                if image_url:
+                    record["image_url"] = image_url
+                elif record.get("image_url"):
+                    record["image_url"] = record["image_url"]
+                elif urlparse(item).scheme in ("http", "https"):
+                    record["image_url"] = item
+                else:
+                    record["image_url"] = None
                 record["image_data"] = image_data
                 record["image_mime"] = mime_type
                 record["image_size"] = size
