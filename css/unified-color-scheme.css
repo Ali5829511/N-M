@@ -1,0 +1,254 @@
+/**
+ * نظام الألوان الموحد لنظام N-M
+ * Unified Color Scheme for N-M System
+ */
+
+:root {
+    /* الألوان الأساسية - Primary Colors */
+    --primary-blue: #1a365d;
+    --primary-blue-light: #2c5282;
+    --primary-blue-dark: #0f2744;
+    
+    /* الألوان الذهبية - Gold Colors */
+    --gold: #d4af37;
+    --gold-dark: #8B6F47;
+    --gold-light: #f4e4b7;
+    
+    /* الألوان الثانوية - Secondary Colors */
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    
+    /* ألوان الخلفية - Background Colors */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #f0f4f8;
+    --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 50%, #e0e7ef 100%);
+    
+    /* ألوان النص - Text Colors */
+    --text-primary: #1a365d;
+    --text-secondary: #4a5568;
+    --text-tertiary: #718096;
+    --text-white: #ffffff;
+    
+    /* ألوان الحالة - Status Colors */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #3b82f6;
+    
+    /* الظلال - Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-gold: 0 8px 25px rgba(139, 111, 71, 0.35);
+    
+    /* التدرجات - Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 50%, var(--gray-800) 100%);
+    --gradient-gold: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+    --gradient-card: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+    
+    /* الحدود - Borders */
+    --border-radius-sm: 8px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 18px;
+    --border-radius-xl: 24px;
+    
+    /* المسافات - Spacing */
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    
+    /* الخطوط - Typography */
+    --font-family: 'Tajawal', Arial, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+}
+
+/* تطبيق الألوان على العناصر الأساسية */
+body {
+    font-family: var(--font-family);
+    background: var(--bg-gradient);
+    color: var(--text-primary);
+}
+
+/* الرأس - Header */
+.header {
+    background: var(--gradient-primary);
+    color: var(--text-white);
+    box-shadow: var(--shadow-lg);
+}
+
+/* البطاقات - Cards */
+.page-card,
+.card {
+    background: var(--gradient-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 2px solid rgba(139, 111, 71, 0.1);
+}
+
+.page-card:hover,
+.card:hover {
+    box-shadow: var(--shadow-xl), var(--shadow-gold);
+    border-color: var(--gold-dark);
+}
+
+/* الأيقونات - Icons */
+.page-icon,
+.icon {
+    background: var(--gradient-gold);
+    color: var(--text-white);
+    box-shadow: var(--shadow-gold);
+}
+
+/* الأزرار - Buttons */
+.btn-primary {
+    background: var(--gradient-gold);
+    color: var(--text-white);
+    border: none;
+    box-shadow: var(--shadow-gold);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(139, 111, 71, 0.5);
+}
+
+.btn-secondary {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 2px solid var(--gold-dark);
+}
+
+.btn-secondary:hover {
+    background: var(--gold-light);
+    border-color: var(--gold);
+}
+
+/* العناوين - Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    font-weight: var(--font-weight-bold);
+}
+
+.section-title {
+    color: var(--text-primary);
+    border-bottom: 3px solid var(--gold);
+}
+
+/* النصوص - Text */
+p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* الروابط - Links */
+a {
+    color: var(--primary-blue);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--gold-dark);
+}
+
+/* الجداول - Tables */
+table {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+}
+
+th {
+    background: var(--gradient-primary);
+    color: var(--text-white);
+}
+
+tr:nth-child(even) {
+    background: var(--bg-secondary);
+}
+
+tr:hover {
+    background: var(--gold-light);
+}
+
+/* النماذج - Forms */
+input, select, textarea {
+    border: 2px solid var(--gray-300);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-sm);
+    font-family: var(--font-family);
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* الإشعارات - Notifications */
+.notification-success {
+    background: var(--success);
+    color: var(--text-white);
+}
+
+.notification-warning {
+    background: var(--warning);
+    color: var(--text-white);
+}
+
+.notification-error {
+    background: var(--error);
+    color: var(--text-white);
+}
+
+.notification-info {
+    background: var(--info);
+    color: var(--text-white);
+}
+
+/* البطاقات الإحصائية - Statistics Cards */
+.stat-card {
+    background: var(--gradient-card);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    border-left: 4px solid var(--gold);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* التحسينات للشاشات الصغيرة */
+@media (max-width: 768px) {
+    :root {
+        --font-size-base: 0.9rem;
+        --font-size-lg: 1rem;
+        --font-size-xl: 1.1rem;
+        --font-size-2xl: 1.3rem;
+        --font-size-3xl: 1.6rem;
+    }
+}
