@@ -1,0 +1,26 @@
+# Example images.txt file
+# ملف images.txt نموذجي
+#
+# This file should contain one image path or URL per line
+# يجب أن يحتوي هذا الملف على مسار صورة أو URL واحد لكل سطر
+#
+# Examples / أمثلة:
+#
+# Remote URLs / روابط عن بُعد:
+# https://example.com/vehicle-photos/car1.jpg
+# https://example.com/vehicle-photos/car2.png
+#
+# Local paths / مسارات محلية:
+# /path/to/local/image1.jpg
+# /path/to/local/image2.png
+# ./images/car.jpg
+#
+# Format requirements / متطلبات التنسيق:
+# - One image per line / صورة واحدة لكل سطر
+# - Empty lines and lines starting with # are ignored / الأسطر الفارغة والأسطر التي تبدأ بـ # يتم تجاهلها
+# - Supported formats: JPG, PNG, GIF, WebP / التنسيقات المدعومة: JPG، PNG، GIF، WebP
+#
+# Usage / الاستخدام:
+# 1. Copy this file: cp images.txt.example images.txt
+# 2. Edit images.txt with your actual image paths/URLs
+# 3. Run: python snapshot_to_postgres.py --images images.txt

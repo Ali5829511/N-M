@@ -16,7 +16,11 @@ Pillow>=10.0.0
 
 # Plate Recognizer Snapshot to PostgreSQL
 # متطلبات Plate Recognizer Snapshot إلى PostgreSQL
-python-dotenv
-psycopg2-binary
-tqdm
-sqlalchemy
+python-dotenv>=1.0.0
+psycopg2-binary>=2.9.9
+tqdm>=4.66.0
+sqlalchemy>=2.0.0
+
+# AWS S3 Storage (optional, only needed when STORE_IMAGES=s3)
+# تخزين AWS S3 (اختياري، مطلوب فقط عند STORE_IMAGES=s3)
+boto3>=1.34.0

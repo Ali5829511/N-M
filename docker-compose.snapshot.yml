@@ -1,29 +1,118 @@
 version: '3.8'
+
 services:
+  # PostgreSQL Database
+  # قاعدة بيانات PostgreSQL
   db:
     image: postgres:15
+    container_name: platenet-db
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: platenet
     volumes:
+      # Persist database data
+      # الاحتفاظ ببيانات قاعدة البيانات
       - db-data:/var/lib/postgresql/data
+      # Auto-initialize database schema
+      # تهيئة تلقائية لمخطط قاعدة البيانات
       - ./db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d platenet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
+  # Application Container
+  # حاوية التطبيق
   app:
     build:
       context: .
       dockerfile: Dockerfile.snapshot
+    container_name: platenet-app
     environment:
+      # Plate Recognizer API Configuration
+      # إعدادات Plate Recognizer API
       PLATE_API_KEY: ${PLATE_API_KEY}
-      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL}
-      DATABASE_URL: postgres://user:pass@db:5432/platenet
+      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
+      
+      # Database Configuration
+      # إعدادات قاعدة البيانات
+      DATABASE_URL: postgresql://user:pass@db:5432/platenet
+      
+      # Storage Configuration
+      # إعدادات التخزين
+      STORE_IMAGES: ${STORE_IMAGES:-s3}
+      
+      # AWS S3 Configuration (required when STORE_IMAGES=s3)
+      # إعدادات AWS S3 (مطلوب عند STORE_IMAGES=s3)
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      S3_BUCKET: ${S3_BUCKET}
+      
+      # Optional: MinIO endpoint for self-hosted S3
+      # اختياري: نقطة نهاية MinIO للتخزين الذاتي S3
+      # AWS_ENDPOINT_URL: ${AWS_ENDPOINT_URL}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
+      # Mount current directory for development
+      # تثبيت الدليل الحالي للتطوير
       - .:/app
+      # Mount images directory if exists
+      # تثبيت دليل الصور إن وُجد
+      - ./images:/app/images
+    working_dir: /app
+    # Keep container running for interactive use
+    # إبقاء الحاوية قيد التشغيل للاستخدام التفاعلي
+    command: tail -f /dev/null
+    restart: unless-stopped
+
+  # Optional: MinIO for self-hosted S3-compatible storage
+  # اختياري: MinIO للتخزين المتوافق مع S3 ذاتي الاستضافة
+  # Uncomment to enable / أزل التعليق للتفعيل
+  # minio:
+  #   image: minio/minio:latest
+  #   container_name: platenet-minio
+  #   command: server /data --console-address ":9001"
+  #   environment:
+  #     MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+  #     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+  #   ports:
+  #     - "9000:9000"  # API
+  #     - "9001:9001"  # Console
+  #   volumes:
+  #     - minio-data:/data
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+  #     interval: 30s
+  #     timeout: 20s
+  #     retries: 3
+  #   restart: unless-stopped
 
 volumes:
   db-data:
+    driver: local
+  # minio-data:
+  #   driver: local
+
+# Notes / ملاحظات:
+# 1. Ensure .env file is created and filled with actual credentials
+#    تأكد من إنشاء ملف .env وملئه ببيانات الاعتماد الفعلية
+#
+# 2. For production, use secrets management instead of environment variables
+#    للإنتاج، استخدم إدارة الأسرار بدلاً من متغيرات البيئة
+#
+# 3. Adjust volume paths as needed for your deployment
+#    اضبط مسارات الحجم حسب الحاجة لنشرك
+#
+# 4. Monitor disk usage - database can grow large with STORE_IMAGES=db
+#    راقب استخدام القرص - يمكن أن تنمو قاعدة البيانات بشكل كبير مع STORE_IMAGES=db
+#
+# 5. To enable MinIO, uncomment the minio service section above
+#    لتفعيل MinIO، أزل التعليق من قسم خدمة minio أعلاه
