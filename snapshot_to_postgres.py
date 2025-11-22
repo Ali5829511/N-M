@@ -40,6 +40,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# HTTP Status codes for successful API responses
+HTTP_SUCCESS_CODES = (200, 201)
+
 # Configuration from environment variables
 PLATE_API_KEY = os.getenv('PLATE_API_KEY')
 SNAPSHOT_API_URL = os.getenv('SNAPSHOT_API_URL', 'https://api.platerecognizer.com/v1/plate-reader/')
@@ -114,7 +117,7 @@ class SnapshotProcessor:
                     timeout=30
                 )
             
-            if response.status_code == 200 or response.status_code == 201:
+            if response.status_code in HTTP_SUCCESS_CODES:
                 return response.json()
             else:
                 logger.error(f"❌ API error {response.status_code}: {response.text}")
@@ -150,7 +153,7 @@ class SnapshotProcessor:
                 timeout=30
             )
             
-            if response.status_code == 200 or response.status_code == 201:
+            if response.status_code in HTTP_SUCCESS_CODES:
                 return response.json()
             else:
                 logger.error(f"❌ API error {response.status_code}: {response.text}")
@@ -217,7 +220,7 @@ class SnapshotProcessor:
         if timestamp_str:
             try:
                 captured_at = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
-            except:
+            except (ValueError, TypeError):
                 captured_at = datetime.utcnow()
         else:
             captured_at = datetime.utcnow()
