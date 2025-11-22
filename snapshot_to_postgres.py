@@ -77,6 +77,10 @@ if STORE_IMAGES == "s3":
         print("Error: boto3 is required for S3 storage. Install with: pip install boto3")
         sys.exit(1)
 
+if STORE_IMAGES == "s3" and not S3_BUCKET:
+    print("الرجاء ضبط S3_BUCKET عند استخدام STORE_IMAGES=s3")
+    sys.exit(1)
+
 HEADERS = {
     "Authorization": f"Token {PLATE_API_KEY}"
 }

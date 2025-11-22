@@ -35,6 +35,11 @@ cp .env.example .env
 - `PLATE_API_KEY`: مفتاح API من Plate Recognizer
 - `SNAPSHOT_API_URL`: نقطة نهاية API (مثال: `https://api.platerecognizer.com/v1/plate-reader/`)
 - `DATABASE_URL`: رابط الاتصال بقاعدة بيانات PostgreSQL
+- `STORE_IMAGES`: وضع التخزين - `s3` (افتراضي) أو `db`
+- `S3_BUCKET`: اسم S3 bucket (مطلوب عند `STORE_IMAGES=s3`)
+- `AWS_ACCESS_KEY_ID`: مفتاح الوصول إلى AWS
+- `AWS_SECRET_ACCESS_KEY`: المفتاح السري لـ AWS
+- `AWS_REGION`: منطقة AWS (افتراضي: `us-east-1`)
 
 #### متغيرات تخزين الصور (للوضع S3):
 - `STORE_IMAGES=s3` (الافتراضي، موصى به)
@@ -224,6 +229,11 @@ python snapshot_to_postgres.py \
   --confidence-threshold 0.75
 ```
 
+المعاملات المتاحة:
+- `--images`: ملف نصي يحتوي على صور (مطلوب)
+- `--delay`: تأخير بين الطلبات بالثواني (افتراضي: 0.5)
+- `--confidence-threshold`: حد أدنى للثقة في قراءة اللوحة (افتراضي: 0.0)
+
 ## التشغيل باستخدام Docker
 
 **⚠️ WARNING:** Storing images in database can cause:
@@ -234,13 +244,18 @@ python snapshot_to_postgres.py \
 
 **Configuration:**
 ```bash
-docker-compose up -d
+docker-compose -f docker-compose.snapshot.yml up -d
 ```
 
 هذا سيقوم بما يلي:
 - إنشاء قاعدة بيانات PostgreSQL
 - بناء صورة Docker للتطبيق
 - تشغيل السكربت
+
+للإيقاف:
+```bash
+docker-compose -f docker-compose.snapshot.yml down
+```
 
 ## بنية البيانات
 
@@ -262,6 +277,47 @@ docker-compose up -d
 - **`image_sha256`**: SHA256 hash للصورة (لتجنب التكرار)
 - `meta`: بيانات إضافية (JSONB)
 - `created_at`: تاريخ إضافة السجل
+
+## استرجاع الصور
+
+### من S3:
+```python
+import psycopg2
+import requests
+
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
+
+# الحصول على URL الصورة
+cur.execute("SELECT image_url, plate_text FROM vehicle_snapshots WHERE plate_text = %s", ("ABC123",))
+row = cur.fetchone()
+
+if row:
+    image_url, plate = row
+    # تحميل الصورة
+    response = requests.get(image_url)
+    with open(f"{plate}.jpg", "wb") as f:
+        f.write(response.content)
+```
+
+### من قاعدة البيانات:
+```python
+import psycopg2
+
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
+
+# الحصول على بايتات الصورة
+cur.execute("SELECT image_data, image_mime, plate_text FROM vehicle_snapshots WHERE plate_text = %s", ("ABC123",))
+row = cur.fetchone()
+
+if row:
+    image_data, mime, plate = row
+    # حفظ الصورة
+    extension = mime.split('/')[-1] if mime else 'jpg'
+    with open(f"{plate}.{extension}", "wb") as f:
+        f.write(image_data)
+```
 
 ## ملاحظات مهمة
 
