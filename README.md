@@ -545,6 +545,223 @@ N-M/
 └── .gitignore               # ملفات Git المستثناة
 ```
 
+---
+
+## 🚗 Plate Recognizer Snapshot Integration
+## تكامل Plate Recognizer Snapshot
+
+**جديد!** النظام الآن يدعم جمع بيانات السيارات من Plate Recognizer Snapshot API وتخزينها في PostgreSQL مع الصور.
+
+### 📋 الميزات الرئيسية / Key Features
+
+- ✅ **تكامل كامل مع Plate Recognizer Snapshot API**
+- ✅ **تخزين الصور في قاعدة البيانات (Binary/BYTEA)**
+- ✅ **حفظ البيانات الخام كـ JSONB للاستعلامات المرنة**
+- ✅ **دعم الصور من URLs أو الملفات المحلية**
+- ✅ **حساب SHA256 hash لكل صورة لمنع التكرار**
+- ✅ **بيئة Docker كاملة مع PostgreSQL**
+
+### 🚀 البدء السريع / Quick Start
+
+#### 1. إعداد البيئة / Environment Setup
+
+```bash
+# نسخ ملف البيئة / Copy environment file
+cp .env.example .env
+
+# تعديل المتغيرات المطلوبة / Edit required variables
+# PLATE_RECOGNIZER_API_TOKEN=your_token_here
+# DB_PASSWORD=secure_password
+```
+
+#### 2. تشغيل Docker / Run with Docker
+
+```bash
+# تشغيل الخدمات / Start services
+docker-compose up -d
+
+# التحقق من الحالة / Check status
+docker-compose ps
+
+# عرض السجلات / View logs
+docker-compose logs -f
+```
+
+#### 3. معالجة صورة / Process an Image
+
+```bash
+# من URL
+docker-compose exec plate_recognizer python snapshot_to_postgres.py https://example.com/car.jpg
+
+# من ملف محلي / From local file
+docker-compose exec plate_recognizer python snapshot_to_postgres.py /app/images/car.jpg
+```
+
+#### 4. تشغيل محلياً بدون Docker / Run Locally without Docker
+
+```bash
+# تثبيت المتطلبات / Install dependencies
+pip install -r requirements.txt
+
+# تشغيل السكربت / Run script
+python snapshot_to_postgres.py https://example.com/car.jpg
+```
+
+### 📊 استرجاع الصور من قاعدة البيانات / Retrieve Images from Database
+
+#### باستخدام psql:
+
+```sql
+-- عرض معلومات الصور / View image information
+SELECT id, snapshot_id, plate_number, image_mime, image_size, 
+       created_at 
+FROM vehicle_snapshots 
+ORDER BY created_at DESC 
+LIMIT 10;
+
+-- استخراج صورة معينة / Extract specific image
+\o /tmp/car_image.jpg
+SELECT encode(image_data, 'base64') 
+FROM vehicle_snapshots 
+WHERE id = 1;
+\o
+```
+
+#### باستخدام Python:
+
+```python
+import psycopg2
+from pathlib import Path
+
+# الاتصال بقاعدة البيانات / Connect to database
+conn = psycopg2.connect(
+    host='localhost',
+    port=5432,
+    dbname='traffic_system',
+    user='postgres',
+    password='your_password'
+)
+
+cursor = conn.cursor()
+
+# استرجاع الصورة / Retrieve image
+cursor.execute("""
+    SELECT image_data, image_mime, plate_number 
+    FROM vehicle_snapshots 
+    WHERE id = %s
+""", (1,))
+
+result = cursor.fetchone()
+if result:
+    image_data, mime_type, plate = result
+    
+    # تحديد امتداد الملف / Determine file extension
+    ext = mime_type.split('/')[-1]
+    filename = f"car_{plate}_{1}.{ext}"
+    
+    # حفظ الصورة / Save image
+    Path(filename).write_bytes(image_data)
+    print(f"✅ Image saved: {filename}")
+
+cursor.close()
+conn.close()
+```
+
+### ⚠️ تحذيرات مهمة / Important Warnings
+
+#### 🔒 الأمان والخصوصية / Security & Privacy
+
+- ⚠️ **تخزين الصور يتطلب سياسة خصوصية واضحة**
+- ⚠️ **احذف البيانات القديمة بانتظام لتوفير المساحة**
+- ⚠️ **لا تشارك قاعدة البيانات بدون تشفير**
+- ⚠️ **استخدم HTTPS فقط عند نقل البيانات**
+
+#### 💾 إدارة التخزين / Storage Management
+
+```bash
+# فحص حجم قاعدة البيانات / Check database size
+docker-compose exec postgres psql -U postgres -d traffic_system -c "
+SELECT 
+    pg_size_pretty(pg_database_size('traffic_system')) as db_size,
+    pg_size_pretty(pg_total_relation_size('vehicle_snapshots')) as table_size;
+"
+
+# حذف البيانات القديمة / Delete old data
+docker-compose exec postgres psql -U postgres -d traffic_system -c "
+DELETE FROM vehicle_snapshots 
+WHERE created_at < NOW() - INTERVAL '30 days';
+"
+
+# تفريغ المساحة / Vacuum database
+docker-compose exec postgres psql -U postgres -d traffic_system -c "VACUUM FULL vehicle_snapshots;"
+```
+
+#### 🔄 النسخ الاحتياطي / Backup
+
+```bash
+# نسخ احتياطي كامل / Full backup
+docker-compose exec postgres pg_dump -U postgres traffic_system > backup_$(date +%Y%m%d).sql
+
+# نسخ احتياطي بدون الصور (لتوفير المساحة) / Backup without images
+docker-compose exec postgres pg_dump -U postgres traffic_system \
+  --exclude-table-data=vehicle_snapshots > backup_no_images_$(date +%Y%m%d).sql
+
+# استعادة من نسخة احتياطية / Restore from backup
+docker-compose exec -T postgres psql -U postgres traffic_system < backup.sql
+```
+
+### 📈 الأداء / Performance
+
+**نصائح لتحسين الأداء / Performance Tips:**
+
+1. **استخدم الفهارس الموجودة** - الجدول يحتوي على فهارس لـ `plate_number`, `created_at`, `sha256`
+2. **حدد حجم الصور** - استخدم صور بحجم معقول (< 2 MB)
+3. **راقب المساحة** - تحقق بانتظام من مساحة القرص المتاحة
+4. **استخدم VACUUM** - قم بتنظيف قاعدة البيانات دورياً
+
+### 📚 الملفات ذات الصلة / Related Files
+
+- `snapshot_to_postgres.py` - السكربت الرئيسي للتكامل
+- `db_schema.sql` - سكيما قاعدة البيانات
+- `docker-compose.yml` - تكوين Docker
+- `Dockerfile.snapshot` - Dockerfile للخدمة
+- `.env.example` - مثال على المتغيرات البيئية
+
+### 🔧 استكشاف الأخطاء / Troubleshooting
+
+#### مشكلة: API Token غير صحيح
+```bash
+# تحقق من التوكن / Verify token
+echo $PLATE_RECOGNIZER_API_TOKEN
+
+# اختبار الاتصال / Test connection
+curl -H "Authorization: Token YOUR_TOKEN" \
+  https://api.platerecognizer.com/v1/plate-reader/
+```
+
+#### مشكلة: فشل الاتصال بقاعدة البيانات
+```bash
+# تحقق من حالة PostgreSQL / Check PostgreSQL status
+docker-compose ps postgres
+
+# اختبار الاتصال / Test connection
+docker-compose exec postgres psql -U postgres -d traffic_system -c "SELECT 1;"
+```
+
+#### مشكلة: نفاد المساحة
+```bash
+# فحص المساحة المتاحة / Check available space
+df -h
+
+# حذف البيانات القديمة (احذر!) / Delete old data (careful!)
+docker-compose exec postgres psql -U postgres -d traffic_system -c "
+DELETE FROM vehicle_snapshots WHERE created_at < NOW() - INTERVAL '7 days';
+VACUUM FULL vehicle_snapshots;
+"
+```
+
+---
+
 ## 🔄 حالة المشروع
 
 - ✅ **جاهز للتطوير والاختبار**: النظام يعمل بشكل كامل في بيئة التطوير

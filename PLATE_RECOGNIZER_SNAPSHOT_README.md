@@ -1,356 +1,414 @@
-# Plate Recognizer Snapshot Integration
-# دليل تكامل Plate Recognizer Snapshot
+# Plate Recognizer Snapshot Integration with PostgreSQL
 
-## Overview / نظرة عامة
+This feature enables ingestion of vehicle images using the [Plate Recognizer Snapshot API](https://platerecognizer.com/) and stores the recognition results along with image metadata in PostgreSQL.
 
-This system integrates Plate Recognizer Snapshot API with PostgreSQL database to automatically process vehicle images, extract license plate information, and store the results with optional S3 image storage.
+## Features
 
-يتكامل هذا النظام مع Plate Recognizer Snapshot API وقاعدة بيانات PostgreSQL لمعالجة صور المركبات تلقائياً واستخراج معلومات اللوحات وتخزين النتائج مع خيار تخزين الصور في S3.
+- **Flexible Image Storage**: Choose between S3 object storage (default) or PostgreSQL bytea (for small tests)
+- **Comprehensive Metadata**: Stores plate text, confidence, vehicle make/model, colors, bounding boxes
+- **Deduplication**: Uses SHA-256 hashing to avoid storing duplicate images
+- **Retry Logic**: Automatic retries for network errors with exponential backoff
+- **Batch Processing**: Process multiple images from a text file
+- **Confidence Filtering**: Filter results by confidence threshold
 
-## Features / المميزات
+## Architecture
 
-- ✅ Automatic license plate recognition using Plate Recognizer API
-- ✅ Support for both URL-based and local file images
-- ✅ S3 storage for images (default, recommended)
-- ✅ Optional database storage for small-scale testing
-- ✅ SHA256 hash calculation to prevent duplicate images
-- ✅ MIME type detection and image size tracking
-- ✅ Confidence threshold filtering
-- ✅ Automatic retry on network failures
-- ✅ Progress tracking with tqdm
-- ✅ Comprehensive metadata storage (makes, models, colors, bbox)
+### Storage Modes
 
-## Setup Instructions / تعليمات الإعداد
+1. **S3 Mode (Default - Recommended for Production)**
+   - Images are uploaded to AWS S3 or S3-compatible storage (e.g., MinIO)
+   - Only metadata and S3 URL are stored in PostgreSQL
+   - Efficient for large-scale deployments
+   - Reduces database size and improves performance
 
-### 1. Prerequisites / المتطلبات الأساسية
+2. **DB Mode (For Small Tests Only)**
+   - Images are stored as bytea in PostgreSQL
+   - Useful for small-scale testing or when S3 is not available
+   - ⚠️ **Warning**: Not recommended for production due to database bloat
 
-- Python 3.11 or higher
-- PostgreSQL 15 or higher
-- AWS S3 account (for production use)
-- Plate Recognizer API account
+## Prerequisites
 
-### 2. Install Dependencies / تثبيت المتطلبات
+- Python 3.11+
+- PostgreSQL 15+ with uuid-ossp extension
+- Plate Recognizer API account and API key
+- (Optional) AWS S3 bucket or MinIO for image storage
 
-```bash
-pip install -r requirements.txt
-```
+## Setup Instructions
 
-### 3. Database Setup / إعداد قاعدة البيانات
+### 1. Database Setup
 
-Create the database schema:
-
-```bash
-psql $DATABASE_URL -f db_schema.sql
-```
-
-Or using Docker Compose:
+Create the PostgreSQL database and run the schema:
 
 ```bash
-docker-compose -f docker-compose.snapshot.yml up -d db
+# Connect to PostgreSQL
+psql -U your_user -d your_database
+
+# Run the schema
+\i db_schema.sql
 ```
 
-### 4. Environment Configuration / تكوين البيئة
+Or using Docker Compose (see below).
 
-Copy `.env.example` to `.env` and fill in your credentials:
+### 2. Environment Configuration
+
+Copy the example environment file and configure it:
 
 ```bash
 cp .env.example .env
 ```
 
-Required environment variables:
+Edit `.env` and fill in your credentials:
 
 ```bash
-# Plate Recognizer API
-PLATE_API_KEY=your_api_key_here
+# Required for all modes
+PLATE_API_KEY=your_plate_recognizer_api_key_here
 SNAPSHOT_API_URL=https://api.platerecognizer.com/v1/plate-reader/
-
-# Database
 DATABASE_URL=postgresql://user:pass@localhost:5432/platenet
 
-# Image Storage (choose one)
-STORE_IMAGES=s3  # or "db" for testing
+# Storage mode: "s3" (default) or "db"
+STORE_IMAGES=s3
 
-# S3 Configuration (required if STORE_IMAGES=s3)
+# Required when STORE_IMAGES=s3
 S3_BUCKET=your-bucket-name
-AWS_ACCESS_KEY_ID=your_access_key
-AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_REGION=us-east-1
 ```
 
-## Usage / الاستخدام
-
-### Basic Usage / الاستخدام الأساسي
-
-Create a text file with image paths or URLs (one per line):
+### 3. Install Dependencies
 
 ```bash
-# images.txt
-https://example.com/vehicle1.jpg
-https://example.com/vehicle2.jpg
-/path/to/local/image.jpg
+pip install -r requirements.txt
 ```
 
-Run the script:
+### 4. Prepare Image List
+
+Create a file `images.txt` with one image path or URL per line:
+
+```
+/path/to/image1.jpg
+/path/to/image2.jpg
+https://example.com/vehicle.jpg
+https://example.com/another-vehicle.png
+```
+
+### 5. Run the Script
+
+Basic usage:
 
 ```bash
 python snapshot_to_postgres.py --images images.txt
 ```
 
-### Advanced Options / خيارات متقدمة
+With options:
 
 ```bash
 python snapshot_to_postgres.py \
   --images images.txt \
   --delay 1.0 \
-  --confidence-threshold 0.8 \
-  --retries 3
+  --confidence-threshold 0.7
 ```
 
-Parameters:
-- `--images`: Text file with image paths/URLs (required)
-- `--delay`: Delay between requests in seconds (default: 0.5)
-- `--confidence-threshold`: Minimum plate confidence (0.0-1.0, default: 0.0)
-- `--retries`: Number of retry attempts on failure (default: 3)
+#### Command Line Options
 
-### Docker Usage / استخدام Docker
+- `--images`: Path to text file containing image paths/URLs (required)
+- `--delay`: Delay between API requests in seconds (default: 0.5)
+- `--confidence-threshold`: Minimum confidence to store results (default: 0.0)
 
-Using Docker Compose:
+## Docker Deployment
+
+### Using Docker Compose
+
+1. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your credentials
+   ```
+
+2. **Create images.txt** with your image paths/URLs
+
+3. **Run with Docker Compose**:
+   ```bash
+   # For S3 storage mode
+   docker-compose -f docker-compose.snapshot.yml up
+
+   # For DB storage mode (testing only)
+   STORE_IMAGES=db docker-compose -f docker-compose.snapshot.yml up
+   ```
+
+The database will be automatically initialized with the schema.
+
+### Building the Docker Image Separately
 
 ```bash
-# Start database
-docker-compose -f docker-compose.snapshot.yml up -d db
-
-# Run the application
-docker-compose -f docker-compose.snapshot.yml run app \
-  python snapshot_to_postgres.py --images images.txt --delay 1.0
+docker build -f Dockerfile.snapshot -t plate-snapshot:latest .
 ```
 
-## Storage Modes / أوضاع التخزين
+## Usage Examples
 
-### S3 Storage (Recommended) / تخزين S3 (موصى به)
+### Example 1: Process Images with S3 Storage
 
-Default mode. Images are uploaded to S3 and only metadata is stored in the database.
-
-**Advantages:**
-- ✅ Scalable for large datasets
-- ✅ Cost-effective storage
-- ✅ Faster database operations
-- ✅ Easier backups
-
-**Configuration:**
 ```bash
+# .env configuration
 STORE_IMAGES=s3
-S3_BUCKET=your-bucket-name
-AWS_ACCESS_KEY_ID=your_key
-AWS_SECRET_ACCESS_KEY=your_secret
+S3_BUCKET=my-vehicle-images
+AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+AWS_REGION=us-east-1
+
+# Run script
+python snapshot_to_postgres.py --images images.txt --delay 1.0
 ```
 
-### Database Storage (Testing Only) / تخزين قاعدة البيانات (للاختبار فقط)
+### Example 2: Process Images with DB Storage
 
-Images are stored as bytea in PostgreSQL. Only suitable for small-scale testing.
-
-**Configuration:**
 ```bash
+# .env configuration
 STORE_IMAGES=db
+
+# Run script
+python snapshot_to_postgres.py --images images.txt --delay 0.5
 ```
 
-**⚠️ Warning:** Not recommended for production use. Database size will grow rapidly.
+### Example 3: Filter by Confidence
 
-## Retrieving Images / استرجاع الصور
+Only store results with confidence >= 0.8:
 
-### From S3
+```bash
+python snapshot_to_postgres.py \
+  --images images.txt \
+  --confidence-threshold 0.8
+```
 
-Images stored in S3 can be accessed directly via the `image_url` field:
+## Retrieving Stored Data
+
+### Query Metadata
 
 ```sql
-SELECT id, plate_text, image_url FROM vehicle_snapshots 
-WHERE plate_text = 'ABC123';
+-- Get all recognized plates
+SELECT 
+  plate_text,
+  plate_confidence,
+  captured_at,
+  image_url,
+  image_sha256
+FROM vehicle_snapshots
+ORDER BY created_at DESC;
+
+-- Search by plate text
+SELECT * FROM vehicle_snapshots
+WHERE plate_text ILIKE '%ABC123%';
+
+-- Get high confidence results
+SELECT * FROM vehicle_snapshots
+WHERE plate_confidence > 0.9;
 ```
 
-### From Database
+### Retrieve Images
 
-For images stored in the database:
+#### From S3
+
+Images are stored at the URL in the `image_url` column:
 
 ```sql
--- Get image data
-SELECT id, plate_text, image_data, image_mime 
-FROM vehicle_snapshots 
-WHERE plate_text = 'ABC123';
+SELECT image_url FROM vehicle_snapshots WHERE plate_text = 'ABC123';
 ```
 
-Python example to retrieve and save:
+Access the URL directly in your browser or application.
+
+#### From Database (bytea)
+
+```sql
+-- Get image bytes
+SELECT image_data, image_mime FROM vehicle_snapshots WHERE plate_text = 'ABC123';
+```
+
+In Python:
 
 ```python
 import psycopg2
 from io import BytesIO
+from PIL import Image
 
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
-cur.execute("SELECT image_data, image_mime FROM vehicle_snapshots WHERE id = %s", (image_id,))
-image_data, mime_type = cur.fetchone()
 
-# Save to file
-ext = mime_type.split('/')[-1]
-with open(f'output.{ext}', 'wb') as f:
-    f.write(image_data)
+cur.execute("SELECT image_data, image_mime FROM vehicle_snapshots WHERE plate_text = %s", ('ABC123',))
+row = cur.fetchone()
+
+if row and row[0]:
+    image_bytes = bytes(row[0])
+    image = Image.open(BytesIO(image_bytes))
+    image.show()
 ```
 
-## Database Schema / مخطط قاعدة البيانات
+## Using MinIO as S3 Alternative
+
+For local development, you can use MinIO as an S3-compatible storage:
+
+1. **Install MinIO**:
+   ```bash
+   docker run -p 9000:9000 -p 9001:9001 \
+     -e MINIO_ROOT_USER=minioadmin \
+     -e MINIO_ROOT_PASSWORD=minioadmin \
+     minio/minio server /data --console-address ":9001"
+   ```
+
+2. **Create bucket**: Visit http://localhost:9001 and create a bucket
+
+3. **Configure .env for MinIO**:
+   ```bash
+   STORE_IMAGES=s3
+   S3_BUCKET=vehicle-images
+   AWS_ACCESS_KEY_ID=minioadmin
+   AWS_SECRET_ACCESS_KEY=minioadmin
+   # For MinIO, you need to configure the endpoint
+   # (requires modifying snapshot_to_postgres.py to add endpoint_url parameter)
+   ```
+
+## Security Best Practices
+
+### ⚠️ Important Security Notes
+
+1. **Never commit credentials** to version control
+   - Add `.env` to `.gitignore`
+   - Use `.env.example` as a template
+
+2. **Use GitHub Secrets** for CI/CD:
+   - Go to: Repository → Settings → Secrets and variables → Actions
+   - Add secrets: `PLATE_API_KEY`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+
+3. **Rotate credentials regularly**:
+   - Change API keys every 90 days
+   - Use temporary credentials when possible
+
+4. **Use IAM roles** in production:
+   - Instead of access keys, use EC2 instance roles or ECS task roles
+   - Grant minimum required permissions
+
+5. **S3 bucket security**:
+   - Enable encryption at rest
+   - Use bucket policies to restrict access
+   - Enable versioning for data protection
+   - Consider private buckets with presigned URLs
+
+6. **Database security**:
+   - Use SSL/TLS for database connections
+   - Restrict network access with security groups
+   - Use strong passwords
+   - Regularly backup your database
+
+## Privacy and Storage Warnings
+
+### ⚠️ Privacy Considerations
+
+- **Personal Data**: Vehicle images and license plates may constitute personal data under GDPR, CCPA, and similar regulations
+- **Data Minimization**: Only store necessary data; consider retention policies
+- **Access Control**: Implement proper access controls to protect sensitive data
+- **Consent**: Ensure you have legal basis for collecting and storing this data
+- **Data Processing Agreement**: Required if using third-party services (Plate Recognizer, AWS)
+
+### ⚠️ Storage Size Warnings
+
+- **S3 Mode**: Each image is typically 100KB-5MB
+  - 10,000 images ≈ 1-50 GB
+  - S3 storage cost: ~$0.023/GB/month
+  
+- **DB Mode**: Images stored as bytea significantly increase database size
+  - 10,000 images ≈ 1-50 GB added to database
+  - **Not recommended for production**
+  - Can impact database performance
+  - Increases backup time and storage costs
+
+### Recommendations
+
+1. Use **S3 mode** for production
+2. Implement **data retention policies** (e.g., delete images after 90 days)
+3. Use **lifecycle policies** on S3 to automatically transition old data to cheaper storage
+4. Monitor storage usage and costs regularly
+5. Consider **image compression** before storage if quality allows
+
+## Troubleshooting
+
+### Common Issues
+
+**Error: Missing required environment variables**
+- Ensure `.env` file exists and contains all required variables
+- Check that variable names are correct (case-sensitive)
+
+**Error: boto3 not installed**
+- Run: `pip install boto3`
+- Or reinstall requirements: `pip install -r requirements.txt`
+
+**Error: S3 upload failed**
+- Verify AWS credentials are correct
+- Check bucket name and region
+- Ensure bucket exists and you have write permissions
+- Check network connectivity
+
+**Error: Database connection failed**
+- Verify DATABASE_URL format: `postgresql://user:pass@host:port/dbname`
+- Check if PostgreSQL is running
+- Verify network connectivity and firewall rules
+
+**Low recognition accuracy**
+- Use higher quality images
+- Ensure images are well-lit
+- Check that plates are clearly visible
+- Consider adjusting confidence threshold
+
+## Database Schema
 
 ```sql
 CREATE TABLE vehicle_snapshots (
-  id uuid PRIMARY KEY,
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   snapshot_ref text,
   camera_id text,
   captured_at timestamptz,
-  plate_text text,              -- License plate number
-  plate_confidence numeric,     -- Confidence score (0.0-1.0)
-  makes_models jsonb,           -- Vehicle make/model predictions
-  colors jsonb,                 -- Vehicle color predictions
-  bbox jsonb,                   -- Bounding box coordinates
-  raw_response jsonb,           -- Full API response
-  image_url text,               -- S3 URL (if STORE_IMAGES=s3)
-  image_data bytea,             -- Image bytes (if STORE_IMAGES=db)
-  image_mime text,              -- MIME type (e.g., image/jpeg)
-  image_size integer,           -- Image size in bytes
-  image_sha256 text,            -- SHA256 hash for deduplication
-  meta jsonb,                   -- Additional metadata
+  plate_text text,
+  plate_confidence numeric,
+  makes_models jsonb,
+  colors jsonb,
+  bbox jsonb,
+  raw_response jsonb,
+  image_url text,
+  image_data bytea,           -- NULL when STORE_IMAGES=s3
+  image_mime text,
+  image_size integer,
+  image_sha256 text,          -- For deduplication
+  meta jsonb,
   created_at timestamptz DEFAULT now()
 );
 ```
 
-## Example Queries / أمثلة الاستعلامات
+Indexes:
+- `plate_text` - Fast plate lookups
+- `created_at` - Time-based queries
+- `makes_models` (GIN) - JSONB searches
+- `image_sha256` - Deduplication checks
 
-```sql
--- Find all snapshots for a specific plate
-SELECT * FROM vehicle_snapshots 
-WHERE plate_text = 'ABC123'
-ORDER BY created_at DESC;
+## API Rate Limits
 
--- Get snapshots with high confidence
-SELECT plate_text, plate_confidence, image_url 
-FROM vehicle_snapshots 
-WHERE plate_confidence > 0.9;
+Plate Recognizer API has rate limits depending on your subscription:
+- Free tier: 2,500 lookups/month
+- Paid tiers: Higher limits
 
--- Search by vehicle make/model
-SELECT * FROM vehicle_snapshots 
-WHERE makes_models @> '{"make": "Toyota"}';
+Use the `--delay` parameter to control request rate and avoid hitting limits.
 
--- Check storage statistics
-SELECT 
-  COUNT(*) as total_snapshots,
-  pg_size_pretty(SUM(image_size)) as total_image_size,
-  COUNT(CASE WHEN image_data IS NOT NULL THEN 1 END) as stored_in_db,
-  COUNT(CASE WHEN image_url IS NOT NULL THEN 1 END) as stored_in_s3
-FROM vehicle_snapshots;
+## License
 
--- Find duplicate images by hash
-SELECT image_sha256, COUNT(*) as duplicates
-FROM vehicle_snapshots
-GROUP BY image_sha256
-HAVING COUNT(*) > 1;
-```
+See [LICENSE](LICENSE) file for details.
 
-## Privacy and Security / الخصوصية والأمان
+## Support
 
-### ⚠️ Important Privacy Considerations
+For issues with:
+- **This integration**: Open an issue in this repository
+- **Plate Recognizer API**: Visit [Plate Recognizer Support](https://platerecognizer.com/help/)
+- **AWS S3**: Consult [AWS Documentation](https://docs.aws.amazon.com/s3/)
 
-1. **Data Protection**: Vehicle images and license plate data are sensitive personal information
-   - Comply with local data protection laws (GDPR, CCPA, etc.)
-   - Implement proper access controls
-   - Consider data retention policies
+## References
 
-2. **AWS Credentials**: Never commit credentials to version control
-   - Use environment variables or AWS IAM roles
-   - Rotate credentials regularly
-   - Use minimal required permissions
-
-3. **API Keys**: Keep Plate Recognizer API keys secure
-   - Use GitHub Secrets for CI/CD
-   - Rotate keys periodically
-   - Monitor API usage
-
-4. **Database Access**: Secure your PostgreSQL database
-   - Use strong passwords
-   - Enable SSL connections
-   - Restrict network access
-
-5. **S3 Bucket Security**:
-   - Keep buckets private (ACL='private' is default)
-   - Use presigned URLs for temporary access (S3_USE_PRESIGNED_URLS=true)
-   - Use bucket policies to restrict access
-   - Enable encryption at rest
-   - Enable versioning for backup
-   - Never use public-read ACL for sensitive vehicle data
-
-### Recommended IAM Policy for S3
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:PutObjectAcl"
-      ],
-      "Resource": "arn:aws:s3:::your-bucket-name/vehicle-snapshots/*"
-    }
-  ]
-}
-```
-
-## Troubleshooting / استكشاف الأخطاء
-
-### Common Issues
-
-1. **S3 Upload Fails**
-   - Verify AWS credentials are correct
-   - Check bucket name and region
-   - Ensure IAM permissions are set correctly
-   - Check network connectivity
-
-2. **Database Connection Error**
-   - Verify DATABASE_URL format
-   - Check PostgreSQL is running
-   - Ensure database exists
-   - Test connection: `psql $DATABASE_URL`
-
-3. **API Rate Limiting**
-   - Increase `--delay` parameter
-   - Check Plate Recognizer account limits
-   - Implement exponential backoff
-
-4. **Image Not Found**
-   - Verify image URLs are accessible
-   - Check local file paths
-   - Ensure proper permissions
-
-## Performance Tips / نصائح الأداء
-
-1. **Batch Processing**: Process images in batches during off-peak hours
-2. **Delay Configuration**: Adjust delay based on API rate limits
-3. **Database Indexes**: Ensure indexes are created on frequently queried fields
-4. **S3 Transfer Acceleration**: Enable for faster uploads from distant regions
-5. **Connection Pooling**: Use pgbouncer for high-throughput scenarios
-
-## License / الترخيص
-
-See LICENSE file in the repository root.
-
-## Support / الدعم
-
-For issues and questions:
-- GitHub Issues: [Create an issue](https://github.com/Ali5829511/N-M/issues)
-- Plate Recognizer Docs: https://guides.platerecognizer.com/
-
-## Changelog / سجل التغييرات
-
-### Version 1.0.0
-- Initial release
-- S3 and database storage support
-- Confidence threshold filtering
-- SHA256 deduplication
-- Retry logic
+- [Plate Recognizer Documentation](https://docs.platerecognizer.com/)
+- [Plate Recognizer Snapshot API](https://guides.platerecognizer.com/docs/snapshot/api-reference/)
+- [AWS S3 Documentation](https://docs.aws.amazon.com/s3/)
+- [PostgreSQL JSONB Documentation](https://www.postgresql.org/docs/current/datatype-json.html)
