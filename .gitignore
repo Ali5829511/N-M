@@ -65,6 +65,7 @@ images/
 processed_images/
 traffic.db
 *.db
+images.txt
 
 # Backup files
 *.sql

@@ -12,7 +12,8 @@
 import os
 import sys
 import argparse
-import json
+import hashlib
+import mimetypes
 import time
 import hashlib
 import mimetypes
@@ -27,6 +28,7 @@ from psycopg2 import Binary
 from psycopg2.extras import Json, register_uuid
 from datetime import datetime
 
+# Load environment variables
 load_dotenv()
 
 # Required environment variables (will be validated in main())
@@ -59,6 +61,20 @@ if STORE_IMAGES == "s3":
         )
     except ImportError:
         print("خطأ: يرجى تثبيت boto3 باستخدام: pip install boto3")
+        sys.exit(1)
+
+# Validate S3 configuration if needed
+if STORE_IMAGES == "s3":
+    if not S3_BUCKET or not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
+        print("Error: STORE_IMAGES=s3 but missing S3 configuration.")
+        print("Please set: S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
+        sys.exit(1)
+    # Import boto3 only when needed
+    try:
+        import boto3
+        from botocore.exceptions import ClientError
+    except ImportError:
+        print("Error: boto3 is required for S3 storage. Install with: pip install boto3")
         sys.exit(1)
 
 HEADERS = {
@@ -182,12 +198,43 @@ def send_request(payload, retry_count=3):
             else:
                 raise e
 
-def parse_and_normalize_response(resp):
+def send_to_plate_recognizer(image_bytes, mime_type='image/jpeg'):
     """
     Extract important fields from Plate Recognizer response.
     Since response may vary based on model settings, we also store the raw response.
     """
-    out = {
+    # Determine file extension from mime type
+    ext = mime_type.split('/')[-1] if '/' in mime_type else 'jpg'
+    filename = f"image.{ext}"
+    
+    files = {"upload": (filename, image_bytes, mime_type)}
+    
+    # Retry logic
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(
+                SNAPSHOT_API_URL,
+                headers=HEADERS,
+                files=files,
+                timeout=60
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            if attempt < max_retries - 1:
+                print(f"  Retry {attempt + 1}/{max_retries} after error: {e}")
+                time.sleep(2 ** attempt)  # Exponential backoff
+            else:
+                raise
+
+
+def parse_plate_recognizer_response(resp, confidence_threshold=0.0):
+    """
+    Parse Plate Recognizer response and extract relevant information.
+    Returns a dictionary with extracted fields.
+    """
+    parsed = {
         "snapshot_ref": None,
         "camera_id": None,
         "captured_at": None,
@@ -197,41 +244,54 @@ def parse_and_normalize_response(resp):
         "colors": None,
         "bbox": None,
         "raw_response": resp,
-        "image_url": None,
-        "meta": {}
     }
-
-    results = resp.get("results") or resp.get("vehicles") or [resp]
-
-    if isinstance(results, dict):
-        results = [results]
-
-    if len(results) > 0:
-        r0 = results[0]
-        out["snapshot_ref"] = r0.get("id") or r0.get("snapshot_id") or out["snapshot_ref"]
-        out["camera_id"] = r0.get("camera_id") or r0.get("camera")
-        plate = r0.get("plate") or r0.get("plate_info") or {}
+    
+    # Extract results (structure may vary)
+    results = resp.get("results", [])
+    
+    if results and len(results) > 0:
+        result = results[0]
+        
+        # Extract plate information
+        plate = result.get("plate", {})
         if isinstance(plate, dict):
-            out["plate_text"] = plate.get("plate") or plate.get("number") or out["plate_text"]
-            out["plate_confidence"] = plate.get("confidence") or out["plate_confidence"]
-        mm = r0.get("vehicle") or r0.get("vehicle_info") or {}
-        if mm:
-            out["makes_models"] = mm.get("predictions") or mm.get("makes_models") or mm
-        colors = r0.get("color") or r0.get("colors")
-        if colors:
-            out["colors"] = colors
-        bbox = r0.get("box") or r0.get("bounding_box") or r0.get("bbox")
-        if bbox:
-            out["bbox"] = bbox
-        if r0.get("timestamp"):
+            plate_text = plate.get("plate") or plate.get("text") or plate.get("number")
+        else:
+            plate_text = str(plate) if plate else None
+        plate_confidence = result.get("score", 0.0)
+        
+        # Apply confidence threshold
+        if plate_confidence < confidence_threshold:
+            return None
+        
+        parsed["plate_text"] = plate
+        parsed["plate_confidence"] = plate_confidence
+        
+        # Extract vehicle information
+        vehicle = result.get("vehicle", {})
+        if vehicle:
+            parsed["makes_models"] = vehicle.get("type", {})
+            parsed["colors"] = vehicle.get("color", [])
+        
+        # Extract bounding box
+        parsed["bbox"] = result.get("box", {})
+        
+        # Extract other metadata
+        parsed["camera_id"] = resp.get("camera_id")
+        parsed["snapshot_ref"] = resp.get("uuid") or resp.get("filename")
+        
+        # Extract timestamp
+        timestamp = resp.get("timestamp")
+        if timestamp:
             try:
-                out["captured_at"] = datetime.fromisoformat(r0.get("timestamp"))
+                parsed["captured_at"] = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
             except Exception:
-                out["captured_at"] = None
-        if r0.get("image_url"):
-            out["image_url"] = r0.get("image_url")
+                parsed["captured_at"] = datetime.now()
+        else:
+            parsed["captured_at"] = datetime.now()
+    
+    return parsed
 
-    return out
 
 def insert_into_db(conn, record, image_data=None):
     """
