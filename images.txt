@@ -1,0 +1,20 @@
+# Sample Images File for Plate Recognizer Snapshot
+# ================================================
+# Add image paths or URLs here, one per line
+# Lines starting with # are comments and will be ignored
+
+# Example 1: Local image paths
+# /path/to/car1.jpg
+# /path/to/car2.jpg
+# /app/images/vehicle1.png
+# /app/images/vehicle2.png
+
+# Example 2: Image URLs
+# https://example.com/images/car1.jpg
+# https://example.com/images/car2.jpg
+
+# Example 3: Mixed (paths and URLs)
+# /path/to/local/image.jpg
+# https://example.com/remote/image.jpg
+
+# Add your image sources below:

@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service
+  db:
+    image: postgres:15-alpine
+    container_name: plate_recognizer_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: plate_recognizer
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persistent data storage
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize database with schema
+      - ./db_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - plate_recognizer_network
+
+  # Snapshot Processor Application Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile_snapshot
+    container_name: plate_recognizer_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Load from .env file
+      PLATE_API_KEY: ${PLATE_API_KEY}
+      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/plate_recognizer
+      REQUEST_DELAY: ${REQUEST_DELAY:-1.0}
+    volumes:
+      # Mount local images.txt for easy updates
+      - ./images.txt:/app/images.txt:ro
+      # Mount local directory for image files (optional)
+      - ./images:/app/images:ro
+    networks:
+      - plate_recognizer_network
+    # Command can be overridden to specify a different images file or camera ID
+    # Example with camera ID (optional parameter):
+    # command: python snapshot_to_postgres.py images.txt camera_001
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  plate_recognizer_network:
+    driver: bridge
