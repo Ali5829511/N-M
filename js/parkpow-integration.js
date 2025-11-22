@@ -42,11 +42,28 @@ class ParkPowAPI {
      */
     async loadConfig() {
         try {
-            const response = await fetch('config/parkpow_config.json');
-            if (!response.ok) {
-                throw new Error('فشل تحميل ملف التكوين');
+            // Try multiple possible paths based on where the script is loaded from
+            const paths = [
+                '../config/parkpow_config.json',  // من داخل مجلد pages
+                'config/parkpow_config.json',     // من المجلد الجذر
+                './config/parkpow_config.json'    // مسار آخر محتمل
+            ];
+            
+            for (const path of paths) {
+                try {
+                    const response = await fetch(path);
+                    if (response.ok) {
+                        const config = await response.json();
+                        console.log(`✓ تم تحميل التكوين من: ${path}`);
+                        return config;
+                    }
+                } catch (e) {
+                    // Try next path
+                    continue;
+                }
             }
-            return await response.json();
+            
+            throw new Error('فشل تحميل ملف التكوين من جميع المسارات المحتملة');
         } catch (error) {
             console.error('خطأ في تحميل تكوين ParkPow:', error);
             return null;
