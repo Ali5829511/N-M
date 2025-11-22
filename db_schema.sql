@@ -1,5 +1,6 @@
--- Database schema for Plate Recognizer Snapshot API results
--- PostgreSQL database with support for both S3 and database image storage
+-- إنشاء جدول لتخزين نتائج snapshot من Plate Recognizer
+-- افتراض استخدام PostgreSQL
+-- يدعم تخزين الصور في S3 أو قاعدة البيانات
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -15,16 +16,16 @@ CREATE TABLE IF NOT EXISTS vehicle_snapshots (
   bbox jsonb,
   raw_response jsonb,
   image_url text,
-  image_data bytea,  -- NULLABLE: stores image bytes when STORE_IMAGES=db
-  image_mime text,   -- MIME type of the image (e.g., image/jpeg)
-  image_size integer,  -- Image size in bytes
-  image_sha256 text,  -- SHA256 hash of image for deduplication
+  image_data bytea,  -- NULLABLE: used when STORE_IMAGES=db
+  image_mime text,
+  image_size integer,
+  image_sha256 text,
   meta jsonb,
   created_at timestamptz DEFAULT now()
 );
 
--- Indexes for efficient querying
+-- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_vehicle_plate_text ON vehicle_snapshots (plate_text);
 CREATE INDEX IF NOT EXISTS idx_vehicle_created_at ON vehicle_snapshots (created_at);
-CREATE INDEX IF NOT EXISTS idx_vehicle_makes_models ON vehicle_snapshots USING gin (makes_models);
+CREATE INDEX IF NOT EXISTS idx_vehicle_makes_models_jsonb ON vehicle_snapshots USING gin (makes_models);
 CREATE INDEX IF NOT EXISTS idx_vehicle_image_sha256 ON vehicle_snapshots (image_sha256);

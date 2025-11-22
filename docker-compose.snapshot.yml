@@ -14,7 +14,7 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d platenet"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,29 +25,30 @@ services:
       dockerfile: Dockerfile.snapshot
     container_name: plate_recognizer_app
     environment:
+      # Plate Recognizer API (required)
       PLATE_API_KEY: ${PLATE_API_KEY}
       SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-pass}@db:5432/${POSTGRES_DB:-platenet}
+      
+      # Database
+      DATABASE_URL: postgres://user:pass@db:5432/platenet
       STORE_IMAGES: ${STORE_IMAGES:-s3}
       S3_BUCKET: ${S3_BUCKET}
+      AWS_REGION: ${AWS_REGION}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_REGION: ${AWS_REGION:-us-east-1}
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - .:/app
-      - ./images.txt:/app/images.txt
-    # Override CMD to wait for DB and run script
-    command: >
-      sh -c "
-        echo 'Waiting for database...';
-        sleep 5;
-        echo 'Starting image processing...';
-        python snapshot_to_postgres.py --images images.txt --delay 1.0 --confidence-threshold 0.7
-      "
+    # Override CMD to wait for manual execution
+    # Remove the default CMD from Dockerfile to allow interactive use
+    command: tail -f /dev/null
 
 volumes:
   db-data:
-    driver: local
+
+# Usage:
+# 1. Copy .env.example to .env and fill in your credentials
+# 2. Run: docker-compose -f docker-compose.snapshot.yml up -d
+# 3. Execute the script: docker-compose -f docker-compose.snapshot.yml exec app python snapshot_to_postgres.py --images images.txt

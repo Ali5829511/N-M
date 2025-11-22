@@ -1,53 +1,112 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15
-    container_name: plate_recognizer_db
+  # PostgreSQL Database
+  # قاعدة بيانات PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: traffic_postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pass}
-      POSTGRES_DB: ${POSTGRES_DB:-platenet}
-    volumes:
-      - db-data:/var/lib/postgresql/data
-      - ./db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql
+      POSTGRES_DB: ${DB_NAME:-traffic_system}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d platenet"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-traffic_system}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    networks:
+      - traffic_network
 
-  app:
+  # Python Application for Plate Recognition
+  # تطبيق Python للتعرف على اللوحات
+  plate_recognizer:
     build:
       context: .
       dockerfile: Dockerfile.snapshot
-    container_name: plate_recognizer_app
+    container_name: traffic_plate_recognizer
     environment:
-      PLATE_API_KEY: ${PLATE_API_KEY}
-      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-pass}@db:5432/${POSTGRES_DB:-platenet}
-      STORE_IMAGES: ${STORE_IMAGES:-s3}
-      S3_BUCKET: ${S3_BUCKET}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_REGION: ${AWS_REGION:-us-east-1}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-traffic_system}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-changeme}
+      - PLATE_RECOGNIZER_API_TOKEN=${PLATE_RECOGNIZER_API_TOKEN}
+      - PLATE_RECOGNIZER_API_URL=${PLATE_RECOGNIZER_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
     volumes:
-      - .:/app
-      - ./images.txt:/app/images.txt
-    # Override CMD to wait for DB and run script
-    command: >
-      sh -c "
-        echo 'Waiting for database...';
-        sleep 5;
-        echo 'Starting image processing...';
-        python snapshot_to_postgres.py --images images.txt --delay 1.0 --confidence-threshold 0.7
-      "
+      - ./snapshot_to_postgres.py:/app/snapshot_to_postgres.py:ro
+      - ./images:/app/images:ro  # Mount for local images
+    networks:
+      - traffic_network
+    # Keep container running for manual execution
+    command: tail -f /dev/null
+
+  # pgAdmin - PostgreSQL Administration Tool (Optional)
+  # pgAdmin - أداة إدارة PostgreSQL (اختياري)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: traffic_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@traffic.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - traffic_network
+    restart: unless-stopped
+    profiles:
+      - tools  # Only start with: docker-compose --profile tools up
 
 volumes:
-  db-data:
+  postgres_data:
     driver: local
+
+networks:
+  traffic_network:
+    driver: bridge
+
+# ============================================
+# Important Notes / ملاحظات مهمة
+# ============================================
+#
+# 1. Storage Considerations / اعتبارات التخزين:
+#    - Images stored in PostgreSQL will consume significant disk space
+#    - الصور المخزنة في PostgreSQL ستستهلك مساحة كبيرة من القرص
+#    - Monitor volume size: docker system df -v
+#    - راقب حجم الحجم: docker system df -v
+#
+# 2. Security / الأمان:
+#    - Change default passwords in .env file
+#    - غيّر كلمات المرور الافتراضية في ملف .env
+#    - Never commit .env file to repository
+#    - لا تضف ملف .env إلى المستودع أبداً
+#
+# 3. Usage / الاستخدام:
+#    - Start services: docker-compose up -d
+#    - تشغيل الخدمات: docker-compose up -d
+#    - Run plate recognition: docker-compose exec plate_recognizer python snapshot_to_postgres.py <image_source>
+#    - تشغيل التعرف على اللوحات: docker-compose exec plate_recognizer python snapshot_to_postgres.py <image_source>
+#    - View logs: docker-compose logs -f
+#    - عرض السجلات: docker-compose logs -f
+#
+# 4. Backup / النسخ الاحتياطي:
+#    - Backup database: docker-compose exec postgres pg_dump -U postgres traffic_system > backup.sql
+#    - النسخ الاحتياطي: docker-compose exec postgres pg_dump -U postgres traffic_system > backup.sql
+#
+# 5. pgAdmin (Optional Tool):
+#    - Start with tools: docker-compose --profile tools up -d
+#    - Access at: http://localhost:5050
+#    - الوصول على: http://localhost:5050

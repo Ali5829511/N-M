@@ -4,6 +4,9 @@
 # Plate Recognition API
 requests>=2.31.0
 
+# PostgreSQL Database Driver
+psycopg2-binary>=2.9.9
+
 # PDF Generation
 fpdf>=1.7.2
 
@@ -16,8 +19,8 @@ Pillow>=10.0.0
 
 # Plate Recognizer Snapshot to PostgreSQL
 # متطلبات Plate Recognizer Snapshot إلى PostgreSQL
-python-dotenv>=1.0.0
-psycopg2-binary>=2.9.0
-tqdm>=4.65.0
-sqlalchemy>=2.0.0
-boto3>=1.26.0
+python-dotenv
+psycopg2-binary
+tqdm
+sqlalchemy
+boto3  # For S3 image storage
