@@ -130,21 +130,33 @@ npm install && npm start
 
 ---
 
-## 🚗 Plate Recognizer Snapshot Integration
+## 🚗 Plate Recognizer Integration
 
 **Automatic vehicle detection and license plate recognition using Plate Recognizer API**
 
 This system automatically processes vehicle images, detects license plates, and stores metadata in PostgreSQL with flexible image storage options (S3 or database).
 
+### 🎯 Deployment Options:
+
+1. **Snapshot API (Cloud)**: Cloud-based API, no installation required
+   - Best for: Quick setup, pay-per-use, scalability
+   - Reference: https://guides.platerecognizer.com/docs/snapshot/api-reference/
+
+2. **SDK/Server (On-Premise)**: Self-hosted solution on your infrastructure
+   - Best for: Privacy, offline operation, high volume, low latency
+   - Reference: https://guides.platerecognizer.com/docs/tech-references/server/
+   - **Setup Guide**: [PLATE_RECOGNIZER_SDK_GUIDE.md](PLATE_RECOGNIZER_SDK_GUIDE.md)
+
 ### ✨ Features:
-- 🔍 **Automatic plate detection** using Plate Recognizer Snapshot API
+- 🔍 **Automatic plate detection** using Plate Recognizer API (Snapshot or SDK)
+- 🏢 **Dual deployment**: Cloud (Snapshot API) or On-Premise (SDK/Server)
 - 📦 **Flexible image storage**: S3 (default) or PostgreSQL bytea
 - 🔐 **Secure**: SHA256 hashing, no hardcoded credentials
 - 🎯 **Confidence filtering**: Only store high-quality detections
 - 🔄 **Retry mechanism**: Handles network errors gracefully
 - 🐳 **Docker support**: Easy deployment with docker-compose
 
-### 🚀 Quick Setup:
+### 🚀 Quick Setup (Snapshot API - Cloud):
 
 1. **Create database and apply schema:**
    ```bash
@@ -155,6 +167,7 @@ This system automatically processes vehicle images, detects license plates, and 
    ```bash
    cp .env.example .env
    # Edit .env with your credentials:
+   # - PLATE_API_TYPE=snapshot (default, for cloud)
    # - PLATE_API_KEY (from https://app.platerecognizer.com/)
    # - DATABASE_URL
    # - STORE_IMAGES=s3 (or "db" for small tests)
@@ -185,8 +198,33 @@ This system automatically processes vehicle images, detects license plates, and 
 
 ```bash
 # Set environment variables in .env
-docker-compose up -d
+docker-compose -f docker-compose.snapshot.yml up -d
 ```
+
+### 🏢 SDK/Server Setup (On-Premise):
+
+For self-hosted deployment using Plate Recognizer SDK:
+
+1. **Set API type to SDK:**
+   ```bash
+   # In .env
+   PLATE_API_TYPE=sdk
+   SDK_API_URL=http://localhost:8080/v1/plate-reader/
+   SDK_LICENSE_TOKEN=your_sdk_license_token
+   ```
+
+2. **Deploy SDK container:**
+   ```bash
+   # Uncomment the plate-recognizer-sdk service in docker-compose.snapshot.yml
+   docker-compose -f docker-compose.snapshot.yml up -d
+   ```
+
+3. **Run the script:**
+   ```bash
+   python snapshot_to_postgres.py --images images.txt
+   ```
+
+📖 **Complete SDK Setup Guide**: [PLATE_RECOGNIZER_SDK_GUIDE.md](PLATE_RECOGNIZER_SDK_GUIDE.md)
 
 ### 📝 Image Storage Options:
 
