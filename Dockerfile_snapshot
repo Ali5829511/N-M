@@ -1,0 +1,35 @@
+# Use Python 3.11 slim image for smaller size
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY snapshot_to_postgres.py .
+COPY db_schema.sql .
+COPY .env.example .
+
+# Copy images file if it exists (optional)
+COPY images.txt* ./ || :
+
+# Create a default images.txt if not exists
+RUN test -f images.txt || echo "# Add your image paths or URLs here (one per line)" > images.txt
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+
+# Command to run the script
+# Note: You can override this with docker-compose or docker run
+CMD ["python", "snapshot_to_postgres.py", "images.txt"]
