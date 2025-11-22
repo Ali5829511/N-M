@@ -77,12 +77,19 @@ def fetch_image_bytes(path_or_url):
 
 def upload_to_s3(image_bytes, filename):
     """رفع الصورة إلى S3 والحصول على URL"""
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        region_name=AWS_REGION
-    )
+    # Support MinIO by checking for custom endpoint
+    endpoint_url = os.getenv("AWS_ENDPOINT_URL")
+    
+    s3_client_config = {
+        'aws_access_key_id': AWS_ACCESS_KEY_ID,
+        'aws_secret_access_key': AWS_SECRET_ACCESS_KEY,
+        'region_name': AWS_REGION
+    }
+    
+    if endpoint_url:
+        s3_client_config['endpoint_url'] = endpoint_url
+    
+    s3_client = boto3.client('s3', **s3_client_config)
     
     key = f"vehicle-snapshots/{filename}"
     s3_client.put_object(
@@ -92,9 +99,13 @@ def upload_to_s3(image_bytes, filename):
         ContentType=get_mime_type(filename)
     )
     
-    # Generate public URL or presigned URL based on bucket configuration
-    # For public bucket:
-    s3_url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{key}"
+    # Generate URL based on endpoint configuration
+    if endpoint_url:
+        # MinIO or custom S3-compatible endpoint
+        s3_url = f"{endpoint_url}/{S3_BUCKET}/{key}"
+    else:
+        # AWS S3 standard URL
+        s3_url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{key}"
     
     # For private bucket, use presigned URL (valid for 1 year):
     # s3_url = s3_client.generate_presigned_url(
