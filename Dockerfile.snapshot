@@ -1,0 +1,36 @@
+# Dockerfile for Plate Recognizer Snapshot Integration
+# Dockerfile لتكامل Plate Recognizer Snapshot
+
+FROM python:3.11-slim
+
+LABEL maintainer="Ali5829511"
+LABEL description="Plate Recognizer Snapshot API to PostgreSQL Integration"
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file
+COPY snapshot_requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r snapshot_requirements.txt
+
+# Copy application files
+COPY snapshot_to_postgres.py .
+COPY images.txt .
+COPY .env.snapshot.example .env.example
+
+# Create volume mount point for images
+VOLUME ["/app/images"]
+
+# Make script executable
+RUN chmod +x snapshot_to_postgres.py
+
+# Default command
+CMD ["python", "snapshot_to_postgres.py"]

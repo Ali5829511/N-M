@@ -1,0 +1,26 @@
+# Example image paths and URLs for testing
+# أمثلة على مسارات وروابط الصور للاختبار
+
+# You can use either local file paths or URLs
+# يمكنك استخدام مسارات الملفات المحلية أو الروابط
+
+# Example URLs (these are sample URLs, replace with your actual images)
+# أمثلة على الروابط (هذه روابط نموذجية، استبدلها بصورك الفعلية)
+
+# https://example.com/images/car1.jpg
+# https://example.com/images/car2.jpg
+# https://example.com/images/car3.jpg
+
+# Example local file paths (relative or absolute)
+# أمثلة على المسارات المحلية (نسبية أو مطلقة)
+
+# /path/to/images/vehicle1.jpg
+# /path/to/images/vehicle2.png
+# ./images/car_001.jpg
+# ./images/car_002.jpg
+
+# Lines starting with # are ignored
+# الأسطر التي تبدأ بـ # يتم تجاهلها
+
+# Add your image paths or URLs below, one per line:
+# أضف مسارات أو روابط صورك أدناه، واحد في كل سطر:

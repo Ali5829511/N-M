@@ -1,0 +1,148 @@
+version: '3.8'
+
+# Docker Compose configuration for Plate Recognizer Snapshot Integration
+# إعدادات Docker Compose لتكامل Plate Recognizer Snapshot
+
+services:
+  # PostgreSQL Database
+  # قاعدة بيانات PostgreSQL
+  db:
+    image: postgres:15
+    container_name: plate_recognizer_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: plate_recognizer
+      POSTGRES_USER: plate_user
+      POSTGRES_PASSWORD: plate_password_change_me
+      # WARNING: Change default password in production!
+      # تحذير: غيّر كلمة المرور الافتراضية في الإنتاج!
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plate_user -d plate_recognizer"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - plate_recognizer_network
+
+  # Plate Recognizer Snapshot Application
+  # تطبيق Plate Recognizer Snapshot
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.snapshot
+    container_name: plate_recognizer_app
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Database connection
+      DATABASE_URL: postgresql://plate_user:plate_password_change_me@db:5432/plate_recognizer
+      
+      # Plate Recognizer API settings
+      # Get your API key from: https://app.platerecognizer.com/accounts/api/
+      PLATE_API_KEY: ${PLATE_API_KEY:-your_api_key_here}
+      SNAPSHOT_API_URL: https://api.platerecognizer.com/v1/plate-reader/
+      
+      # Processing settings
+      REQUEST_DELAY: ${REQUEST_DELAY:-1.0}
+      CONFIDENCE_THRESHOLD: ${CONFIDENCE_THRESHOLD:-0.0}
+      BATCH_SIZE: ${BATCH_SIZE:-10}
+    volumes:
+      # Mount local images directory
+      - ./images:/app/images:ro
+      # Mount images.txt
+      - ./images.txt:/app/images.txt:ro
+      # Mount .env file (create from .env.snapshot.example)
+      - ./.env:/app/.env:ro
+    networks:
+      - plate_recognizer_network
+
+  # Optional: pgAdmin for database management
+  # اختياري: pgAdmin لإدارة قاعدة البيانات
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: plate_recognizer_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin_change_me
+      # WARNING: Change default password in production!
+      # تحذير: غيّر كلمة المرور الافتراضية في الإنتاج!
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+    networks:
+      - plate_recognizer_network
+    profiles:
+      - admin  # Only start with: docker-compose --profile admin up
+
+networks:
+  plate_recognizer_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+# ============================================
+# Usage Instructions / تعليمات الاستخدام
+# ============================================
+#
+# 1. Create .env file from example:
+#    أنشئ ملف .env من المثال:
+#    $ cp .env.snapshot.example .env
+#
+# 2. Edit .env and add your PLATE_API_KEY
+#    عدّل .env وأضف PLATE_API_KEY
+#
+# 3. Add images to images.txt
+#    أضف الصور إلى images.txt
+#
+# 4. Start services:
+#    شغّل الخدمات:
+#    $ docker-compose up -d
+#
+# 5. View logs:
+#    عرض السجلات:
+#    $ docker-compose logs -f app
+#
+# 6. Stop services:
+#    أوقف الخدمات:
+#    $ docker-compose down
+#
+# 7. Start with pgAdmin (optional):
+#    شغّل مع pgAdmin (اختياري):
+#    $ docker-compose --profile admin up -d
+#
+# 8. Clean up (WARNING: deletes data!):
+#    تنظيف (تحذير: يحذف البيانات!):
+#    $ docker-compose down -v
+#
+# ============================================
+# Storage Warning / تحذير التخزين
+# ============================================
+#
+# Storing images in PostgreSQL will increase database size significantly:
+# تخزين الصور في PostgreSQL سيزيد حجم قاعدة البيانات بشكل كبير:
+#
+# - 100 images × 1MB each = ~100MB+ database
+# - 1000 images × 1MB each = ~1GB+ database
+# - 10000 images × 1MB each = ~10GB+ database
+#
+# Monitor disk usage:
+# راقب استخدام القرص:
+# $ docker system df -v
+#
+# For production, consider using S3 or MinIO for image storage.
+# للإنتاج، فكر في استخدام S3 أو MinIO لتخزين الصور.

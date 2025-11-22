@@ -1,0 +1,17 @@
+# Python Dependencies for Plate Recognizer Snapshot Integration
+# متطلبات Python لتكامل Plate Recognizer Snapshot
+
+# HTTP requests
+requests>=2.31.0
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# PostgreSQL database adapter
+psycopg2-binary>=2.9.9
+
+# Progress bar for CLI
+tqdm>=4.66.0
+
+# Database ORM (optional, for advanced usage)
+sqlalchemy>=2.0.0
