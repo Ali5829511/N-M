@@ -61,14 +61,14 @@ class ThemeManager {
         const root = document.documentElement;
         
         // الألوان الأساسية للوضع الليلي
-        root.style.setProperty('--primary-blue', '#4a90e2');
-        root.style.setProperty('--primary-blue-light', '#5da3f5');
-        root.style.setProperty('--primary-blue-dark', '#2d5f8d');
+        root.style.setProperty('--primary-blue', '#5a8ab8');
+        root.style.setProperty('--primary-blue-light', '#7aa5cc');
+        root.style.setProperty('--primary-blue-dark', '#2d4a62');
         
         // الألوان الذهبية
-        root.style.setProperty('--gold', '#f0c14b');
-        root.style.setProperty('--gold-dark', '#b8922b');
-        root.style.setProperty('--gold-light', '#f5d76e');
+        root.style.setProperty('--gold', '#d4af6a');
+        root.style.setProperty('--gold-dark', '#9b7e4f');
+        root.style.setProperty('--gold-light', '#ebd4a8');
         
         // ألوان الخلفية
         root.style.setProperty('--bg-primary', '#1a1a1a');
@@ -102,14 +102,14 @@ class ThemeManager {
     applyLightMode() {
         const root = document.documentElement;
         
-        // إعادة الألوان الافتراضية للوضع النهاري
-        root.style.setProperty('--primary-blue', '#1a365d');
-        root.style.setProperty('--primary-blue-light', '#2c5282');
-        root.style.setProperty('--primary-blue-dark', '#0f2744');
+        // إعادة الألوان الافتراضية للوضع النهاري (من الشعار)
+        root.style.setProperty('--primary-blue', '#3a5a7a');
+        root.style.setProperty('--primary-blue-light', '#bad8f2');
+        root.style.setProperty('--primary-blue-dark', '#1c2a3a');
         
-        root.style.setProperty('--gold', '#d4af37');
-        root.style.setProperty('--gold-dark', '#8B6F47');
-        root.style.setProperty('--gold-light', '#f4e4b7');
+        root.style.setProperty('--gold', '#c9a961');
+        root.style.setProperty('--gold-dark', '#7b6840');
+        root.style.setProperty('--gold-light', '#e8d4a8');
         
         root.style.setProperty('--bg-primary', '#ffffff');
         root.style.setProperty('--bg-secondary', '#f8f9fa');

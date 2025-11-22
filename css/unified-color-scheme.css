@@ -4,15 +4,15 @@
  */
 
 :root {
-    /* الألوان الأساسية - Primary Colors */
-    --primary-blue: #1a365d;
-    --primary-blue-light: #2c5282;
-    --primary-blue-dark: #0f2744;
+    /* الألوان الأساسية - Primary Colors (من الشعار) */
+    --primary-blue: #3a5a7a;
+    --primary-blue-light: #bad8f2;
+    --primary-blue-dark: #1c2a3a;
     
-    /* الألوان الذهبية - Gold Colors */
-    --gold: #d4af37;
-    --gold-dark: #8B6F47;
-    --gold-light: #f4e4b7;
+    /* الألوان الذهبية - Gold Colors (من الشعار) */
+    --gold: #c9a961;
+    --gold-dark: #7b6840;
+    --gold-light: #e8d4a8;
     
     /* الألوان الثانوية - Secondary Colors */
     --gray-50: #f9fafb;
