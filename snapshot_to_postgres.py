@@ -22,7 +22,8 @@ import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
 import psycopg2
-from psycopg2.extras import Json, Binary, register_uuid
+from psycopg2 import Binary
+from psycopg2.extras import Json, register_uuid
 from datetime import datetime
 
 load_dotenv()
