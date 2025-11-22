@@ -340,61 +340,93 @@ Examples / أمثلة:
     
     print(f"📋 Found {len(items)} image(s) to process\n")
 
-    # Connect to database
-    conn = psycopg2.connect(DATABASE_URL)
-    register_uuid()
-
+    # Connect to database with context management
     success_count = 0
     error_count = 0
 
-    for item in tqdm(items, desc="Processing images", unit="image"):
-        try:
-            # Get image bytes
-            image_bytes, source = get_image_bytes(item)
-            
-            # Calculate metadata
-            sha256, mime_type, size_bytes = calculate_image_metadata(image_bytes, item)
-            
-            # Prepare storage
-            image_url = None
-            image_data_for_db = None
-            
-            if STORE_IMAGES == "s3":
-                # Upload to S3
-                image_url = upload_to_s3(image_bytes, sha256, mime_type)
-            elif STORE_IMAGES == "db":
-                # Store in database
-                image_data_for_db = image_bytes
-                image_url = source if urlparse(source).scheme in ("http", "https") else None
-            
-            # Send to Plate Recognizer API
-            api_response = send_request_to_api(image_bytes, item)
-            
-            # Parse response
-            record = parse_and_normalize_response(api_response, args.confidence_threshold)
-            
-            # Add image metadata
-            record["snapshot_ref"] = record["snapshot_ref"] or sha256
-            record["image_url"] = record["image_url"] or image_url
-            record["image_data"] = image_data_for_db
-            record["image_mime"] = mime_type
-            record["image_size"] = size_bytes
-            record["image_sha256"] = sha256
-            
-            # Insert into database
-            new_id = insert_into_db(conn, record)
-            success_count += 1
-            
-            tqdm.write(f"✅ {item} -> DB ID: {new_id}, Plate: {record['plate_text'] or 'N/A'}")
-            
-        except Exception as e:
-            error_count += 1
-            tqdm.write(f"❌ خطأ / Error processing {item}: {e}")
-            conn.rollback()
-        
-        time.sleep(args.delay)
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        register_uuid()
 
-    conn.close()
+        for item in tqdm(items, desc="Processing images", unit="image"):
+            try:
+                # Get image bytes
+                try:
+                    image_bytes, source = get_image_bytes(item)
+                except requests.RequestException as e:
+                    error_count += 1
+                    tqdm.write(f"❌ خطأ في تحميل الصورة / Error downloading image {item}: {e}")
+                    time.sleep(args.delay)
+                    continue
+                except IOError as e:
+                    error_count += 1
+                    tqdm.write(f"❌ خطأ في قراءة الملف / Error reading file {item}: {e}")
+                    time.sleep(args.delay)
+                    continue
+                
+                # Calculate metadata
+                sha256, mime_type, size_bytes = calculate_image_metadata(image_bytes, item)
+                
+                # Prepare storage
+                image_url = None
+                image_data_for_db = None
+                
+                try:
+                    if STORE_IMAGES == "s3":
+                        # Upload to S3
+                        image_url = upload_to_s3(image_bytes, sha256, mime_type)
+                    elif STORE_IMAGES == "db":
+                        # Store in database
+                        image_data_for_db = image_bytes
+                        image_url = source if urlparse(source).scheme in ("http", "https") else None
+                except ClientError as e:
+                    error_count += 1
+                    tqdm.write(f"❌ خطأ في رفع S3 / S3 upload error {item}: {e}")
+                    time.sleep(args.delay)
+                    continue
+                
+                # Send to Plate Recognizer API
+                try:
+                    api_response = send_request_to_api(image_bytes, item)
+                except requests.RequestException as e:
+                    error_count += 1
+                    tqdm.write(f"❌ خطأ في API / API error {item}: {e}")
+                    time.sleep(args.delay)
+                    continue
+                
+                # Parse response
+                record = parse_and_normalize_response(api_response, args.confidence_threshold)
+                
+                # Add image metadata
+                record["snapshot_ref"] = record["snapshot_ref"] or sha256
+                record["image_url"] = record["image_url"] or image_url
+                record["image_data"] = image_data_for_db
+                record["image_mime"] = mime_type
+                record["image_size"] = size_bytes
+                record["image_sha256"] = sha256
+                
+                # Insert into database
+                try:
+                    new_id = insert_into_db(conn, record)
+                    success_count += 1
+                    tqdm.write(f"✅ {item} -> DB ID: {new_id}, Plate: {record['plate_text'] or 'N/A'}")
+                except psycopg2.Error as e:
+                    error_count += 1
+                    tqdm.write(f"❌ خطأ في قاعدة البيانات / Database error {item}: {e}")
+                    conn.rollback()
+                
+            except Exception as e:
+                # Catch any unexpected errors
+                error_count += 1
+                tqdm.write(f"❌ خطأ غير متوقع / Unexpected error {item}: {e}")
+                conn.rollback()
+            
+            time.sleep(args.delay)
+
+    finally:
+        # Ensure database connection is always closed
+        if 'conn' in locals():
+            conn.close()
     
     # Print summary
     print("\n" + "=" * 60)
