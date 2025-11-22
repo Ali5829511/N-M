@@ -1,3 +1,6 @@
+# Dockerfile for Plate Recognizer Snapshot Integration
+# ملف Docker لتكامل Plate Recognizer Snapshot
+
 FROM python:3.11-slim
 
 # Set working directory

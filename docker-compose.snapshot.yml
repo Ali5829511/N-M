@@ -1,6 +1,8 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database
+  # قاعدة بيانات PostgreSQL
   db:
     image: postgres:15
     container_name: plate_recognizer_db
@@ -9,7 +11,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pass}
       POSTGRES_DB: ${POSTGRES_DB:-platenet}
     volumes:
+      # Persist database data
+      # الاحتفاظ ببيانات قاعدة البيانات
       - db-data:/var/lib/postgresql/data
+      # Auto-initialize database schema
+      # تهيئة تلقائية لمخطط قاعدة البيانات
       - ./db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql
     ports:
       - "5432:5432"
@@ -19,6 +25,8 @@ services:
       timeout: 5s
       retries: 5
 
+  # Application Container
+  # حاوية التطبيق
   app:
     build:
       context: .
@@ -42,6 +50,8 @@ services:
       db:
         condition: service_healthy
     volumes:
+      # Mount current directory for development
+      # تثبيت الدليل الحالي للتطوير
       - .:/app
     # Override CMD to wait for manual execution
     # Remove the default CMD from Dockerfile to allow interactive use
