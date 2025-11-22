@@ -46,7 +46,7 @@ When trying to access the API documentation at the above URL, you receive a 429 
 [webhooks]
 [[parkpow]]
 url = https://app.parkpow.com/api/v1/webhook-receiver/
-header = Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346
+header = Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE
 image = yes
 image_type = car
 ```
@@ -90,7 +90,7 @@ image_type = car
 
 ```bash
 curl -X POST https://app.parkpow.com/api/v1/webhook-receiver/ \
-  -H "Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346" \
+  -H "Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE" \
   -H "Content-Type: application/json" \
   -d '{
     "test": true,
@@ -139,7 +139,7 @@ The server is protecting against excessive requests.
 [webhooks]
 [[parkpow]]
 url = https://app.parkpow.com/api/v1/webhook-receiver/
-header = Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346
+header = Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE
 image = yes
 image_type = car
 
@@ -244,7 +244,7 @@ class RateLimitedSender:
 
 ```bash
 # عدد الطلبات في آخر دقيقة
-curl -H "Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346" \
+curl -H "Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE" \
   https://app.parkpow.com/api/v1/usage/
 
 # حالة API

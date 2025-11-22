@@ -12,8 +12,13 @@ This guide explains how to configure and use Stream to automatically send data t
 ## 🔑 معلومات API / API Information
 
 **رمز API الخاص بك / Your API Key:**
+
+احصل على رمز API الخاص بك من: https://app.parkpow.com
+
+Get your API key from: https://app.parkpow.com
+
 ```
-7c13be422713a758a42a0bc453cf3331fbf4d346
+YOUR_PARKPOW_API_TOKEN_HERE
 ```
 
 **نقطة استقبال Webhook / Webhook Endpoint:**
@@ -23,7 +28,9 @@ https://app.parkpow.com/api/v1/webhook-receiver/
 
 ⚠️ **ملاحظة أمنية / Security Note:**  
 احتفظ برمز API في مكان آمن ولا تشاركه علناً.  
-Keep your API key secure and do not share it publicly.
+استخدم `config.ini.private` للتكوين الفعلي وليس `config.ini`.  
+Keep your API key secure and do not share it publicly.  
+Use `config.ini.private` for actual configuration, not `config.ini`.
 
 ---
 
@@ -43,7 +50,7 @@ If you are using Stream for data synchronization, follow these steps:
 [webhooks]
 [[parkpow]]
 url = https://app.parkpow.com/api/v1/webhook-receiver/
-header = Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346
+header = Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE
 image = yes
 image_type = car
 ```
@@ -135,7 +142,7 @@ Stream will automatically send the following data to ParkPow:
 
 ```bash
 curl -X POST https://app.parkpow.com/api/v1/webhook-receiver/ \
-  -H "Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346" \
+  -H "Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE" \
   -H "Content-Type: application/json" \
   -d '{
     "plate_number": "ABC-1234",
@@ -238,7 +245,7 @@ curl -I https://app.parkpow.com/api/v1/webhook-receiver/
    [webhooks]
    [[parkpow]]
    url = https://app.parkpow.com/api/v1/webhook-receiver/
-   header = Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346
+   header = Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE
    image = yes
    image_type = car
    rate_limit = 10  # عدد الطلبات في الدقيقة
@@ -286,7 +293,7 @@ curl -I https://app.parkpow.com/api/v1/webhook-receiver/
 [webhooks]
 [[parkpow]]
 url = https://app.parkpow.com/api/v1/webhook-receiver/
-header = Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346
+header = Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE
 image = yes
 image_type = car
 retry_count = 3
@@ -313,7 +320,7 @@ on_success = no
 [webhooks]
 [[parkpow]]
 url = https://app.parkpow.com/api/v1/webhook-receiver/
-header = Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346
+header = Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE
 image = yes
 image_type = car
 filter = vehicle_type in ['car', 'truck']
@@ -425,7 +432,7 @@ import requests
 def send_to_parkpow(data):
     url = "https://app.parkpow.com/api/v1/webhook-receiver/"
     headers = {
-        "Authorization": "Token 7c13be422713a758a42a0bc453cf3331fbf4d346",
+        "Authorization": "Token YOUR_PARKPOW_API_TOKEN_HERE",
         "Content-Type": "application/json"
     }
     
@@ -455,7 +462,7 @@ result = send_to_parkpow(vehicle_data)
 def send_image_to_parkpow(image_path, metadata):
     url = "https://app.parkpow.com/api/v1/webhook-receiver/"
     headers = {
-        "Authorization": "Token 7c13be422713a758a42a0bc453cf3331fbf4d346"
+        "Authorization": "Token YOUR_PARKPOW_API_TOKEN_HERE"
     }
     
     files = {

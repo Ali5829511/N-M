@@ -294,7 +294,7 @@ This system supports Stream integration to automatically push vehicle and violat
 
 ### 🚀 Quick Setup:
 
-**API Token:** `7c13be422713a758a42a0bc453cf3331fbf4d346`
+**API Token:** `YOUR_PARKPOW_API_TOKEN_HERE`
 
 Add to your Stream `config.ini`:
 
@@ -302,7 +302,7 @@ Add to your Stream `config.ini`:
 [webhooks]
 [[parkpow]]
 url = https://app.parkpow.com/api/v1/webhook-receiver/
-header = Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346
+header = Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE
 image = yes
 image_type = car
 ```

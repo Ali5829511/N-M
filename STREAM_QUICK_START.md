@@ -5,7 +5,7 @@
 
 ### رمز API / API Key
 ```
-7c13be422713a758a42a0bc453cf3331fbf4d346
+YOUR_PARKPOW_API_TOKEN_HERE
 ```
 
 ### التكوين / Configuration
@@ -16,7 +16,7 @@
 [webhooks]
 [[parkpow]]
 url = https://app.parkpow.com/api/v1/webhook-receiver/
-header = Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346
+header = Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE
 image = yes
 image_type = car
 ```
@@ -41,7 +41,7 @@ stream logs --tail 100
 
 ```bash
 curl -X POST https://app.parkpow.com/api/v1/webhook-receiver/ \
-  -H "Authorization: Token 7c13be422713a758a42a0bc453cf3331fbf4d346" \
+  -H "Authorization: Token YOUR_PARKPOW_API_TOKEN_HERE" \
   -H "Content-Type: application/json" \
   -d '{"plate_number": "ABC-1234", "vehicle_type": "car"}'
 ```
