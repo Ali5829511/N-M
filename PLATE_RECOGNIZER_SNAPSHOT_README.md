@@ -238,11 +238,11 @@ WHERE makes_models @> '{"make": "Toyota"}';
 
 -- Check storage statistics
 SELECT 
-  STORE_IMAGES,
   COUNT(*) as total_snapshots,
-  pg_size_pretty(SUM(image_size)) as total_image_size
-FROM vehicle_snapshots
-GROUP BY 1;
+  pg_size_pretty(SUM(image_size)) as total_image_size,
+  COUNT(CASE WHEN image_data IS NOT NULL THEN 1 END) as stored_in_db,
+  COUNT(CASE WHEN image_url IS NOT NULL THEN 1 END) as stored_in_s3
+FROM vehicle_snapshots;
 
 -- Find duplicate images by hash
 SELECT image_sha256, COUNT(*) as duplicates
@@ -276,10 +276,12 @@ HAVING COUNT(*) > 1;
    - Restrict network access
 
 5. **S3 Bucket Security**:
+   - Keep buckets private (ACL='private' is default)
+   - Use presigned URLs for temporary access (S3_USE_PRESIGNED_URLS=true)
    - Use bucket policies to restrict access
    - Enable encryption at rest
-   - Consider using presigned URLs instead of public access
    - Enable versioning for backup
+   - Never use public-read ACL for sensitive vehicle data
 
 ### Recommended IAM Policy for S3
 

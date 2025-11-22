@@ -77,7 +77,11 @@ def detect_mime_type(path_or_url, data=None):
 def upload_to_s3(image_bytes, sha256_hash, mime_type, config):
     """رفع الصورة إلى S3 وإرجاع URL"""
     try:
-        import boto3
+        # Check if boto3 is available
+        try:
+            import boto3
+        except ImportError:
+            raise RuntimeError("الرجاء تثبيت boto3: pip install boto3")
         
         s3_client = boto3.client(
             's3',
@@ -90,23 +94,36 @@ def upload_to_s3(image_bytes, sha256_hash, mime_type, config):
         ext = mimetypes.guess_extension(mime_type) or '.jpg'
         key = f"vehicle-snapshots/{sha256_hash}{ext}"
         
+        # استخدام ACL خاص (private) للأمان - استخدم presigned URLs للوصول المؤقت
         s3_client.put_object(
             Bucket=config['S3_BUCKET'],
             Key=key,
             Body=image_bytes,
-            ContentType=mime_type,
-            ACL='public-read'  # يمكن تغييره حسب الحاجة
+            ContentType=mime_type
+            # ACL='private' is default - removed public-read for security
         )
         
-        # إرجاع URL العام
-        url = f"https://{config['S3_BUCKET']}.s3.{config['AWS_REGION']}.amazonaws.com/{key}"
+        # إنشاء presigned URL للوصول المؤقت (صالح لمدة ساعة)
+        # يمكن تعديل المدة حسب الحاجة
+        use_presigned = config.get('S3_USE_PRESIGNED_URLS', 'true').lower() == 'true'
+        if use_presigned:
+            url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': config['S3_BUCKET'], 'Key': key},
+                ExpiresIn=3600  # ساعة واحدة
+            )
+        else:
+            # للاستخدام مع buckets عامة فقط
+            url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': config['S3_BUCKET'], 'Key': key},
+                ExpiresIn=0  # URL دائم (يتطلب bucket عام)
+            )
+        
         return url
-    except ImportError:
-        print("الرجاء تثبيت boto3: pip install boto3")
-        return None
     except Exception as e:
         print(f"خطأ في رفع الصورة إلى S3: {e}")
-        return None
+        raise
 
 def fetch_image_bytes(path_or_url):
     """جلب بايتات الصورة من URL أو ملف محلي"""
@@ -280,7 +297,8 @@ Environment variables required:
                 if attempt == args.retries - 1:
                     print(f"خطأ عند إرسال {item} بعد {args.retries} محاولات: {e}")
                     break
-                time.sleep(args.delay * (attempt + 1))
+                # استخدام exponential backoff للتعامل مع rate limiting
+                time.sleep(args.delay * (2 ** attempt))
         
         if not resp:
             continue
@@ -319,6 +337,7 @@ Environment variables required:
         except Exception as e:
             print(f"خطأ في إدخال DB لـ {item}: {e}")
             conn.rollback()
+            # لا نتوقف عند فشل إدخال واحد، نواصل مع الصور التالية
         
         time.sleep(args.delay)
 
