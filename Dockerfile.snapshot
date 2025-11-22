@@ -1,0 +1,62 @@
+# Dockerfile for Plate Recognizer Snapshot Service
+# ملف Docker لخدمة Plate Recognizer Snapshot
+
+FROM python:3.11-slim
+
+LABEL maintainer="Traffic Management System"
+LABEL description="Plate Recognizer Snapshot to PostgreSQL Integration"
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY snapshot_to_postgres.py .
+COPY db_schema.sql .
+
+# Create directory for local images
+RUN mkdir -p /app/images
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
+# Default command (can be overridden)
+CMD ["python", "snapshot_to_postgres.py"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD python -c "import sys; sys.exit(0)"
+
+# ============================================
+# Usage Notes / ملاحظات الاستخدام
+# ============================================
+#
+# Build:
+# docker build -f Dockerfile.snapshot -t traffic-plate-recognizer .
+#
+# Run standalone:
+# docker run --rm \
+#   -e DB_HOST=postgres \
+#   -e DB_NAME=traffic_system \
+#   -e DB_USER=postgres \
+#   -e DB_PASSWORD=yourpassword \
+#   -e PLATE_RECOGNIZER_API_TOKEN=your_token \
+#   traffic-plate-recognizer \
+#   python snapshot_to_postgres.py https://example.com/car.jpg
+#
+# With docker-compose (recommended):
+# docker-compose up -d
+# docker-compose exec plate_recognizer python snapshot_to_postgres.py <image_source>
