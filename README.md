@@ -667,11 +667,13 @@ N-M/
 ### 📋 الميزات الرئيسية / Key Features
 
 - ✅ **تكامل كامل مع Plate Recognizer Snapshot API**
-- ✅ **تخزين الصور في قاعدة البيانات (Binary/BYTEA)**
+- ✅ **تخزين الصور في S3 (الوضع الافتراضي) / S3 Storage (Default)**
+- ✅ **خيار تخزين الصور في قاعدة البيانات (BYTEA) / Optional DB Storage**
 - ✅ **حفظ البيانات الخام كـ JSONB للاستعلامات المرنة**
 - ✅ **دعم الصور من URLs أو الملفات المحلية**
 - ✅ **حساب SHA256 hash لكل صورة لمنع التكرار**
 - ✅ **بيئة Docker كاملة مع PostgreSQL**
+- ✅ **دعم MinIO للتطوير المحلي / MinIO Support for Local Development**
 
 ### 🚀 البدء السريع / Quick Start
 
@@ -681,43 +683,94 @@ N-M/
 # نسخ ملف البيئة / Copy environment file
 cp .env.example .env
 
-# تعديل المتغيرات المطلوبة / Edit required variables
-# PLATE_RECOGNIZER_API_TOKEN=your_token_here
-# DB_PASSWORD=secure_password
+# تعديل المتغيرات المطلوبة / Edit required variables in .env:
+# PLATE_API_KEY=your_plate_recognizer_api_key
+# SNAPSHOT_API_URL=https://api.platerecognizer.com/v1/plate-reader/
+# DATABASE_URL=postgresql://user:pass@localhost:5432/platenet
+# STORE_IMAGES=s3  # Default: s3 (or "db" for database storage)
+# S3_BUCKET=your-bucket-name
+# AWS_REGION=us-east-1
+# AWS_ACCESS_KEY_ID=your_aws_access_key
+# AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 ```
 
-#### 2. تشغيل Docker / Run with Docker
+**⚠️ ملاحظة مهمة / Important Note:**
+- الوضع الافتراضي لتخزين الصور هو **S3** (موصى به للإنتاج)
+- Default storage mode is **S3** (recommended for production)
+- لتخزين الصور في قاعدة البيانات، اضبط `STORE_IMAGES=db`
+- To store images in database, set `STORE_IMAGES=db`
+- للتطوير المحلي، يمكنك استخدام MinIO بدلاً من AWS S3
+- For local development, you can use MinIO instead of AWS S3
+
+#### 2. إنشاء قاعدة البيانات / Create Database
 
 ```bash
-# تشغيل الخدمات / Start services
-docker-compose up -d
+# تشغيل PostgreSQL / Start PostgreSQL
+docker-compose -f docker-compose.snapshot.yml up -d db
+
+# تطبيق المخطط / Apply schema
+docker-compose -f docker-compose.snapshot.yml exec db psql -U user -d platenet -f /docker-entrypoint-initdb.d/db_schema.sql
+```
+
+أو استخدم psql مباشرة / Or use psql directly:
+```bash
+psql -h localhost -U user -d platenet -f db_schema.sql
+```
+
+#### 3. تشغيل Docker / Run with Docker
+
+```bash
+# تشغيل جميع الخدمات / Start all services
+docker-compose -f docker-compose.snapshot.yml up -d
 
 # التحقق من الحالة / Check status
-docker-compose ps
+docker-compose -f docker-compose.snapshot.yml ps
 
 # عرض السجلات / View logs
-docker-compose logs -f
+docker-compose -f docker-compose.snapshot.yml logs -f
 ```
 
-#### 3. معالجة صورة / Process an Image
+#### 4. معالجة الصور / Process Images
+
+أولاً، قم بإنشاء ملف `images.txt` يحتوي على روابط أو مسارات الصور:
 
 ```bash
-# من URL
-docker-compose exec plate_recognizer python snapshot_to_postgres.py https://example.com/car.jpg
-
-# من ملف محلي / From local file
-docker-compose exec plate_recognizer python snapshot_to_postgres.py /app/images/car.jpg
+# إنشاء ملف الصور / Create images file
+cat > images.txt << EOF
+https://example.com/car1.jpg
+https://example.com/car2.jpg
+/path/to/local/image.jpg
+EOF
 ```
 
-#### 4. تشغيل محلياً بدون Docker / Run Locally without Docker
+ثم قم بتشغيل السكربت / Then run the script:
+
+```bash
+# باستخدام Docker / Using Docker
+docker-compose -f docker-compose.snapshot.yml exec app python snapshot_to_postgres.py --images images.txt --delay 1.0 --confidence-threshold 0.7
+
+# مباشرة / Directly (if running locally)
+python snapshot_to_postgres.py --images images.txt --delay 1.0 --confidence-threshold 0.7
+```
+
+#### 5. تشغيل محلياً بدون Docker / Run Locally without Docker
 
 ```bash
 # تثبيت المتطلبات / Install dependencies
 pip install -r requirements.txt
 
+# إنشاء قاعدة البيانات / Create database
+createdb platenet
+psql -d platenet -f db_schema.sql
+
 # تشغيل السكربت / Run script
-python snapshot_to_postgres.py https://example.com/car.jpg
+python snapshot_to_postgres.py --images images.txt --delay 1.0 --confidence-threshold 0.7
 ```
+
+**الأوامر المتاحة / Available Options:**
+- `--images`: مسار ملف نصي يحتوي على روابط/مسارات الصور (مطلوب)
+- `--delay`: تأخير بين الطلبات بالثواني (افتراضي: 0.5)
+- `--confidence-threshold`: الحد الأدنى للثقة (0.0-1.0، افتراضي: 0.0)
 
 ### 📊 استرجاع الصور من قاعدة البيانات / Retrieve Images from Database
 
@@ -778,6 +831,75 @@ if result:
 cursor.close()
 conn.close()
 ```
+
+### 🗄️ إعداد S3 و MinIO / S3 and MinIO Setup
+
+#### استخدام AWS S3 / Using AWS S3
+
+1. **إنشاء Bucket في AWS S3:**
+   ```bash
+   # Using AWS CLI
+   aws s3 mb s3://your-bucket-name --region us-east-1
+   ```
+
+2. **ضبط الصلاحيات / Set Permissions:**
+   - تأكد من أن IAM user لديه صلاحيات `s3:PutObject` و `s3:GetObject`
+   - Ensure IAM user has `s3:PutObject` and `s3:GetObject` permissions
+
+3. **تحديث `.env`:**
+   ```bash
+   STORE_IMAGES=s3
+   S3_BUCKET=your-bucket-name
+   AWS_REGION=us-east-1
+   AWS_ACCESS_KEY_ID=your_access_key
+   AWS_SECRET_ACCESS_KEY=your_secret_key
+   ```
+
+#### استخدام MinIO للتطوير المحلي / Using MinIO for Local Development
+
+MinIO هو بديل مفتوح المصدر ومتوافق مع S3 للتطوير المحلي.
+
+1. **تشغيل MinIO:**
+   ```bash
+   docker run -d \
+     -p 9000:9000 \
+     -p 9001:9001 \
+     --name minio \
+     -e MINIO_ROOT_USER=minioadmin \
+     -e MINIO_ROOT_PASSWORD=minioadmin \
+     -v minio_data:/data \
+     minio/minio server /data --console-address ":9001"
+   ```
+
+2. **إنشاء Bucket:**
+   - افتح http://localhost:9001
+   - تسجيل الدخول: `minioadmin` / `minioadmin`
+   - أنشئ bucket باسم مثل `plate-snapshots`
+
+3. **تحديث السكربت:**
+   يتطلب تعديل بسيط في `snapshot_to_postgres.py` لإضافة دعم MinIO:
+   ```python
+   # في دالة main() بعد إنشاء boto3 client:
+   AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
+   if AWS_ENDPOINT_URL:
+       boto3_client = boto3.client(
+           's3',
+           endpoint_url=AWS_ENDPOINT_URL,
+           aws_access_key_id=AWS_ACCESS_KEY_ID,
+           aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+           region_name=AWS_REGION
+       )
+   ```
+
+4. **تحديث `.env`:**
+   ```bash
+   STORE_IMAGES=s3
+   S3_BUCKET=plate-snapshots
+   AWS_REGION=us-east-1
+   AWS_ACCESS_KEY_ID=minioadmin
+   AWS_SECRET_ACCESS_KEY=minioadmin
+   AWS_ENDPOINT_URL=http://localhost:9000
+   ```
 
 ### ⚠️ تحذيرات مهمة / Important Warnings
 

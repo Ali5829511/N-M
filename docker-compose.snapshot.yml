@@ -32,10 +32,12 @@ services:
       # Database
       DATABASE_URL: postgres://user:pass@db:5432/platenet
       STORE_IMAGES: ${STORE_IMAGES:-s3}
+      # S3/MinIO Configuration
       S3_BUCKET: ${S3_BUCKET}
-      AWS_REGION: ${AWS_REGION}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_ENDPOINT_URL: ${AWS_ENDPOINT_URL}  # Optional: for MinIO or S3-compatible storage
     depends_on:
       db:
         condition: service_healthy
