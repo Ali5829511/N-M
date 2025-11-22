@@ -1,0 +1,81 @@
+version: '3.8'
+
+# Plate Recognizer Snapshot + PostgreSQL Stack
+# نظام التعرف على اللوحات مع PostgreSQL
+
+services:
+  # PostgreSQL Database Service
+  # خدمة قاعدة البيانات PostgreSQL
+  db:
+    image: postgres:15
+    container_name: plate_recognizer_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vehicle_snapshots
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password_change_me
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist database data
+      # حفظ بيانات قاعدة البيانات
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize schema on first run
+      # تهيئة المخطط عند التشغيل الأول
+      - ./db_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - plate_recognizer_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Plate Recognizer Application Service
+  # خدمة تطبيق التعرف على اللوحات
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.snapshot
+    container_name: plate_recognizer_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Plate Recognizer API Configuration
+      # إعدادات API للتعرف على اللوحات
+      PLATE_API_KEY: ${PLATE_API_KEY}
+      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
+      
+      # Database Configuration
+      # إعدادات قاعدة البيانات
+      DATABASE_URL: postgresql://postgres:postgres_password_change_me@db:5432/vehicle_snapshots
+      
+      # Request delay (seconds between API calls)
+      # تأخير بين الطلبات (بالثواني)
+      REQUEST_DELAY: ${REQUEST_DELAY:-1.0}
+    volumes:
+      # Mount images.txt file
+      # تحميل ملف قائمة الصور
+      - ./images.txt:/app/images.txt:ro
+      # Optional: Mount local images directory
+      # اختياري: تحميل مجلد الصور المحلية
+      - ./input_images:/app/input_images:ro
+    networks:
+      - plate_recognizer_network
+    # Command will be set in Dockerfile
+    # الأمر سيتم تعيينه في Dockerfile
+
+# Volumes for data persistence
+# أحجام التخزين للحفاظ على البيانات
+volumes:
+  postgres_data:
+    driver: local
+
+# Network for inter-service communication
+# الشبكة للاتصال بين الخدمات
+networks:
+  plate_recognizer_network:
+    driver: bridge

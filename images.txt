@@ -1,0 +1,29 @@
+# Sample Images List for Plate Recognizer Snapshot
+# قائمة الصور النموذجية للتعرف على اللوحات
+
+# Instructions:
+# 1. Add one image path or URL per line
+# 2. Lines starting with # are comments and will be ignored
+# 3. Empty lines will be ignored
+# 4. Supports both local files and HTTP/HTTPS URLs
+
+# تعليمات:
+# 1. أضف مسار صورة أو رابط واحد في كل سطر
+# 2. السطور التي تبدأ بـ # هي تعليقات وسيتم تجاهلها
+# 3. السطور الفارغة سيتم تجاهلها
+# 4. يدعم الملفات المحلية وروابط HTTP/HTTPS
+
+# Example local file paths (uncomment to use):
+# أمثلة على المسارات المحلية (أزل # للاستخدام):
+# /path/to/your/image1.jpg
+# /path/to/your/image2.png
+# /app/input_images/car1.jpg
+# /app/input_images/car2.jpg
+
+# Example URLs (uncomment to use):
+# أمثلة على الروابط (أزل # للاستخدام):
+# https://example.com/car1.jpg
+# https://example.com/car2.jpg
+
+# Add your image paths or URLs below:
+# أضف مسارات أو روابط صورك أدناه:
