@@ -369,6 +369,25 @@
                 <small>رابط لاستقبال الإشعارات التلقائية من Snapshot Cloud</small>
             </div>
 
+            <div class="info-box" style="margin-top: 20px;">
+                <h3><i class="fas fa-key"></i> إعدادات ParkPow Cloud License</h3>
+                <div class="form-group">
+                    <label for="parkpowLicenseKey">مفتاح الترخيص (License Key):</label>
+                    <input type="text" id="parkpowLicenseKey" placeholder="مثال: 6mBNSb5L6W">
+                    <small>مفتاح الترخيص الخاص بك من ParkPow</small>
+                </div>
+                <div class="form-group">
+                    <label for="parkpowCameras">عدد الكاميرات:</label>
+                    <input type="number" id="parkpowCameras" placeholder="3" min="1" max="100">
+                    <small>عدد الكاميرات المسموح بها في الترخيص</small>
+                </div>
+                <div class="form-group">
+                    <label for="parkpowDescription">الوصف (اختياري):</label>
+                    <input type="text" id="parkpowDescription" placeholder="وصف الترخيص">
+                    <small>معلومات إضافية عن الترخيص</small>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>حالة الاتصال:</label>
                 <span id="snapshotConnectionStatus" class="status-badge status-disconnected">
@@ -459,6 +478,16 @@
             const webhookUrl = localStorage.getItem('SNAPSHOT_WEBHOOK_URL') || '';
             document.getElementById('webhookUrl').value = webhookUrl;
 
+            // تحميل إعدادات ParkPow License
+            const parkpowLicenseKey = localStorage.getItem('PARKPOW_LICENSE_KEY') || '';
+            document.getElementById('parkpowLicenseKey').value = parkpowLicenseKey;
+
+            const parkpowCameras = localStorage.getItem('PARKPOW_CAMERAS') || '';
+            document.getElementById('parkpowCameras').value = parkpowCameras;
+
+            const parkpowDescription = localStorage.getItem('PARKPOW_DESCRIPTION') || '';
+            document.getElementById('parkpowDescription').value = parkpowDescription;
+
             // تحديث حالة الاتصال للـ Snapshot
             if (snapshotApiToken) {
                 document.getElementById('snapshotConnectionStatus').className = 'status-badge status-connected';
@@ -487,12 +516,25 @@
             localStorage.setItem('SNAPSHOT_REGION', snapshotRegion);
             localStorage.setItem('SNAPSHOT_WEBHOOK_URL', webhookUrl);
 
+            // حفظ إعدادات ParkPow License
+            const parkpowLicenseKey = document.getElementById('parkpowLicenseKey').value;
+            const parkpowCameras = document.getElementById('parkpowCameras').value;
+            const parkpowDescription = document.getElementById('parkpowDescription').value;
+
+            localStorage.setItem('PARKPOW_LICENSE_KEY', parkpowLicenseKey);
+            localStorage.setItem('PARKPOW_CAMERAS', parkpowCameras);
+            localStorage.setItem('PARKPOW_DESCRIPTION', parkpowDescription);
+
             showAlert('success', 'تم حفظ الإعدادات بنجاح! ✅');
 
             // تحديث حالة الاتصال
             if (apiToken && system === 'platerecognizer') {
                 document.getElementById('connectionStatus').className = 'status-badge status-connected';
                 document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
+            }
+            if (snapshotApiToken && system === 'snapshot') {
+                document.getElementById('snapshotConnectionStatus').className = 'status-badge status-connected';
+                document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
             }
         }
 
@@ -532,19 +574,74 @@
             }
         }
 
+        async function testSnapshotConnection() {
+            const snapshotApiToken = document.getElementById('snapshotApiToken').value;
+            
+            if (!snapshotApiToken) {
+                showAlert('error', 'الرجاء إدخال رمز API أولاً! ⚠️');
+                return;
+            }
+
+            showAlert('info', 'جاري اختبار الاتصال بـ Snapshot Cloud... ⏳');
+
+            try {
+                // اختبار الاتصال بـ Snapshot Cloud API
+                const response = await fetch('https://api.platerecognizer.com/v1/statistics/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Token ' + snapshotApiToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showAlert('success', `✅ الاتصال بـ Snapshot Cloud ناجح! لديك ${data.usage.calls} استدعاء متبقي من ${data.usage.max_calls}`);
+                    document.getElementById('snapshotConnectionStatus').className = 'status-badge status-connected';
+                    document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
+                } else {
+                    showAlert('error', '❌ فشل الاتصال! تحقق من صحة رمز API');
+                    document.getElementById('snapshotConnectionStatus').className = 'status-badge status-disconnected';
+                    document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
+                }
+            } catch (error) {
+                showAlert('error', '❌ خطأ في الاتصال: ' + error.message);
+                document.getElementById('snapshotConnectionStatus').className = 'status-badge status-disconnected';
+                document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
+            }
+        }
+
         function resetSettings() {
             if (confirm('هل أنت متأكد من إعادة تعيين جميع الإعدادات؟')) {
                 localStorage.removeItem('RECOGNITION_SYSTEM');
                 localStorage.removeItem('PLATE_RECOGNIZER_API_TOKEN');
                 localStorage.removeItem('PLATE_RECOGNIZER_REGION');
+                localStorage.removeItem('SNAPSHOT_API_TOKEN');
+                localStorage.removeItem('SNAPSHOT_API_URL');
+                localStorage.removeItem('SNAPSHOT_REGION');
+                localStorage.removeItem('SNAPSHOT_WEBHOOK_URL');
+                localStorage.removeItem('PARKPOW_LICENSE_KEY');
+                localStorage.removeItem('PARKPOW_CAMERAS');
+                localStorage.removeItem('PARKPOW_DESCRIPTION');
                 
                 document.getElementById('recognitionSystem').value = 'mock';
                 document.getElementById('apiToken').value = '';
                 document.getElementById('apiRegion').value = 'sa';
                 document.getElementById('apiCard').style.display = 'none';
                 
+                document.getElementById('snapshotApiToken').value = '';
+                document.getElementById('snapshotApiUrl').value = 'https://api.platerecognizer.com/v1/plate-reader/';
+                document.getElementById('snapshotRegion').value = 'sa';
+                document.getElementById('webhookUrl').value = '';
+                document.getElementById('parkpowLicenseKey').value = '';
+                document.getElementById('parkpowCameras').value = '';
+                document.getElementById('parkpowDescription').value = '';
+                document.getElementById('snapshotCard').style.display = 'none';
+                
                 document.getElementById('connectionStatus').className = 'status-badge status-disconnected';
                 document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
+                
+                document.getElementById('snapshotConnectionStatus').className = 'status-badge status-disconnected';
+                document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
                 
                 showAlert('success', 'تم إعادة تعيين الإعدادات بنجاح! ✅');
             }
