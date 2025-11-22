@@ -13,7 +13,9 @@ services:
     environment:
       POSTGRES_DB: vehicle_snapshots
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_password_change_me
+      # WARNING: Change this password for production use!
+      # تحذير: غيّر كلمة المرور هذه للاستخدام في الإنتاج!
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres_password_change_me}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
@@ -51,7 +53,8 @@ services:
       
       # Database Configuration
       # إعدادات قاعدة البيانات
-      DATABASE_URL: postgresql://postgres:postgres_password_change_me@db:5432/vehicle_snapshots
+      # WARNING: Update password in .env for production!
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres_password_change_me}@db:5432/vehicle_snapshots
       
       # Request delay (seconds between API calls)
       # تأخير بين الطلبات (بالثواني)

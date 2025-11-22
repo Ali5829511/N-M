@@ -33,7 +33,7 @@ def is_url(path: str) -> bool:
     try:
         result = urlparse(path)
         return all([result.scheme, result.netloc])
-    except Exception:
+    except (ValueError, TypeError, AttributeError):
         return False
 
 # Configuration from environment variables
@@ -255,7 +255,9 @@ class PostgreSQLStorage:
             return inserted_ids[0] if inserted_ids else None
             
         except Exception as e:
-            print(f"❌ Database error: {str(e)}")
+            print(f"❌ Database error ({type(e).__name__}): {str(e)}")
+            import traceback
+            traceback.print_exc()
             return None
 
 
@@ -350,7 +352,7 @@ def main():
             print(f"❌ [{idx}/{len(image_paths)}] File not found: {image_path}")
             error_count += 1
         except Exception as e:
-            print(f"❌ [{idx}/{len(image_paths)}] Unexpected error for {image_path}: {str(e)}")
+            print(f"❌ [{idx}/{len(image_paths)}] Unexpected error ({type(e).__name__}) for {image_path}: {str(e)}")
             error_count += 1
         
         # Delay between requests to avoid rate limiting
