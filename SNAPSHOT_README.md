@@ -169,6 +169,24 @@ Environment variables in `.env`:
 | `CONFIDENCE_THRESHOLD` | Minimum confidence (0.0-1.0) | `0.0` |
 | `BATCH_SIZE` | Records per commit | `10` |
 
+### API Endpoint Options / خيارات نقطة نهاية API
+
+The script supports two Plate Recognizer API endpoints:
+
+**Standard Snapshot API** (default):
+```
+SNAPSHOT_API_URL=https://api.platerecognizer.com/v1/plate-reader/
+```
+
+**Snapshot Cloud API**:
+```
+SNAPSHOT_API_URL=https://app.platerecognizer.com/service/snapshot-cloud/
+```
+
+Choose the endpoint that matches your Plate Recognizer subscription. Both endpoints work with the same API key and provide the same response format.
+
+يدعم السكربت نقطتي نهاية من Plate Recognizer API. اختر النقطة التي تتناسب مع اشتراكك. كلا النقطتين تعملان بنفس مفتاح API وتوفران نفس تنسيق الاستجابة.
+
 ## Database Schema / مخطط قاعدة البيانات
 
 The `vehicle_snapshots` table stores:

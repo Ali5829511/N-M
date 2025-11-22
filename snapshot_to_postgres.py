@@ -27,6 +27,9 @@ load_dotenv()
 
 # Configuration from environment
 PLATE_API_KEY = os.getenv('PLATE_API_KEY')
+# Supports both Standard Snapshot API and Snapshot Cloud API
+# https://api.platerecognizer.com/v1/plate-reader/ (Standard)
+# https://app.platerecognizer.com/service/snapshot-cloud/ (Cloud)
 SNAPSHOT_API_URL = os.getenv('SNAPSHOT_API_URL', 'https://api.platerecognizer.com/v1/plate-reader/')
 DATABASE_URL = os.getenv('DATABASE_URL')
 REQUEST_DELAY = float(os.getenv('REQUEST_DELAY', '1.0'))  # Delay between requests in seconds
