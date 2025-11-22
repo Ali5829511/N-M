@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY snapshot_to_postgres.py ./
 COPY db_schema.sql ./
 
-# Default command (can be overridden in docker-compose or at runtime)
+# Default command: run snapshot_to_postgres.py with images.txt
+# Can be overridden in docker-compose or at runtime
 # Example: docker run <image> python snapshot_to_postgres.py --images images.txt --delay 1.0
-CMD ["python", "snapshot_to_postgres.py", "--help"]
+CMD ["python", "snapshot_to_postgres.py", "--images", "images.txt"]

@@ -123,61 +123,47 @@ def upload_to_s3(image_bytes, filename, mime_type):
             ContentType=mime_type
         )
         
-        # إنشاء URL للصورة (عام أو presigned حسب إعدادات الـ bucket)
-        s3_url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
+        # إنشاء URL للصورة
+        # إذا كان هناك AWS_ENDPOINT_URL (MinIO)، استخدمه
+        AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
+        if AWS_ENDPOINT_URL:
+            # MinIO or custom S3-compatible endpoint
+            s3_url = f"{AWS_ENDPOINT_URL}/{S3_BUCKET}/{s3_key}"
+        else:
+            # AWS S3 URL
+            s3_url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
         
         return s3_url
     except Exception as e:
-        print(f"خطأ في رفع الصورة إلى S3: {e}")
+        print(f"  خطأ في رفع الصورة إلى S3: {e}")
         return None
 
-def build_payload_for_image(path_or_url):
+def send_request_to_api(image_bytes, image_url=None, retry_count=3):
     """
-    إنشاء payload لإرسال الصورة إلى API
-    """
-    if urlparse(path_or_url).scheme in ("http", "https"):
-        # Fetch from URL
-        response = requests.get(path_or_url, timeout=60)
-        response.raise_for_status()
-        image_bytes = response.content
-        # Try to determine MIME type from Content-Type header
-        mime_type = response.headers.get('Content-Type', 'image/jpeg')
-        if ';' in mime_type:
-            mime_type = mime_type.split(';')[0].strip()
-    else:
-        # Read local file
-        with open(path_or_url, "rb") as f:
-            image_bytes = f.read()
-        # Determine MIME type from file extension
-        mime_type, _ = mimetypes.guess_type(path_or_url)
-        if not mime_type:
-            mime_type = 'image/jpeg'  # Default
-    
-    # Calculate SHA256 hash
-    sha256_hash = hashlib.sha256(image_bytes).hexdigest()
-    size = len(image_bytes)
-    
-    return image_bytes, mime_type, size, sha256_hash
-
-def send_request(payload, retry_count=3):
-    """
-    إذا payload يحتوي 'local_path' نرفع الملف كـ multipart، وإلا نرسل JSON مع image_url.
-    يتضمن إعادة المحاولة عند فشل الشبكة.
+    إرسال الصورة إلى Plate Recognizer API مع إعادة المحاولة
+    يمكن إرسال الصورة كـ multipart أو كـ URL
     """
     for attempt in range(retry_count):
         try:
-            if "local_path" in payload:
-                path = payload["local_path"]
-                with open(path, "rb") as fh:
-                    files = {"upload": fh}
-                    r = requests.post(SNAPSHOT_API_URL, headers=HEADERS, files=files, timeout=60)
+            if image_url:
+                # إرسال رابط الصورة
+                payload = {"upload": image_url}
+                r = requests.post(
+                    SNAPSHOT_API_URL, 
+                    headers={**HEADERS, "Content-Type": "application/json"}, 
+                    json=payload, 
+                    timeout=60
+                )
             else:
-                r = requests.post(SNAPSHOT_API_URL, headers={**HEADERS, "Content-Type": "application/json"}, json=payload, timeout=60)
+                # إرسال الصورة كـ multipart
+                files = {"upload": image_bytes}
+                r = requests.post(SNAPSHOT_API_URL, headers=HEADERS, files=files, timeout=60)
+            
             r.raise_for_status()
             return r.json()
         except requests.exceptions.RequestException as e:
             if attempt < retry_count - 1:
-                print(f"محاولة {attempt + 1} فشلت، إعادة المحاولة...")
+                print(f"  محاولة {attempt + 1} فشلت، إعادة المحاولة...")
                 time.sleep(2 ** attempt)  # exponential backoff
             else:
                 raise e
@@ -266,68 +252,7 @@ def insert_into_db(conn, record, image_data=None):
         conn.commit()
         return new_id
 
-def process_image(item, confidence_threshold=0.0):
-    """
-    Process a single image: fetch bytes, compute metadata, store to S3/DB, 
-    send to Plate Recognizer API, and return record data.
-    """
-    # Step 1: Fetch image bytes and compute metadata
-    try:
-        image_bytes, mime_type, size, sha256_hash = fetch_image_bytes(item)
-    except Exception as e:
-        print(f"  ERROR fetching image from {item}: {e}")
-        return None
-    
-    # Step 2: Store image (S3 or DB)
-    image_url = None
-    image_data = None
-    
-    if STORE_IMAGES == "s3":
-        try:
-            image_url = upload_to_s3(image_bytes, sha256_hash, mime_type)
-        except Exception as e:
-            print(f"  ERROR uploading to S3: {e}")
-            return None
-    elif STORE_IMAGES == "db":
-        # Store in database
-        image_data = Binary(image_bytes)
-        # For DB storage, we can optionally keep the original URL as reference
-        if urlparse(item).scheme in ("http", "https"):
-            image_url = item
-    
-    # Step 3: Send to Plate Recognizer API
-    try:
-        # If we have S3 URL, send that; otherwise send bytes
-        if STORE_IMAGES == "s3" and image_url:
-            resp = send_request_with_retry(None, image_url=image_url)
-        else:
-            resp = send_request_with_retry(image_bytes)
-    except Exception as e:
-        print(f"  ERROR calling Plate Recognizer API: {e}")
-        return None
-    
-    # Step 4: Parse response
-    record = parse_and_normalize_response(resp)
-    record["snapshot_ref"] = record["snapshot_ref"] or sha256_hash
-    
-    # Apply confidence threshold filter
-    if record["plate_confidence"] is not None:
-        if float(record["plate_confidence"]) < confidence_threshold:
-            print(f"  Skipping - confidence {record['plate_confidence']} below threshold {confidence_threshold}")
-            return None
-    
-    # Add image metadata
-    record["image_url"] = image_url
-    record["image_data"] = image_data
-    record["image_mime"] = mime_type
-    record["image_size"] = size
-    record["image_sha256"] = sha256_hash
-    
-    # Keep original URL in metadata if available
-    if not record["image_url"] and urlparse(item).scheme in ("http", "https"):
-        record["image_url"] = item
-    
-    return record
+
 
 def main():
     parser = argparse.ArgumentParser(description="Send images to Plate Recognizer snapshot and store results")
@@ -338,7 +263,7 @@ def main():
     args = parser.parse_args()
     
     # Validate environment variables after parsing args (so --help works without env vars)
-    global s3_client, HEADERS
+    global boto3_client, HEADERS
     
     if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
         print("ERROR: Please set required environment variables: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
@@ -350,18 +275,31 @@ def main():
     
     # Initialize boto3 only if using S3
     if STORE_IMAGES == "s3":
+        if not S3_BUCKET:
+            print("ERROR: S3_BUCKET must be set when STORE_IMAGES=s3")
+            sys.exit(1)
         try:
             import boto3
-            s3_client = boto3.client(
-                's3',
-                region_name=AWS_REGION,
-                aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-                aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
-            )
-            if not S3_BUCKET:
-                print("ERROR: S3_BUCKET must be set when STORE_IMAGES=s3")
-                sys.exit(1)
-            print(f"Using S3 storage: {S3_BUCKET}")
+            
+            # Support for MinIO or custom S3-compatible endpoints
+            AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
+            if AWS_ENDPOINT_URL:
+                boto3_client = boto3.client(
+                    's3',
+                    endpoint_url=AWS_ENDPOINT_URL,
+                    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+                    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+                    region_name=AWS_REGION
+                )
+                print(f"Using S3-compatible storage: {S3_BUCKET} at {AWS_ENDPOINT_URL}")
+            else:
+                boto3_client = boto3.client(
+                    's3',
+                    region_name=AWS_REGION,
+                    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+                    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+                )
+                print(f"Using AWS S3 storage: {S3_BUCKET} (region: {AWS_REGION})")
         except ImportError:
             print("ERROR: boto3 is required when STORE_IMAGES=s3. Install it with: pip install boto3")
             sys.exit(1)
@@ -417,18 +355,24 @@ def main():
                 # رفع إلى S3
                 image_url_stored = upload_to_s3(image_bytes, item, mime_type)
                 if not image_url_stored:
-                    print(f"فشل رفع الصورة إلى S3: {item}")
+                    print(f"  فشل رفع الصورة إلى S3: {item}")
+                    error_count += 1
+                    time.sleep(args.delay)
                     continue
             elif STORE_IMAGES == "db":
                 # تخزين في قاعدة البيانات
                 image_data_to_store = image_bytes
             
             # 4. إرسال إلى Plate Recognizer API
-            payload = build_payload_for_image(item)
             try:
-                resp = send_request(payload)
+                # إرسال URL إذا كان لدينا رابط S3، وإلا نرسل البايتات
+                if STORE_IMAGES == "s3" and image_url_stored:
+                    resp = send_request_to_api(None, image_url=image_url_stored)
+                else:
+                    resp = send_request_to_api(image_bytes)
             except Exception as e:
-                print(f"خطأ عند إرسال {item}: {e}")
+                print(f"  خطأ عند إرسال {item}: {e}")
+                error_count += 1
                 time.sleep(args.delay)
                 continue
             
@@ -438,12 +382,13 @@ def main():
             # 6. فحص حد الثقة
             if record["plate_confidence"] is not None:
                 if record["plate_confidence"] < args.confidence_threshold:
-                    print(f"تخطي {item}: الثقة {record['plate_confidence']} أقل من الحد {args.confidence_threshold}")
+                    print(f"  تخطي {item}: الثقة {record['plate_confidence']} أقل من الحد {args.confidence_threshold}")
+                    skipped_count += 1
                     time.sleep(args.delay)
                     continue
             
             # 7. إضافة البيانات الوصفية
-            record["snapshot_ref"] = record["snapshot_ref"] or item
+            record["snapshot_ref"] = record["snapshot_ref"] or sha256_hash
             if STORE_IMAGES == "s3" and image_url_stored:
                 record["image_url"] = image_url_stored
             elif not record["image_url"] and urlparse(item).scheme in ("http", "https"):
@@ -456,18 +401,27 @@ def main():
             # 8. إدخال في قاعدة البيانات
             try:
                 new_id = insert_into_db(conn, record, image_data_to_store)
-                print(f"تم إدخال السجل {new_id} للصورة {item}")
+                print(f"  ✓ تم إدخال السجل {new_id} للصورة {item}")
+                success_count += 1
             except Exception as e:
-                print(f"خطأ في إدخال DB لـ {item}: {e}")
+                print(f"  خطأ في إدخال DB لـ {item}: {e}")
                 conn.rollback()
+                error_count += 1
             
         except Exception as e:
-            print(f"خطأ في معالجة {item}: {e}")
+            print(f"  خطأ في معالجة {item}: {e}")
+            error_count += 1
         
         time.sleep(args.delay)
 
     conn.close()
-    print(f"تمت معالجة {len(items)} صورة")
+    print()
+    print("=" * 60)
+    print(f"تمت معالجة {len(items)} صورة:")
+    print(f"  ✓ نجح: {success_count}")
+    print(f"  ✗ فشل: {error_count}")
+    print(f"  ⊘ متخطى: {skipped_count}")
+    print("=" * 60)
 
 if __name__ == "__main__":
     main()
