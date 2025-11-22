@@ -4,6 +4,9 @@
 # Plate Recognition API
 requests>=2.31.0
 
+# PostgreSQL Database Driver
+psycopg2-binary>=2.9.9
+
 # PDF Generation
 fpdf>=1.7.2
 
@@ -20,3 +23,4 @@ python-dotenv>=1.0.0
 psycopg2-binary>=2.9.9  # Note: For production, consider using psycopg2 (requires compilation)
 tqdm>=4.66.0
 sqlalchemy>=2.0.0,<3.0.0
+boto3>=1.28.0  # For S3 image storage

@@ -1,0 +1,24 @@
+# مثال لملف images.txt
+# Example images.txt file
+#
+# ضع رابط أو مسار صورة في كل سطر
+# Place one image URL or path per line
+#
+# الأسطر التي تبدأ بـ # تُتجاهل
+# Lines starting with # are ignored
+#
+
+# أمثلة لروابط صور عبر الإنترنت:
+# Examples of online image URLs:
+# https://example.com/car1.jpg
+# https://example.com/car2.png
+# https://i.imgur.com/sample.jpg
+
+# أمثلة لملفات محلية:
+# Examples of local files:
+# /path/to/local/car1.jpg
+# /path/to/local/car2.png
+# ./relative/path/car3.jpg
+
+# للاختبار، قم بإلغاء التعليق عن السطور أدناه أو أضف روابط/مسارات صورك:
+# For testing, uncomment lines below or add your own image URLs/paths:

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
 # Dockerfile for Plate Recognizer Snapshot to PostgreSQL
 # ملف Docker لنظام التعرف على اللوحات مع PostgreSQL
 
 # Use Python 3.11 slim image
+=======
+# Dockerfile for Plate Recognizer Snapshot Integration
+# ملف Docker لتكامل Plate Recognizer Snapshot
+
+>>>>>>> origin/main
 FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app
 
+<<<<<<< HEAD
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -36,3 +43,17 @@ COPY .env* ./
 
 # Default command: run the snapshot processor with images.txt
 CMD ["python", "snapshot_to_postgres.py", "images.txt"]
+=======
+# Install dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY snapshot_to_postgres.py ./
+COPY db_schema.sql ./
+
+# Default command: run snapshot_to_postgres.py with images.txt
+# Can be overridden in docker-compose or at runtime
+# Example: docker run <image> python snapshot_to_postgres.py --images images.txt --delay 1.0
+CMD ["python", "snapshot_to_postgres.py", "--images", "images.txt"]
+>>>>>>> origin/main
