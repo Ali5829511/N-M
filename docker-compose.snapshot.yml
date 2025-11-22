@@ -3,6 +3,7 @@ version: '3.8'
 services:
   db:
     image: postgres:15
+    container_name: plate_recognizer_db
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pass}
@@ -22,11 +23,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.snapshot
+    container_name: plate_recognizer_app
     environment:
       # Plate Recognizer API (required)
       PLATE_API_KEY: ${PLATE_API_KEY}
       SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
-      DATABASE_URL: postgres://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-pass}@db:5432/${POSTGRES_DB:-platenet}
+      
+      # Database
+      DATABASE_URL: postgres://user:pass@db:5432/platenet
       STORE_IMAGES: ${STORE_IMAGES:-s3}
       # S3/MinIO Configuration
       S3_BUCKET: ${S3_BUCKET}

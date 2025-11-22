@@ -12,7 +12,8 @@
 import os
 import sys
 import argparse
-import json
+import hashlib
+import mimetypes
 import time
 import hashlib
 import mimetypes
@@ -25,8 +26,10 @@ from tqdm import tqdm
 import psycopg2
 from psycopg2 import Binary
 from psycopg2.extras import Json, register_uuid
+from psycopg2 import Binary
 from datetime import datetime
 
+# Load environment variables
 load_dotenv()
 
 # Required environment variables (will be validated in main())
@@ -39,7 +42,100 @@ AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 
 # Global variables initialized in main()
 boto3_client = None
-HEADERS = {}
+if STORE_IMAGES == "s3":
+    if not S3_BUCKET or not AWS_REGION:
+        print("الرجاء ضبط المتغيرات البيئية: S3_BUCKET و AWS_REGION عند استخدام STORE_IMAGES=s3")
+        sys.exit(1)
+    try:
+        import boto3
+        boto3_client = boto3.client(
+            's3',
+            region_name=AWS_REGION,
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+        )
+    except ImportError:
+        print("خطأ: يرجى تثبيت boto3 باستخدام: pip install boto3")
+        sys.exit(1)
+
+# Validate S3 configuration if needed
+if STORE_IMAGES == "s3":
+    if not S3_BUCKET or not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
+        print("Error: STORE_IMAGES=s3 but missing S3 configuration.")
+        print("Please set: S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
+        sys.exit(1)
+    # Import boto3 only when needed
+    try:
+        import boto3
+        from botocore.exceptions import ClientError
+    except ImportError:
+        print("Error: boto3 is required for S3 storage. Install with: pip install boto3")
+        sys.exit(1)
+
+if STORE_IMAGES == "s3" and not S3_BUCKET:
+    print("الرجاء ضبط S3_BUCKET عند استخدام STORE_IMAGES=s3")
+    sys.exit(1)
+
+def upload_to_s3(image_bytes, sha256_hash, mime_type, config):
+    """رفع الصورة إلى S3 وإرجاع URL"""
+    try:
+        # Check if boto3 is available
+        try:
+            import boto3
+        except ImportError:
+            raise RuntimeError("الرجاء تثبيت boto3: pip install boto3")
+        
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=config['AWS_ACCESS_KEY_ID'],
+            aws_secret_access_key=config['AWS_SECRET_ACCESS_KEY'],
+            region_name=config['AWS_REGION']
+        )
+        
+        # استخدام SHA256 كاسم الملف لتجنب التكرار
+        ext = mimetypes.guess_extension(mime_type) or '.jpg'
+        key = f"vehicle-snapshots/{sha256_hash}{ext}"
+        
+        # استخدام ACL خاص (private) للأمان - استخدم presigned URLs للوصول المؤقت
+        s3_client.put_object(
+            Bucket=config['S3_BUCKET'],
+            Key=key,
+            Body=image_bytes,
+            ContentType=mime_type
+            # ACL='private' is default - removed public-read for security
+        )
+        
+        # إنشاء presigned URL للوصول المؤقت (صالح لمدة ساعة)
+        # يمكن تعديل المدة حسب الحاجة
+        use_presigned = config.get('S3_USE_PRESIGNED_URLS', 'true').lower() == 'true'
+        if use_presigned:
+            url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': config['S3_BUCKET'], 'Key': key},
+                ExpiresIn=3600  # ساعة واحدة
+            )
+        else:
+            # للاستخدام مع buckets عامة فقط
+            url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': config['S3_BUCKET'], 'Key': key},
+                ExpiresIn=0  # URL دائم (يتطلب bucket عام)
+            )
+        
+        return url
+    except Exception as e:
+        print(f"خطأ في رفع الصورة إلى S3: {e}")
+        raise
+
+def fetch_image_bytes(path_or_url):
+    """جلب بايتات الصورة من URL أو ملف محلي"""
+    if urlparse(path_or_url).scheme in ("http", "https"):
+        response = requests.get(path_or_url, timeout=30)
+        response.raise_for_status()
+        return response.content
+    else:
+        with open(path_or_url, "rb") as f:
+            return f.read()
 
 def get_image_bytes(path_or_url):
     """
@@ -144,12 +240,43 @@ def send_request_to_api(image_bytes, image_url=None, retry_count=3):
             else:
                 raise e
 
-def parse_and_normalize_response(resp):
+def send_to_plate_recognizer(image_bytes, mime_type='image/jpeg'):
     """
     Extract important fields from Plate Recognizer response.
     Since response may vary based on model settings, we also store the raw response.
     """
-    out = {
+    # Determine file extension from mime type
+    ext = mime_type.split('/')[-1] if '/' in mime_type else 'jpg'
+    filename = f"image.{ext}"
+    
+    files = {"upload": (filename, image_bytes, mime_type)}
+    
+    # Retry logic
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(
+                SNAPSHOT_API_URL,
+                headers=HEADERS,
+                files=files,
+                timeout=60
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            if attempt < max_retries - 1:
+                print(f"  Retry {attempt + 1}/{max_retries} after error: {e}")
+                time.sleep(2 ** attempt)  # Exponential backoff
+            else:
+                raise
+
+
+def parse_plate_recognizer_response(resp, confidence_threshold=0.0):
+    """
+    Parse Plate Recognizer response and extract relevant information.
+    Returns a dictionary with extracted fields.
+    """
+    parsed = {
         "snapshot_ref": None,
         "camera_id": None,
         "captured_at": None,
@@ -159,41 +286,54 @@ def parse_and_normalize_response(resp):
         "colors": None,
         "bbox": None,
         "raw_response": resp,
-        "image_url": None,
-        "meta": {}
     }
-
-    results = resp.get("results") or resp.get("vehicles") or [resp]
-
-    if isinstance(results, dict):
-        results = [results]
-
-    if len(results) > 0:
-        r0 = results[0]
-        out["snapshot_ref"] = r0.get("id") or r0.get("snapshot_id") or out["snapshot_ref"]
-        out["camera_id"] = r0.get("camera_id") or r0.get("camera")
-        plate = r0.get("plate") or r0.get("plate_info") or {}
+    
+    # Extract results (structure may vary)
+    results = resp.get("results", [])
+    
+    if results and len(results) > 0:
+        result = results[0]
+        
+        # Extract plate information
+        plate = result.get("plate", {})
         if isinstance(plate, dict):
-            out["plate_text"] = plate.get("plate") or plate.get("number") or out["plate_text"]
-            out["plate_confidence"] = plate.get("confidence") or out["plate_confidence"]
-        mm = r0.get("vehicle") or r0.get("vehicle_info") or {}
-        if mm:
-            out["makes_models"] = mm.get("predictions") or mm.get("makes_models") or mm
-        colors = r0.get("color") or r0.get("colors")
-        if colors:
-            out["colors"] = colors
-        bbox = r0.get("box") or r0.get("bounding_box") or r0.get("bbox")
-        if bbox:
-            out["bbox"] = bbox
-        if r0.get("timestamp"):
+            plate_text = plate.get("plate") or plate.get("text") or plate.get("number")
+        else:
+            plate_text = str(plate) if plate else None
+        plate_confidence = result.get("score", 0.0)
+        
+        # Apply confidence threshold
+        if plate_confidence < confidence_threshold:
+            return None
+        
+        parsed["plate_text"] = plate
+        parsed["plate_confidence"] = plate_confidence
+        
+        # Extract vehicle information
+        vehicle = result.get("vehicle", {})
+        if vehicle:
+            parsed["makes_models"] = vehicle.get("type", {})
+            parsed["colors"] = vehicle.get("color", [])
+        
+        # Extract bounding box
+        parsed["bbox"] = result.get("box", {})
+        
+        # Extract other metadata
+        parsed["camera_id"] = resp.get("camera_id")
+        parsed["snapshot_ref"] = resp.get("uuid") or resp.get("filename")
+        
+        # Extract timestamp
+        timestamp = resp.get("timestamp")
+        if timestamp:
             try:
-                out["captured_at"] = datetime.fromisoformat(r0.get("timestamp"))
+                parsed["captured_at"] = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
             except Exception:
-                out["captured_at"] = None
-        if r0.get("image_url"):
-            out["image_url"] = r0.get("image_url")
+                parsed["captured_at"] = datetime.now()
+        else:
+            parsed["captured_at"] = datetime.now()
+    
+    return parsed
 
-    return out
 
 def insert_into_db(conn, record, image_data=None):
     """
@@ -213,9 +353,9 @@ def insert_into_db(conn, record, image_data=None):
             record["captured_at"],
             record["plate_text"],
             record["plate_confidence"],
-            Json(record["makes_models"]),
-            Json(record["colors"]),
-            Json(record["bbox"]),
+            Json(record["makes_models"]) if record["makes_models"] else None,
+            Json(record["colors"]) if record["colors"] else None,
+            Json(record["bbox"]) if record["bbox"] else None,
             Json(record["raw_response"]),
             record["image_url"],
             Binary(image_data) if image_data else None,
@@ -231,7 +371,18 @@ def insert_into_db(conn, record, image_data=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Send images to Plate Recognizer snapshot and store results")
+    parser = argparse.ArgumentParser(
+        description="Send images to Plate Recognizer snapshot and store results",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Example usage:
+  python snapshot_to_postgres.py --images images.txt --delay 1.0 --confidence-threshold 0.8
+
+Environment variables required:
+  PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL
+  For S3: S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+        """
+    )
     parser.add_argument("--images", required=True, help="ملف نصي يحتوي على مسار/URL لكل صورة في سطر مستقل")
     parser.add_argument("--delay", type=float, default=0.5, help="تأخير بين الطلبات بالثواني")
     parser.add_argument("--confidence-threshold", type=float, default=0.0, 
