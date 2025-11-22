@@ -746,12 +746,20 @@
             reader.onload = (e) => {
                 const div = document.createElement('div');
                 div.className = 'preview-item';
-                div.innerHTML = `
-                    <img src="${e.target.result}" alt="Preview">
-                    <button class="preview-remove" onclick="removeFile('${file.name}')">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
+                
+                // Create image element
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Preview';
+                
+                // Create remove button
+                const button = document.createElement('button');
+                button.className = 'preview-remove';
+                button.innerHTML = '<i class="fas fa-times"></i>';
+                button.addEventListener('click', () => removeFile(file.name));
+                
+                div.appendChild(img);
+                div.appendChild(button);
                 previewGrid.appendChild(div);
             };
             reader.readAsDataURL(file);
@@ -1058,7 +1066,7 @@
                 html += `<td><strong>${repeatCount}</strong></td>`;
                 html += `<td><span class="status-badge status-${status.class}">${status.text}</span></td>`;
                 html += `<td>
-                    <button class="btn btn-sm btn-primary" onclick="viewDetails(${index})">
+                    <button class="btn btn-sm btn-primary" data-index="${index}">
                         <i class="fas fa-eye"></i> تفاصيل
                     </button>
                 </td>`;
@@ -1078,6 +1086,16 @@
             
             resultsContainer.innerHTML = html;
         }
+        
+        // Use event delegation for details buttons to avoid duplicate event listeners
+        // This is attached once and handles all clicks on buttons with data-index
+        resultsContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('button[data-index]');
+            if (button) {
+                const index = parseInt(button.getAttribute('data-index'), 10);
+                viewDetails(index);
+            }
+        });
 
         function getRepeatCount(plateNumber) {
             // البحث في قاعدة البيانات المحلية

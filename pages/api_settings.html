@@ -275,6 +275,16 @@
                     <li>⚠️ يحتاج رمز API (مدفوع)</li>
                     <li>🔗 الموقع: <a href="https://app.platerecognizer.com/start/" target="_blank">app.platerecognizer.com</a></li>
                 </ul>
+                <p style="margin-top: 10px;"><strong>3. Snapshot Cloud API:</strong></p>
+                <ul>
+                    <li>✅ خدمة سحابية متقدمة للتعرف على اللوحات</li>
+                    <li>✅ معالجة تلقائية للصور من الكاميرات</li>
+                    <li>✅ دعم Webhooks للإشعارات الفورية</li>
+                    <li>✅ تخزين سحابي للصور والنتائج</li>
+                    <li>✅ دقة عالية جداً وسرعة معالجة فائقة</li>
+                    <li>⚠️ يحتاج رمز API واشتراك (مدفوع)</li>
+                    <li>🔗 الموقع: <a href="https://app.platerecognizer.com/service/snapshot-cloud/" target="_blank">Snapshot Cloud</a></li>
+                </ul>
             </div>
         </div>
 
@@ -285,6 +295,7 @@
                 <select id="recognitionSystem">
                     <option value="mock">نظام المحاكاة (Mock System) - مجاني</option>
                     <option value="platerecognizer">Plate Recognizer API - احترافي</option>
+                    <option value="snapshot">Snapshot Cloud API - سحابي متقدم</option>
                 </select>
                 <small>اختر النظام الذي تريد استخدامه للتعرف على اللوحات</small>
             </div>
@@ -324,6 +335,252 @@
             </button>
         </div>
 
+        <div class="card" id="snapshotCard" style="display: none;">
+            <h2><i class="fas fa-cloud"></i> إعدادات Snapshot Cloud API</h2>
+            
+            <div class="form-group">
+                <label for="snapshotApiToken">رمز API Token:</label>
+                <input type="text" id="snapshotApiToken" placeholder="أدخل رمز API Token هنا">
+                <small>احصل على رمز API من <a href="https://app.platerecognizer.com/service/snapshot-cloud/dashboard/" target="_blank">Snapshot Cloud Dashboard</a></small>
+            </div>
+
+            <div class="form-group">
+                <label for="snapshotApiUrl">رابط Snapshot API:</label>
+                <input type="text" id="snapshotApiUrl" placeholder="https://api.platerecognizer.com/v1/plate-reader/">
+                <small>الرابط الافتراضي للـ API (يمكنك تركه كما هو)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="snapshotRegion">المنطقة:</label>
+                <select id="snapshotRegion">
+                    <option value="sa">السعودية (SA)</option>
+                    <option value="ae">الإمارات (AE)</option>
+                    <option value="kw">الكويت (KW)</option>
+                    <option value="qa">قطر (QA)</option>
+                    <option value="bh">البحرين (BH)</option>
+                    <option value="om">عمان (OM)</option>
+                </select>
+                <small>اختر المنطقة الجغرافية للوحات</small>
+            </div>
+
+            <h3 style="color: #2c3e50; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                <i class="fas fa-video"></i> إعدادات الكاميرا (Camera Settings)
+            </h3>
+
+            <div class="form-group">
+                <label for="cameraId">معرف الكاميرا (Camera ID):</label>
+                <input type="text" id="cameraId" placeholder="مثال: camera-01">
+                <small>معرف فريد للكاميرا - يستخدم لتمييز مصدر الصور</small>
+            </div>
+
+            <div class="form-group">
+                <label for="cameraName">اسم الكاميرا (Camera Name):</label>
+                <input type="text" id="cameraName" placeholder="مثال: كاميرا المدخل الرئيسي">
+                <small>اسم وصفي للكاميرا</small>
+            </div>
+
+            <div class="form-group">
+                <label for="cameraLocation">موقع الكاميرا (Location):</label>
+                <input type="text" id="cameraLocation" placeholder="مثال: بوابة الدخول - الجهة الشمالية">
+                <small>الموقع الجغرافي أو وصف مكان تركيب الكاميرا</small>
+            </div>
+
+            <h3 style="color: #2c3e50; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                <i class="fas fa-cogs"></i> إعدادات المعالجة (Processing Settings)
+            </h3>
+
+            <div class="form-group">
+                <label for="confidenceThreshold">الحد الأدنى للثقة (Confidence Threshold):</label>
+                <input type="number" id="confidenceThreshold" placeholder="0.8" min="0" max="1" step="0.1" value="0.7">
+                <small>الحد الأدنى لدرجة الثقة لقبول النتيجة (من 0 إلى 1) - القيمة الموصى بها: 0.7</small>
+            </div>
+
+            <div class="form-group">
+                <label for="enableMMC">
+                    <input type="checkbox" id="enableMMC" style="width: auto; margin-left: 10px;">
+                    تفعيل MMC (Make, Model, Color)
+                </label>
+                <small>تفعيل التعرف على نوع السيارة وموديلها ولونها</small>
+            </div>
+
+            <div class="form-group">
+                <label for="enableVehicleType">
+                    <input type="checkbox" id="enableVehicleType" style="width: auto; margin-left: 10px;">
+                    تفعيل اكتشاف نوع المركبة (Vehicle Type Detection)
+                </label>
+                <small>اكتشاف نوع المركبة (سيارة، شاحنة، دراجة نارية، إلخ)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="enableDirection">
+                    <input type="checkbox" id="enableDirection" style="width: auto; margin-left: 10px;">
+                    تفعيل اكتشاف الاتجاه (Direction Detection)
+                </label>
+                <small>اكتشاف اتجاه حركة المركبة</small>
+            </div>
+
+            <h3 style="color: #2c3e50; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                <i class="fas fa-server"></i> إعدادات FTP (FTP Settings)
+            </h3>
+
+            <div class="form-group">
+                <label for="ftpHost">عنوان خادم FTP (FTP Host):</label>
+                <input type="text" id="ftpHost" placeholder="ftp.platerecognizer.com">
+                <small>عنوان خادم FTP لرفع الصور</small>
+            </div>
+
+            <div class="form-group">
+                <label for="ftpPort">منفذ FTP (FTP Port):</label>
+                <input type="number" id="ftpPort" placeholder="21" value="21">
+                <small>المنافذ الشائعة: 21 (FTP)، 990 (FTPS)، 22 (SFTP) - قد تختلف حسب الإعداد</small>
+            </div>
+
+            <div class="form-group">
+                <label for="ftpUsername">اسم مستخدم FTP (FTP Username):</label>
+                <input type="text" id="ftpUsername" placeholder="username">
+                <small>اسم المستخدم للوصول إلى خادم FTP</small>
+            </div>
+
+            <div class="form-group">
+                <label for="ftpPassword">كلمة مرور FTP (FTP Password):</label>
+                <input type="password" id="ftpPassword" placeholder="••••••••">
+                <small>⚠️ تحذير أمني: سيتم حفظ كلمة المرور في المتصفح - استخدم كلمات مرور خاصة بهذا التطبيق فقط</small>
+            </div>
+
+            <div class="form-group">
+                <label for="ftpProtocol">بروتوكول FTP:</label>
+                <select id="ftpProtocol">
+                    <option value="ftp">FTP (Port 21)</option>
+                    <option value="ftps">FTPS (Port 2121)</option>
+                    <option value="sftp">SFTP (Port 2022)</option>
+                </select>
+                <small>اختر البروتوكول المناسب للاتصال الآمن</small>
+            </div>
+
+            <h3 style="color: #2c3e50; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                <i class="fas fa-bell"></i> إعدادات Webhook
+            </h3>
+
+            <div class="form-group">
+                <label for="webhookUrl">رابط Webhook (اختياري):</label>
+                <input type="text" id="webhookUrl" placeholder="https://your-domain.com/webhook">
+                <small>رابط لاستقبال الإشعارات التلقائية من Snapshot Cloud</small>
+            </div>
+
+            <div class="form-group">
+                <label for="parkpowWebhookUrl">رابط ParkPow Webhook:</label>
+                <input type="text" id="parkpowWebhookUrl" placeholder="https://app.parkpow.com/api/v1/webhook-receiver/">
+                <small>رابط webhook الخاص بـ ParkPow لإرسال البيانات تلقائياً</small>
+            </div>
+
+            <h3 style="color: #2c3e50; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                <i class="fas fa-clock"></i> إعدادات الوقت والتاريخ (Timezone & Timestamp)
+            </h3>
+
+            <div class="form-group">
+                <label for="timezone">المنطقة الزمنية (Timezone):</label>
+                <select id="timezone">
+                    <option value="Asia/Riyadh">آسيا/الرياض (Asia/Riyadh)</option>
+                    <option value="Asia/Dubai">آسيا/دبي (Asia/Dubai)</option>
+                    <option value="Asia/Kuwait">آسيا/الكويت (Asia/Kuwait)</option>
+                    <option value="Asia/Qatar">آسيا/قطر (Asia/Qatar)</option>
+                    <option value="Asia/Bahrain">آسيا/البحرين (Asia/Bahrain)</option>
+                    <option value="Asia/Muscat">آسيا/مسقط (Asia/Muscat)</option>
+                    <option value="UTC">UTC</option>
+                </select>
+                <small>اختر المنطقة الزمنية لتسجيل الطوابع الزمنية</small>
+            </div>
+
+            <div class="form-group">
+                <label for="enableTimestamp">
+                    <input type="checkbox" id="enableTimestamp" checked style="width: auto; margin-left: 10px;">
+                    تفعيل الطابع الزمني (Enable Timestamp)
+                </label>
+                <small>إضافة طابع زمني على الصور المعالجة</small>
+            </div>
+
+            <h3 style="color: #2c3e50; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                <i class="fas fa-tachometer-alt"></i> إعدادات الأداء (Performance Settings)
+            </h3>
+
+            <div class="form-group">
+                <label for="maxCallsPerSecond">الحد الأقصى للطلبات في الثانية (Max Calls/Second):</label>
+                <input type="number" id="maxCallsPerSecond" placeholder="8" min="1" value="8">
+                <small>عدد الطلبات المسموح بها في الثانية - القيمة الافتراضية: 8 (يعتمد على خطة الاشتراك)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="totalApiCalls">إجمالي الطلبات المتاحة (Total API Calls):</label>
+                <input type="number" id="totalApiCalls" placeholder="50000" min="1000">
+                <small>إجمالي عدد الطلبات المتاحة في الاشتراك</small>
+            </div>
+
+            <div class="form-group">
+                <label for="apiResetDate">تاريخ إعادة تعيين الطلبات (API Reset Date):</label>
+                <input type="datetime-local" id="apiResetDate">
+                <small>التاريخ والوقت الذي سيتم فيه إعادة تعيين عداد الطلبات</small>
+            </div>
+
+            <h3 style="color: #2c3e50; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                <i class="fas fa-database"></i> إعدادات التخزين (Storage Settings)
+            </h3>
+
+            <div class="form-group">
+                <label for="imageRetention">مدة الاحتفاظ بالصور (Image Retention - بالأيام):</label>
+                <input type="number" id="imageRetention" placeholder="30" min="1" max="365" value="30">
+                <small>عدد الأيام للاحتفاظ بالصور قبل الحذف التلقائي</small>
+            </div>
+
+            <div class="form-group">
+                <label for="dataRetention">مدة الاحتفاظ بالبيانات (Data Retention - بالأيام):</label>
+                <input type="number" id="dataRetention" placeholder="90" min="1" max="365" value="90">
+                <small>عدد الأيام للاحتفاظ ببيانات التعرف قبل الأرشفة</small>
+            </div>
+
+            <div class="form-group">
+                <label for="enableAutoCleanup">
+                    <input type="checkbox" id="enableAutoCleanup" style="width: auto; margin-left: 10px;">
+                    تفعيل التنظيف التلقائي (Auto Cleanup)
+                </label>
+                <small>حذف البيانات القديمة تلقائياً بناءً على إعدادات الاحتفاظ</small>
+            </div>
+
+            <div class="info-box" style="margin-top: 20px;">
+                <h3><i class="fas fa-key"></i> إعدادات ParkPow Cloud License</h3>
+                <div class="form-group">
+                    <label for="parkpowLicenseKey">مفتاح الترخيص (License Key):</label>
+                    <input type="text" id="parkpowLicenseKey" placeholder="مثال: 6mBNSb5L6W">
+                    <small>مفتاح الترخيص الخاص بك من ParkPow</small>
+                </div>
+                <div class="form-group">
+                    <label for="parkpowToken">رمز ParkPow Token:</label>
+                    <input type="text" id="parkpowToken" placeholder="أدخل ParkPow Token هنا">
+                    <small>رمز المصادقة الخاص بـ ParkPow API</small>
+                </div>
+                <div class="form-group">
+                    <label for="parkpowCameras">عدد الكاميرات:</label>
+                    <input type="number" id="parkpowCameras" placeholder="3" min="1" max="100">
+                    <small>عدد الكاميرات المسموح بها في الترخيص</small>
+                </div>
+                <div class="form-group">
+                    <label for="parkpowDescription">الوصف (اختياري):</label>
+                    <input type="text" id="parkpowDescription" placeholder="وصف الترخيص">
+                    <small>معلومات إضافية عن الترخيص</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>حالة الاتصال:</label>
+                <span id="snapshotConnectionStatus" class="status-badge status-disconnected">
+                    <i class="fas fa-circle"></i> غير متصل
+                </span>
+            </div>
+
+            <button class="btn btn-success" onclick="testSnapshotConnection()">
+                <i class="fas fa-plug"></i> اختبار الاتصال
+            </button>
+        </div>
+
         <div class="card">
             <h2><i class="fas fa-save"></i> حفظ الإعدادات</h2>
             <button class="btn btn-primary" onclick="saveSettings()">
@@ -335,7 +592,7 @@
         </div>
     </div>
 
-    <script src="../js/auth-manager.js"></script>
+    <script src="../js/auth.js"></script>
     <script>
         // التحقق من تسجيل الدخول
         if (window.authManager) {
@@ -350,10 +607,17 @@
         // عرض/إخفاء بطاقة API حسب النظام المختار
         document.getElementById('recognitionSystem').addEventListener('change', function() {
             const apiCard = document.getElementById('apiCard');
+            const snapshotCard = document.getElementById('snapshotCard');
+            
+            // إخفاء جميع البطاقات أولاً
+            apiCard.style.display = 'none';
+            snapshotCard.style.display = 'none';
+            
+            // عرض البطاقة المناسبة
             if (this.value === 'platerecognizer') {
                 apiCard.style.display = 'block';
-            } else {
-                apiCard.style.display = 'none';
+            } else if (this.value === 'snapshot') {
+                snapshotCard.style.display = 'block';
             }
         });
 
@@ -362,16 +626,17 @@
             const system = localStorage.getItem('RECOGNITION_SYSTEM') || 'mock';
             document.getElementById('recognitionSystem').value = system;
             
-            // عرض بطاقة API إذا كان النظام هو platerecognizer
+            // عرض بطاقة API المناسبة
             if (system === 'platerecognizer') {
                 document.getElementById('apiCard').style.display = 'block';
+            } else if (system === 'snapshot') {
+                document.getElementById('snapshotCard').style.display = 'block';
             }
 
-            // تحميل رمز API
+            // تحميل إعدادات Plate Recognizer API
             const apiToken = localStorage.getItem('PLATE_RECOGNIZER_API_TOKEN') || '';
             document.getElementById('apiToken').value = apiToken;
 
-            // تحميل المنطقة
             const region = localStorage.getItem('PLATE_RECOGNIZER_REGION') || 'sa';
             document.getElementById('apiRegion').value = region;
 
@@ -380,6 +645,72 @@
                 document.getElementById('connectionStatus').className = 'status-badge status-connected';
                 document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
             }
+
+            // تحميل إعدادات Snapshot Cloud API
+            const snapshotApiToken = localStorage.getItem('SNAPSHOT_API_TOKEN') || '';
+            document.getElementById('snapshotApiToken').value = snapshotApiToken;
+
+            const snapshotApiUrl = localStorage.getItem('SNAPSHOT_API_URL') || 'https://api.platerecognizer.com/v1/plate-reader/';
+            document.getElementById('snapshotApiUrl').value = snapshotApiUrl;
+
+            const snapshotRegion = localStorage.getItem('SNAPSHOT_REGION') || 'sa';
+            document.getElementById('snapshotRegion').value = snapshotRegion;
+
+            // Camera Settings
+            document.getElementById('cameraId').value = localStorage.getItem('CAMERA_ID') || '';
+            document.getElementById('cameraName').value = localStorage.getItem('CAMERA_NAME') || '';
+            document.getElementById('cameraLocation').value = localStorage.getItem('CAMERA_LOCATION') || '';
+
+            // Processing Settings
+            document.getElementById('confidenceThreshold').value = localStorage.getItem('CONFIDENCE_THRESHOLD') || '0.7';
+            document.getElementById('enableMMC').checked = localStorage.getItem('ENABLE_MMC') === 'true';
+            document.getElementById('enableVehicleType').checked = localStorage.getItem('ENABLE_VEHICLE_TYPE') === 'true';
+            document.getElementById('enableDirection').checked = localStorage.getItem('ENABLE_DIRECTION') === 'true';
+
+            // FTP Settings
+            document.getElementById('ftpHost').value = localStorage.getItem('FTP_HOST') || 'ftp.platerecognizer.com';
+            document.getElementById('ftpPort').value = localStorage.getItem('FTP_PORT') || '21';
+            document.getElementById('ftpUsername').value = localStorage.getItem('FTP_USERNAME') || '';
+            document.getElementById('ftpPassword').value = localStorage.getItem('FTP_PASSWORD') || '';
+            document.getElementById('ftpProtocol').value = localStorage.getItem('FTP_PROTOCOL') || 'ftp';
+
+            // Webhook Settings
+            const webhookUrl = localStorage.getItem('SNAPSHOT_WEBHOOK_URL') || '';
+            document.getElementById('webhookUrl').value = webhookUrl;
+            document.getElementById('parkpowWebhookUrl').value = localStorage.getItem('PARKPOW_WEBHOOK_URL') || 'https://app.parkpow.com/api/v1/webhook-receiver/';
+
+            // Timezone Settings
+            document.getElementById('timezone').value = localStorage.getItem('TIMEZONE') || 'Asia/Riyadh';
+            document.getElementById('enableTimestamp').checked = localStorage.getItem('ENABLE_TIMESTAMP') !== 'false';
+
+            // Performance Settings
+            document.getElementById('maxCallsPerSecond').value = localStorage.getItem('MAX_CALLS_PER_SECOND') || '8';
+            document.getElementById('totalApiCalls').value = localStorage.getItem('TOTAL_API_CALLS') || '50000';
+            document.getElementById('apiResetDate').value = localStorage.getItem('API_RESET_DATE') || '';
+
+            // Storage Settings
+            document.getElementById('imageRetention').value = localStorage.getItem('IMAGE_RETENTION') || '30';
+            document.getElementById('dataRetention').value = localStorage.getItem('DATA_RETENTION') || '90';
+            document.getElementById('enableAutoCleanup').checked = localStorage.getItem('ENABLE_AUTO_CLEANUP') === 'true';
+
+            // تحميل إعدادات ParkPow License
+            const parkpowLicenseKey = localStorage.getItem('PARKPOW_LICENSE_KEY') || '';
+            document.getElementById('parkpowLicenseKey').value = parkpowLicenseKey;
+
+            const parkpowToken = localStorage.getItem('PARKPOW_TOKEN') || '';
+            document.getElementById('parkpowToken').value = parkpowToken;
+
+            const parkpowCameras = localStorage.getItem('PARKPOW_CAMERAS') || '';
+            document.getElementById('parkpowCameras').value = parkpowCameras;
+
+            const parkpowDescription = localStorage.getItem('PARKPOW_DESCRIPTION') || '';
+            document.getElementById('parkpowDescription').value = parkpowDescription;
+
+            // تحديث حالة الاتصال للـ Snapshot
+            if (snapshotApiToken) {
+                document.getElementById('snapshotConnectionStatus').className = 'status-badge status-connected';
+                document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
+            }
         }
 
         function saveSettings() {
@@ -387,17 +718,78 @@
             const apiToken = document.getElementById('apiToken').value;
             const region = document.getElementById('apiRegion').value;
 
-            // حفظ الإعدادات
+            // حفظ الإعدادات العامة
             localStorage.setItem('RECOGNITION_SYSTEM', system);
             localStorage.setItem('PLATE_RECOGNIZER_API_TOKEN', apiToken);
             localStorage.setItem('PLATE_RECOGNIZER_REGION', region);
 
-            showAlert('success', 'تم حفظ الإعدادات بنجاح! ✅');
+            // حفظ إعدادات Snapshot Cloud API
+            const snapshotApiToken = document.getElementById('snapshotApiToken').value;
+            const snapshotApiUrl = document.getElementById('snapshotApiUrl').value;
+            const snapshotRegion = document.getElementById('snapshotRegion').value;
+
+            localStorage.setItem('SNAPSHOT_API_TOKEN', snapshotApiToken);
+            localStorage.setItem('SNAPSHOT_API_URL', snapshotApiUrl);
+            localStorage.setItem('SNAPSHOT_REGION', snapshotRegion);
+
+            // Camera Settings
+            localStorage.setItem('CAMERA_ID', document.getElementById('cameraId').value);
+            localStorage.setItem('CAMERA_NAME', document.getElementById('cameraName').value);
+            localStorage.setItem('CAMERA_LOCATION', document.getElementById('cameraLocation').value);
+
+            // Processing Settings
+            localStorage.setItem('CONFIDENCE_THRESHOLD', document.getElementById('confidenceThreshold').value);
+            localStorage.setItem('ENABLE_MMC', document.getElementById('enableMMC').checked);
+            localStorage.setItem('ENABLE_VEHICLE_TYPE', document.getElementById('enableVehicleType').checked);
+            localStorage.setItem('ENABLE_DIRECTION', document.getElementById('enableDirection').checked);
+
+            // FTP Settings
+            localStorage.setItem('FTP_HOST', document.getElementById('ftpHost').value);
+            localStorage.setItem('FTP_PORT', document.getElementById('ftpPort').value);
+            localStorage.setItem('FTP_USERNAME', document.getElementById('ftpUsername').value);
+            localStorage.setItem('FTP_PASSWORD', document.getElementById('ftpPassword').value);
+            localStorage.setItem('FTP_PROTOCOL', document.getElementById('ftpProtocol').value);
+
+            // Webhook Settings
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            localStorage.setItem('SNAPSHOT_WEBHOOK_URL', webhookUrl);
+            localStorage.setItem('PARKPOW_WEBHOOK_URL', document.getElementById('parkpowWebhookUrl').value);
+
+            // Timezone Settings
+            localStorage.setItem('TIMEZONE', document.getElementById('timezone').value);
+            localStorage.setItem('ENABLE_TIMESTAMP', document.getElementById('enableTimestamp').checked);
+
+            // Performance Settings
+            localStorage.setItem('MAX_CALLS_PER_SECOND', document.getElementById('maxCallsPerSecond').value);
+            localStorage.setItem('TOTAL_API_CALLS', document.getElementById('totalApiCalls').value);
+            localStorage.setItem('API_RESET_DATE', document.getElementById('apiResetDate').value);
+
+            // Storage Settings
+            localStorage.setItem('IMAGE_RETENTION', document.getElementById('imageRetention').value);
+            localStorage.setItem('DATA_RETENTION', document.getElementById('dataRetention').value);
+            localStorage.setItem('ENABLE_AUTO_CLEANUP', document.getElementById('enableAutoCleanup').checked);
+
+            // حفظ إعدادات ParkPow License
+            const parkpowLicenseKey = document.getElementById('parkpowLicenseKey').value;
+            const parkpowToken = document.getElementById('parkpowToken').value;
+            const parkpowCameras = document.getElementById('parkpowCameras').value;
+            const parkpowDescription = document.getElementById('parkpowDescription').value;
+
+            localStorage.setItem('PARKPOW_LICENSE_KEY', parkpowLicenseKey);
+            localStorage.setItem('PARKPOW_TOKEN', parkpowToken);
+            localStorage.setItem('PARKPOW_CAMERAS', parkpowCameras);
+            localStorage.setItem('PARKPOW_DESCRIPTION', parkpowDescription);
+
+            showAlert('success', 'تم حفظ جميع الإعدادات بنجاح! ✅');
 
             // تحديث حالة الاتصال
             if (apiToken && system === 'platerecognizer') {
                 document.getElementById('connectionStatus').className = 'status-badge status-connected';
                 document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
+            }
+            if (snapshotApiToken && system === 'snapshot') {
+                document.getElementById('snapshotConnectionStatus').className = 'status-badge status-connected';
+                document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
             }
         }
 
@@ -437,21 +829,157 @@
             }
         }
 
+        async function testSnapshotConnection() {
+            const snapshotApiToken = document.getElementById('snapshotApiToken').value;
+            
+            if (!snapshotApiToken) {
+                showAlert('error', 'الرجاء إدخال رمز API أولاً! ⚠️');
+                return;
+            }
+
+            showAlert('info', 'جاري اختبار الاتصال بـ Snapshot Cloud... ⏳');
+
+            try {
+                // اختبار الاتصال بـ Snapshot Cloud API - استخدام نقطة النهاية للإحصائيات
+                const response = await fetch('https://api.platerecognizer.com/v1/statistics/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Token ' + snapshotApiToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // التحقق من وجود البيانات المتوقعة
+                    const calls = data?.usage?.calls ?? 'غير متاح';
+                    const maxCalls = data?.usage?.max_calls ?? 'غير متاح';
+                    showAlert('success', `✅ الاتصال بـ Snapshot Cloud ناجح! لديك ${calls} استدعاء متبقي من ${maxCalls}`);
+                    document.getElementById('snapshotConnectionStatus').className = 'status-badge status-connected';
+                    document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> متصل';
+                } else {
+                    showAlert('error', '❌ فشل الاتصال! تحقق من صحة رمز API');
+                    document.getElementById('snapshotConnectionStatus').className = 'status-badge status-disconnected';
+                    document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
+                }
+            } catch (error) {
+                showAlert('error', '❌ خطأ في الاتصال: ' + error.message);
+                document.getElementById('snapshotConnectionStatus').className = 'status-badge status-disconnected';
+                document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
+            }
+        }
+
         function resetSettings() {
             if (confirm('هل أنت متأكد من إعادة تعيين جميع الإعدادات؟')) {
+                // إعدادات أساسية
                 localStorage.removeItem('RECOGNITION_SYSTEM');
                 localStorage.removeItem('PLATE_RECOGNIZER_API_TOKEN');
                 localStorage.removeItem('PLATE_RECOGNIZER_REGION');
+                localStorage.removeItem('SNAPSHOT_API_TOKEN');
+                localStorage.removeItem('SNAPSHOT_API_URL');
+                localStorage.removeItem('SNAPSHOT_REGION');
                 
+                // Camera Settings
+                localStorage.removeItem('CAMERA_ID');
+                localStorage.removeItem('CAMERA_NAME');
+                localStorage.removeItem('CAMERA_LOCATION');
+                
+                // Processing Settings
+                localStorage.removeItem('CONFIDENCE_THRESHOLD');
+                localStorage.removeItem('ENABLE_MMC');
+                localStorage.removeItem('ENABLE_VEHICLE_TYPE');
+                localStorage.removeItem('ENABLE_DIRECTION');
+                
+                // FTP Settings
+                localStorage.removeItem('FTP_HOST');
+                localStorage.removeItem('FTP_PORT');
+                localStorage.removeItem('FTP_USERNAME');
+                localStorage.removeItem('FTP_PASSWORD');
+                localStorage.removeItem('FTP_PROTOCOL');
+                
+                // Webhook Settings
+                localStorage.removeItem('SNAPSHOT_WEBHOOK_URL');
+                localStorage.removeItem('PARKPOW_WEBHOOK_URL');
+                
+                // Timezone Settings
+                localStorage.removeItem('TIMEZONE');
+                localStorage.removeItem('ENABLE_TIMESTAMP');
+                
+                // Performance Settings
+                localStorage.removeItem('MAX_CALLS_PER_SECOND');
+                localStorage.removeItem('TOTAL_API_CALLS');
+                localStorage.removeItem('API_RESET_DATE');
+                
+                // Storage Settings
+                localStorage.removeItem('IMAGE_RETENTION');
+                localStorage.removeItem('DATA_RETENTION');
+                localStorage.removeItem('ENABLE_AUTO_CLEANUP');
+                
+                // ParkPow Settings
+                localStorage.removeItem('PARKPOW_LICENSE_KEY');
+                localStorage.removeItem('PARKPOW_TOKEN');
+                localStorage.removeItem('PARKPOW_CAMERAS');
+                localStorage.removeItem('PARKPOW_DESCRIPTION');
+                
+                // إعادة تعيين القيم في النموذج
                 document.getElementById('recognitionSystem').value = 'mock';
                 document.getElementById('apiToken').value = '';
                 document.getElementById('apiRegion').value = 'sa';
                 document.getElementById('apiCard').style.display = 'none';
                 
+                document.getElementById('snapshotApiToken').value = '';
+                document.getElementById('snapshotApiUrl').value = 'https://api.platerecognizer.com/v1/plate-reader/';
+                document.getElementById('snapshotRegion').value = 'sa';
+                
+                // Camera Settings
+                document.getElementById('cameraId').value = '';
+                document.getElementById('cameraName').value = '';
+                document.getElementById('cameraLocation').value = '';
+                
+                // Processing Settings
+                document.getElementById('confidenceThreshold').value = '0.7';
+                document.getElementById('enableMMC').checked = false;
+                document.getElementById('enableVehicleType').checked = false;
+                document.getElementById('enableDirection').checked = false;
+                
+                // FTP Settings
+                document.getElementById('ftpHost').value = 'ftp.platerecognizer.com';
+                document.getElementById('ftpPort').value = '21';
+                document.getElementById('ftpUsername').value = '';
+                document.getElementById('ftpPassword').value = '';
+                document.getElementById('ftpProtocol').value = 'ftp';
+                
+                // Webhook Settings
+                document.getElementById('webhookUrl').value = '';
+                document.getElementById('parkpowWebhookUrl').value = 'https://app.parkpow.com/api/v1/webhook-receiver/';
+                
+                // Timezone Settings
+                document.getElementById('timezone').value = 'Asia/Riyadh';
+                document.getElementById('enableTimestamp').checked = true;
+                
+                // Performance Settings
+                document.getElementById('maxCallsPerSecond').value = '8';
+                document.getElementById('totalApiCalls').value = '50000';
+                document.getElementById('apiResetDate').value = '';
+                
+                // Storage Settings
+                document.getElementById('imageRetention').value = '30';
+                document.getElementById('dataRetention').value = '90';
+                document.getElementById('enableAutoCleanup').checked = false;
+                
+                // ParkPow Settings
+                document.getElementById('parkpowLicenseKey').value = '';
+                document.getElementById('parkpowToken').value = '';
+                document.getElementById('parkpowCameras').value = '';
+                document.getElementById('parkpowDescription').value = '';
+                document.getElementById('snapshotCard').style.display = 'none';
+                
                 document.getElementById('connectionStatus').className = 'status-badge status-disconnected';
                 document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
                 
-                showAlert('success', 'تم إعادة تعيين الإعدادات بنجاح! ✅');
+                document.getElementById('snapshotConnectionStatus').className = 'status-badge status-disconnected';
+                document.getElementById('snapshotConnectionStatus').innerHTML = '<i class="fas fa-circle"></i> غير متصل';
+                
+                showAlert('success', 'تم إعادة تعيين جميع الإعدادات بنجاح! ✅');
             }
         }
 

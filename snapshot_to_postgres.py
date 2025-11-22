@@ -13,7 +13,8 @@ Features:
 import os
 import sys
 import argparse
-import json
+import hashlib
+import mimetypes
 import time
 import hashlib
 import mimetypes
@@ -24,11 +25,13 @@ import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
 import psycopg2
+from psycopg2 import Binary
 from psycopg2.extras import Json, register_uuid
-from datetime import datetime
 
+# Load environment variables
 load_dotenv()
 
+# Required environment variables (will be validated in main())
 PLATE_API_KEY = os.getenv("PLATE_API_KEY")
 SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -174,12 +177,102 @@ def send_request(image_bytes):
             else:
                 raise
 
-def parse_and_normalize_response(resp):
+def calculate_image_metadata(image_bytes, path_or_url):
     """
-    استخرج الحقول المهمة من ردّ Plate Recognizer.
-    بما أن الرد قد يختلف حسب إعدادات النموذج، ستخزن الرد الخام أيضاً.
+    احسب البيانات الوصفية للصورة: SHA256، MIME type، الحجم
     """
-    out = {
+    sha256_hash = hashlib.sha256(image_bytes).hexdigest()
+    size = len(image_bytes)
+    
+    # تحديد MIME type
+    mime_type = mimetypes.guess_type(path_or_url)[0]
+    
+    # إذا لم نتمكن من تحديد MIME type، نستخدم القيمة الافتراضية
+    if not mime_type:
+        # فحص الـ magic bytes
+        if image_bytes.startswith(b'\xff\xd8\xff'):
+            mime_type = 'image/jpeg'
+        elif image_bytes.startswith(b'\x89PNG\r\n\x1a\n'):
+            mime_type = 'image/png'
+        elif image_bytes.startswith(b'GIF87a') or image_bytes.startswith(b'GIF89a'):
+            mime_type = 'image/gif'
+        else:
+            mime_type = 'application/octet-stream'
+    
+    return sha256_hash, mime_type, size
+
+
+def upload_to_s3(image_bytes, filename, mime_type):
+    """
+    ارفع الصورة إلى S3 وأرجع الـ URL
+    """
+    try:
+        # استخدام SHA256 كاسم للملف لتجنب التكرار
+        sha256_hash = hashlib.sha256(image_bytes).hexdigest()
+        extension = mimetypes.guess_extension(mime_type) or '.jpg'
+        s3_key = f"plate-snapshots/{sha256_hash}{extension}"
+        
+        boto3_client.put_object(
+            Bucket=S3_BUCKET,
+            Key=s3_key,
+            Body=image_bytes,
+            ContentType=mime_type
+        )
+        
+        # إنشاء URL للصورة
+        # إذا كان هناك AWS_ENDPOINT_URL (MinIO)، استخدمه
+        AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
+        if AWS_ENDPOINT_URL:
+            # MinIO or custom S3-compatible endpoint
+            s3_url = f"{AWS_ENDPOINT_URL}/{S3_BUCKET}/{s3_key}"
+        else:
+            # AWS S3 URL
+            s3_url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
+        
+        return s3_url
+    except Exception as e:
+        print(f"  خطأ في رفع الصورة إلى S3: {e}")
+        return None
+
+
+def send_to_plate_recognizer(image_bytes, mime_type='image/jpeg'):
+    """
+    Send image to Plate Recognizer API (Snapshot or SDK) and return response.
+    Supports both cloud-based Snapshot API and on-premise SDK/Server.
+    """
+    # Determine file extension from mime type
+    ext = mime_type.split('/')[-1] if '/' in mime_type else 'jpg'
+    filename = f"image.{ext}"
+    
+    files = {"upload": (filename, image_bytes, mime_type)}
+    
+    # Retry logic
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(
+                API_URL,  # Uses either SNAPSHOT_API_URL or SDK_API_URL
+                headers=HEADERS,
+                files=files,
+                timeout=60
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            if attempt < max_retries - 1:
+                print(f"  Retry {attempt + 1}/{max_retries} after error: {e}")
+                time.sleep(2 ** attempt)  # Exponential backoff
+            else:
+                raise
+
+
+
+def parse_plate_recognizer_response(resp, confidence_threshold=0.0):
+    """
+    Parse Plate Recognizer response and extract relevant information.
+    Returns a dictionary with extracted fields, or None if below threshold.
+    """
+    parsed = {
         "snapshot_ref": None,
         "camera_id": None,
         "captured_at": None,
@@ -189,41 +282,56 @@ def parse_and_normalize_response(resp):
         "colors": None,
         "bbox": None,
         "raw_response": resp,
-        "image_url": None,
         "meta": {}
     }
-
-    results = resp.get("results") or resp.get("vehicles") or [resp]
-
-    if isinstance(results, dict):
-        results = [results]
-
-    if len(results) > 0:
-        r0 = results[0]
-        out["snapshot_ref"] = r0.get("id") or r0.get("snapshot_id") or out["snapshot_ref"]
-        out["camera_id"] = r0.get("camera_id") or r0.get("camera")
-        plate = r0.get("plate") or r0.get("plate_info") or {}
+    
+    # Extract results (structure may vary)
+    results = resp.get("results", [])
+    
+    if results and len(results) > 0:
+        result = results[0]
+        
+        # Extract plate information
+        plate = result.get("plate", {})
         if isinstance(plate, dict):
-            out["plate_text"] = plate.get("plate") or plate.get("number") or out["plate_text"]
-            out["plate_confidence"] = plate.get("confidence") or out["plate_confidence"]
-        mm = r0.get("vehicle") or r0.get("vehicle_info") or {}
-        if mm:
-            out["makes_models"] = mm.get("predictions") or mm.get("makes_models") or mm
-        colors = r0.get("color") or r0.get("colors")
-        if colors:
-            out["colors"] = colors
-        bbox = r0.get("box") or r0.get("bounding_box") or r0.get("bbox")
-        if bbox:
-            out["bbox"] = bbox
-        if r0.get("timestamp"):
+            plate_text = plate.get("plate") or plate.get("text") or plate.get("number")
+        else:
+            plate_text = str(plate) if plate else None
+        
+        plate_confidence = result.get("score", 0.0)
+        
+        # Apply confidence threshold
+        if plate_confidence < confidence_threshold:
+            return None
+        
+        parsed["plate_text"] = plate_text
+        parsed["plate_confidence"] = plate_confidence
+        
+        # Extract vehicle information
+        vehicle = result.get("vehicle", {})
+        if vehicle:
+            parsed["makes_models"] = vehicle.get("type", {})
+            parsed["colors"] = vehicle.get("color", [])
+        
+        # Extract bounding box
+        parsed["bbox"] = result.get("box", {})
+        
+        # Extract other metadata
+        parsed["camera_id"] = resp.get("camera_id")
+        parsed["snapshot_ref"] = resp.get("uuid") or resp.get("filename")
+        
+        # Extract timestamp
+        timestamp = resp.get("timestamp")
+        if timestamp:
             try:
-                out["captured_at"] = datetime.fromisoformat(r0.get("timestamp"))
+                parsed["captured_at"] = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
             except Exception:
-                out["captured_at"] = None
-        if r0.get("image_url"):
-            out["image_url"] = r0.get("image_url")
+                parsed["captured_at"] = datetime.now()
+        else:
+            parsed["captured_at"] = datetime.now()
+    
+    return parsed
 
-    return out
 
 def insert_into_db(conn, record):
     """
@@ -243,9 +351,9 @@ def insert_into_db(conn, record):
             record["captured_at"],
             record["plate_text"],
             record["plate_confidence"],
-            Json(record["makes_models"]),
-            Json(record["colors"]),
-            Json(record["bbox"]),
+            Json(record["makes_models"]) if record["makes_models"] else None,
+            Json(record["colors"]) if record["colors"] else None,
+            Json(record["bbox"]) if record["bbox"] else None,
             Json(record["raw_response"]),
             record["image_url"],
             record.get("image_data"),  # May be None
@@ -257,6 +365,8 @@ def insert_into_db(conn, record):
         new_id = cur.fetchone()[0]
         conn.commit()
         return new_id
+
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -280,6 +390,52 @@ def main():
         help="Minimum confidence threshold for plate detection (0.0-1.0, default: 0.0)"
     )
     args = parser.parse_args()
+    
+    # Validate environment variables after parsing args (so --help works without env vars)
+    global boto3_client, HEADERS, API_URL
+    
+    # Validate API type
+    if PLATE_API_TYPE not in ["snapshot", "sdk"]:
+        print(f"ERROR: PLATE_API_TYPE must be 'snapshot' or 'sdk', got '{PLATE_API_TYPE}'")
+        sys.exit(1)
+    
+    # Validate required environment variables based on API type
+    if not DATABASE_URL:
+        print("ERROR: DATABASE_URL is required")
+        sys.exit(1)
+    
+    # Set API URL and validate credentials based on type
+    if PLATE_API_TYPE == "snapshot":
+        if not SNAPSHOT_API_URL:
+            print("ERROR: SNAPSHOT_API_URL must be set when PLATE_API_TYPE=snapshot")
+            sys.exit(1)
+        if not PLATE_API_KEY:
+            print("ERROR: PLATE_API_KEY must be set when PLATE_API_TYPE=snapshot")
+            sys.exit(1)
+        API_URL = SNAPSHOT_API_URL
+        # Set authentication header for Snapshot API
+        HEADERS = {
+            "Authorization": f"Token {PLATE_API_KEY}"
+        }
+    else:  # sdk
+        if not SDK_API_URL:
+            print("ERROR: SDK_API_URL must be set when PLATE_API_TYPE=sdk")
+            sys.exit(1)
+        # Validate SDK_LICENSE_TOKEN for documentation purposes
+        # Note: The token is actually used by the SDK Docker container, not by this script
+        SDK_LICENSE_TOKEN = os.getenv("SDK_LICENSE_TOKEN")
+        if not SDK_LICENSE_TOKEN:
+            print("WARNING: SDK_LICENSE_TOKEN is not set. Make sure your SDK container is configured correctly.")
+            print("         The SDK Docker container requires LICENSE_TOKEN to be set as an environment variable.")
+        API_URL = SDK_API_URL
+        # SDK/Server may not require authentication header, but we include a dummy one for compatibility
+        HEADERS = {
+            "Authorization": f"Token {PLATE_API_KEY or 'sdk-no-auth-needed'}"
+        }
+    
+    print(f"Using Plate Recognizer API type: {PLATE_API_TYPE}")
+    print(f"API endpoint: {API_URL}")
+    print()
 
     print(f"Configuration:")
     print(f"  Storage mode: {STORE_IMAGES}")
