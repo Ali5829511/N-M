@@ -73,19 +73,24 @@ def get_image_data(image_path_or_url: str) -> Tuple[bytes, str, int, str]:
     return image_bytes, mime_type, size, sha256_hash
 
 
-def send_to_plate_recognizer(image_data: bytes = None, image_url: str = None) -> Dict:
+def send_to_plate_recognizer(image_data: bytes = None, image_url: str = None, mime_type: str = 'image/jpeg') -> Dict:
     """
     Send image to Plate Recognizer Snapshot API.
     
     Args:
         image_data: Image bytes (for upload)
         image_url: Image URL (alternative to upload)
+        mime_type: MIME type of the image (default: image/jpeg)
         
     Returns:
         API response as dictionary
     """
     if not PLATE_API_KEY:
         raise ValueError("PLATE_API_KEY environment variable not set")
+    
+    # Validate that exactly one method is provided
+    if (image_data is None and image_url is None) or (image_data is not None and image_url is not None):
+        raise ValueError("Exactly one of image_data or image_url must be provided")
     
     headers = {
         'Authorization': f'Token {PLATE_API_KEY}'
@@ -96,8 +101,8 @@ def send_to_plate_recognizer(image_data: bytes = None, image_url: str = None) ->
         data = {'upload_url': image_url}
         response = requests.post(SNAPSHOT_API_URL, headers=headers, data=data, timeout=60)
     else:
-        # Upload file
-        files = {'upload': ('image.jpg', image_data, 'image/jpeg')}
+        # Upload file with proper MIME type
+        files = {'upload': ('image', image_data, mime_type)}
         response = requests.post(SNAPSHOT_API_URL, headers=headers, files=files, timeout=60)
     
     response.raise_for_status()
@@ -237,7 +242,7 @@ def process_images(image_file: str = 'images.txt'):
         sys.exit(1)
     
     # Read image paths
-    with open(image_file, 'r') as f:
+    with open(image_file, 'r', encoding='utf-8') as f:
         image_paths = [line.strip() for line in f if line.strip() and not line.startswith('#')]
     
     if not image_paths:
@@ -275,7 +280,7 @@ def process_images(image_file: str = 'images.txt'):
                 if is_url:
                     api_response = send_to_plate_recognizer(image_url=image_path)
                 else:
-                    api_response = send_to_plate_recognizer(image_data=image_bytes)
+                    api_response = send_to_plate_recognizer(image_data=image_bytes, mime_type=mime_type)
                 
                 # Extract data
                 extracted = extract_plate_data(api_response)
@@ -289,9 +294,9 @@ def process_images(image_file: str = 'images.txt'):
                 
                 print(f"  Plate: {extracted['plate_text']} (confidence: {extracted['plate_confidence']:.2f})")
                 
-                # Insert into database
-                snapshot_ref = f"snapshot_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{idx}"
+                # Insert into database with consistent timestamp
                 captured_at = datetime.now()
+                snapshot_ref = f"snapshot_{captured_at.strftime('%Y%m%d_%H%M%S')}_{idx}"
                 
                 insert_snapshot(
                     conn,
@@ -325,7 +330,7 @@ def process_images(image_file: str = 'images.txt'):
             except Exception as e:
                 print(f"  Error processing {image_path}: {e}")
                 errors += 1
-                conn.rollback()
+                # Don't rollback - let successful images in batch commit
                 continue
         
         # Final commit
