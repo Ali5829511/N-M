@@ -48,7 +48,15 @@ curl -X POST https://app.parkpow.com/api/v1/webhook-receiver/ \
 
 ## 📚 للمزيد / For More
 
-راجع: [STREAM_INTEGRATION_GUIDE.md](STREAM_INTEGRATION_GUIDE.md)
+- 📖 [دليل التكامل الكامل](STREAM_INTEGRATION_GUIDE.md)
+- 🛠️ [حل مشكلة 429 Error](PARKPOW_429_ERROR_SOLUTION.md)
+
+## ⚠️ ملاحظة / Note
+
+إذا واجهت خطأ 429 على `/openapi/`:
+- ✅ **لا تقلق!** الخطأ فقط على الوثائق
+- ✅ **التكوين صحيح** ويعمل بشكل طبيعي
+- 📖 راجع: [PARKPOW_429_ERROR_SOLUTION.md](PARKPOW_429_ERROR_SOLUTION.md)
 
 ---
 
