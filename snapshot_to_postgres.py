@@ -15,10 +15,9 @@ import argparse
 import hashlib
 import mimetypes
 import time
-import hashlib
-import mimetypes
 from urllib.parse import urlparse
 from io import BytesIO
+from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
@@ -26,8 +25,6 @@ from tqdm import tqdm
 import psycopg2
 from psycopg2 import Binary
 from psycopg2.extras import Json, register_uuid
-from psycopg2 import Binary
-from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -39,103 +36,13 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 STORE_IMAGES = os.getenv("STORE_IMAGES", "s3").lower()  # "s3" or "db"
 S3_BUCKET = os.getenv("S3_BUCKET")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 # Global variables initialized in main()
 boto3_client = None
-if STORE_IMAGES == "s3":
-    if not S3_BUCKET or not AWS_REGION:
-        print("الرجاء ضبط المتغيرات البيئية: S3_BUCKET و AWS_REGION عند استخدام STORE_IMAGES=s3")
-        sys.exit(1)
-    try:
-        import boto3
-        boto3_client = boto3.client(
-            's3',
-            region_name=AWS_REGION,
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY
-        )
-    except ImportError:
-        print("خطأ: يرجى تثبيت boto3 باستخدام: pip install boto3")
-        sys.exit(1)
+HEADERS = {}
 
-# Validate S3 configuration if needed
-if STORE_IMAGES == "s3":
-    if not S3_BUCKET or not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
-        print("Error: STORE_IMAGES=s3 but missing S3 configuration.")
-        print("Please set: S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
-        sys.exit(1)
-    # Import boto3 only when needed
-    try:
-        import boto3
-        from botocore.exceptions import ClientError
-    except ImportError:
-        print("Error: boto3 is required for S3 storage. Install with: pip install boto3")
-        sys.exit(1)
-
-if STORE_IMAGES == "s3" and not S3_BUCKET:
-    print("الرجاء ضبط S3_BUCKET عند استخدام STORE_IMAGES=s3")
-    sys.exit(1)
-
-def upload_to_s3(image_bytes, sha256_hash, mime_type, config):
-    """رفع الصورة إلى S3 وإرجاع URL"""
-    try:
-        # Check if boto3 is available
-        try:
-            import boto3
-        except ImportError:
-            raise RuntimeError("الرجاء تثبيت boto3: pip install boto3")
-        
-        s3_client = boto3.client(
-            's3',
-            aws_access_key_id=config['AWS_ACCESS_KEY_ID'],
-            aws_secret_access_key=config['AWS_SECRET_ACCESS_KEY'],
-            region_name=config['AWS_REGION']
-        )
-        
-        # استخدام SHA256 كاسم الملف لتجنب التكرار
-        ext = mimetypes.guess_extension(mime_type) or '.jpg'
-        key = f"vehicle-snapshots/{sha256_hash}{ext}"
-        
-        # استخدام ACL خاص (private) للأمان - استخدم presigned URLs للوصول المؤقت
-        s3_client.put_object(
-            Bucket=config['S3_BUCKET'],
-            Key=key,
-            Body=image_bytes,
-            ContentType=mime_type
-            # ACL='private' is default - removed public-read for security
-        )
-        
-        # إنشاء presigned URL للوصول المؤقت (صالح لمدة ساعة)
-        # يمكن تعديل المدة حسب الحاجة
-        use_presigned = config.get('S3_USE_PRESIGNED_URLS', 'true').lower() == 'true'
-        if use_presigned:
-            url = s3_client.generate_presigned_url(
-                'get_object',
-                Params={'Bucket': config['S3_BUCKET'], 'Key': key},
-                ExpiresIn=3600  # ساعة واحدة
-            )
-        else:
-            # للاستخدام مع buckets عامة فقط
-            url = s3_client.generate_presigned_url(
-                'get_object',
-                Params={'Bucket': config['S3_BUCKET'], 'Key': key},
-                ExpiresIn=0  # URL دائم (يتطلب bucket عام)
-            )
-        
-        return url
-    except Exception as e:
-        print(f"خطأ في رفع الصورة إلى S3: {e}")
-        raise
-
-def fetch_image_bytes(path_or_url):
-    """جلب بايتات الصورة من URL أو ملف محلي"""
-    if urlparse(path_or_url).scheme in ("http", "https"):
-        response = requests.get(path_or_url, timeout=30)
-        response.raise_for_status()
-        return response.content
-    else:
-        with open(path_or_url, "rb") as f:
-            return f.read()
 
 def get_image_bytes(path_or_url):
     """
@@ -149,6 +56,7 @@ def get_image_bytes(path_or_url):
         with open(path_or_url, "rb") as f:
             return f.read()
 
+
 def calculate_image_metadata(image_bytes, path_or_url):
     """
     احسب البيانات الوصفية للصورة: SHA256، MIME type، الحجم
@@ -157,12 +65,7 @@ def calculate_image_metadata(image_bytes, path_or_url):
     size = len(image_bytes)
     
     # تحديد MIME type
-    mime_type = None
-    if urlparse(path_or_url).scheme in ("http", "https"):
-        # محاولة الحصول على MIME type من URL
-        mime_type = mimetypes.guess_type(path_or_url)[0]
-    else:
-        mime_type = mimetypes.guess_type(path_or_url)[0]
+    mime_type = mimetypes.guess_type(path_or_url)[0]
     
     # إذا لم نتمكن من تحديد MIME type، نستخدم القيمة الافتراضية
     if not mime_type:
@@ -177,6 +80,7 @@ def calculate_image_metadata(image_bytes, path_or_url):
             mime_type = 'application/octet-stream'
     
     return sha256_hash, mime_type, size
+
 
 def upload_to_s3(image_bytes, filename, mime_type):
     """
@@ -210,40 +114,10 @@ def upload_to_s3(image_bytes, filename, mime_type):
         print(f"  خطأ في رفع الصورة إلى S3: {e}")
         return None
 
-def send_request_to_api(image_bytes, image_url=None, retry_count=3):
-    """
-    إرسال الصورة إلى Plate Recognizer API مع إعادة المحاولة
-    يمكن إرسال الصورة كـ multipart أو كـ URL
-    """
-    for attempt in range(retry_count):
-        try:
-            if image_url:
-                # إرسال رابط الصورة
-                payload = {"upload": image_url}
-                r = requests.post(
-                    SNAPSHOT_API_URL, 
-                    headers={**HEADERS, "Content-Type": "application/json"}, 
-                    json=payload, 
-                    timeout=60
-                )
-            else:
-                # إرسال الصورة كـ multipart
-                files = {"upload": image_bytes}
-                r = requests.post(SNAPSHOT_API_URL, headers=HEADERS, files=files, timeout=60)
-            
-            r.raise_for_status()
-            return r.json()
-        except requests.exceptions.RequestException as e:
-            if attempt < retry_count - 1:
-                print(f"  محاولة {attempt + 1} فشلت، إعادة المحاولة...")
-                time.sleep(2 ** attempt)  # exponential backoff
-            else:
-                raise e
 
 def send_to_plate_recognizer(image_bytes, mime_type='image/jpeg'):
     """
-    Extract important fields from Plate Recognizer response.
-    Since response may vary based on model settings, we also store the raw response.
+    Send image to Plate Recognizer API and return response.
     """
     # Determine file extension from mime type
     ext = mime_type.split('/')[-1] if '/' in mime_type else 'jpg'
@@ -271,10 +145,11 @@ def send_to_plate_recognizer(image_bytes, mime_type='image/jpeg'):
                 raise
 
 
+
 def parse_plate_recognizer_response(resp, confidence_threshold=0.0):
     """
     Parse Plate Recognizer response and extract relevant information.
-    Returns a dictionary with extracted fields.
+    Returns a dictionary with extracted fields, or None if below threshold.
     """
     parsed = {
         "snapshot_ref": None,
@@ -286,6 +161,7 @@ def parse_plate_recognizer_response(resp, confidence_threshold=0.0):
         "colors": None,
         "bbox": None,
         "raw_response": resp,
+        "meta": {}
     }
     
     # Extract results (structure may vary)
@@ -300,13 +176,14 @@ def parse_plate_recognizer_response(resp, confidence_threshold=0.0):
             plate_text = plate.get("plate") or plate.get("text") or plate.get("number")
         else:
             plate_text = str(plate) if plate else None
+        
         plate_confidence = result.get("score", 0.0)
         
         # Apply confidence threshold
         if plate_confidence < confidence_threshold:
             return None
         
-        parsed["plate_text"] = plate
+        parsed["plate_text"] = plate_text
         parsed["plate_confidence"] = plate_confidence
         
         # Extract vehicle information
@@ -492,11 +369,7 @@ Environment variables required:
             
             # 4. إرسال إلى Plate Recognizer API
             try:
-                # إرسال URL إذا كان لدينا رابط S3، وإلا نرسل البايتات
-                if STORE_IMAGES == "s3" and image_url_stored:
-                    resp = send_request_to_api(None, image_url=image_url_stored)
-                else:
-                    resp = send_request_to_api(image_bytes)
+                resp = send_to_plate_recognizer(image_bytes, mime_type)
             except Exception as e:
                 print(f"  خطأ عند إرسال {item}: {e}")
                 error_count += 1
@@ -504,15 +377,14 @@ Environment variables required:
                 continue
             
             # 5. استخراج البيانات من الرد
-            record = parse_and_normalize_response(resp)
+            record = parse_plate_recognizer_response(resp, args.confidence_threshold)
             
             # 6. فحص حد الثقة
-            if record["plate_confidence"] is not None:
-                if record["plate_confidence"] < args.confidence_threshold:
-                    print(f"  تخطي {item}: الثقة {record['plate_confidence']} أقل من الحد {args.confidence_threshold}")
-                    skipped_count += 1
-                    time.sleep(args.delay)
-                    continue
+            if record is None:
+                print(f"  تخطي {item}: الثقة أقل من الحد {args.confidence_threshold}")
+                skipped_count += 1
+                time.sleep(args.delay)
+                continue
             
             # 7. إضافة البيانات الوصفية
             record["snapshot_ref"] = record["snapshot_ref"] or sha256_hash
