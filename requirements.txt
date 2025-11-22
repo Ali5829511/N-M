@@ -17,6 +17,6 @@ Pillow>=10.0.0
 # Plate Recognizer Snapshot to PostgreSQL dependencies
 # متطلبات نظام التعرف على اللوحات مع PostgreSQL
 python-dotenv>=1.0.0
-psycopg2-binary>=2.9.9
+psycopg2-binary>=2.9.9  # Note: For production, consider using psycopg2 (requires compilation)
 tqdm>=4.66.0
-sqlalchemy>=2.0.0
+sqlalchemy>=2.0.0,<3.0.0

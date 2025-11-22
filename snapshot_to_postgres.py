@@ -27,6 +27,15 @@ from sqlalchemy import create_engine, text
 # Load environment variables
 load_dotenv()
 
+
+def is_url(path: str) -> bool:
+    """Check if path is a URL"""
+    try:
+        result = urlparse(path)
+        return all([result.scheme, result.netloc])
+    except Exception:
+        return False
+
 # Configuration from environment variables
 PLATE_API_KEY = os.getenv('PLATE_API_KEY')
 SNAPSHOT_API_URL = os.getenv('SNAPSHOT_API_URL', 'https://api.platerecognizer.com/v1/plate-reader/')
@@ -52,14 +61,6 @@ class PlateRecognizerClient:
         self.api_key = api_key
         self.api_url = api_url
         self.headers = {'Authorization': f'Token {api_key}'}
-    
-    def is_url(self, path: str) -> bool:
-        """Check if path is a URL"""
-        try:
-            result = urlparse(path)
-            return all([result.scheme, result.netloc])
-        except:
-            return False
     
     def recognize_from_file(self, image_path: str, camera_id: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -124,7 +125,7 @@ class PlateRecognizerClient:
         Returns:
             API response as dictionary
         """
-        if self.is_url(image_path):
+        if is_url(image_path):
             return self.recognize_from_url(image_path, camera_id)
         else:
             return self.recognize_from_file(image_path, camera_id)
@@ -190,7 +191,7 @@ class PostgreSQLStorage:
                     if timestamp_str:
                         try:
                             captured_at = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
-                        except:
+                        except (ValueError, AttributeError):
                             captured_at = datetime.utcnow()
                     else:
                         captured_at = datetime.utcnow()
@@ -242,7 +243,7 @@ class PostgreSQLStorage:
                         'colors': json.dumps(colors),
                         'bbox': json.dumps(bbox),
                         'raw_response': json.dumps(api_response),
-                        'image_url': image_source if self.is_url(image_source) else None,
+                        'image_url': image_source if is_url(image_source) else None,
                         'meta': json.dumps(meta)
                     })
                     
@@ -256,14 +257,6 @@ class PostgreSQLStorage:
         except Exception as e:
             print(f"❌ Database error: {str(e)}")
             return None
-    
-    def is_url(self, path: str) -> bool:
-        """Check if path is a URL"""
-        try:
-            result = urlparse(path)
-            return all([result.scheme, result.netloc])
-        except:
-            return False
 
 
 def read_image_list(file_path: str) -> List[str]:
