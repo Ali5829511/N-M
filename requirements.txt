@@ -20,3 +20,4 @@ python-dotenv
 psycopg2-binary
 tqdm
 sqlalchemy
+boto3  # AWS S3 support for image storage

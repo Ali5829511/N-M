@@ -11,19 +11,38 @@ services:
       - ./db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build:
       context: .
       dockerfile: Dockerfile.snapshot
     environment:
+      # Plate Recognizer API
       PLATE_API_KEY: ${PLATE_API_KEY}
-      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL}
+      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
+      
+      # Database
       DATABASE_URL: postgres://user:pass@db:5432/platenet
+      
+      # Image Storage Configuration
+      STORE_IMAGES: ${STORE_IMAGES:-s3}
+      
+      # S3 Configuration (only needed if STORE_IMAGES=s3)
+      S3_BUCKET: ${S3_BUCKET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - .:/app
+    command: ["python", "--version"]  # Override to run custom commands
 
 volumes:
   db-data:

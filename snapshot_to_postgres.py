@@ -5,6 +5,7 @@
 ملاحظات:
 - عدّل SNAPSHOT_API_URL حسب الوثائق الرسمية (https://guides.platerecognizer.com/docs/snapshot/getting-started).
 - يدعم السكربت إرسال قائمة روابط صور من ملف نصي أو مسارات ملفات محلية.
+- يدعم تخزين الصور في S3 (افتراضي) أو في قاعدة البيانات (STORE_IMAGES=db)
 """
 
 import os
@@ -12,6 +13,8 @@ import sys
 import argparse
 import json
 import time
+import hashlib
+import mimetypes
 from urllib.parse import urlparse
 
 import requests
@@ -26,14 +29,87 @@ load_dotenv()
 PLATE_API_KEY = os.getenv("PLATE_API_KEY")
 SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")  # ضع هنا endpoint كما في الوثائق
 DATABASE_URL = os.getenv("DATABASE_URL")
+STORE_IMAGES = os.getenv("STORE_IMAGES", "s3")  # "s3" or "db"
+
+# S3 Configuration
+S3_BUCKET = os.getenv("S3_BUCKET")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 
 if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
     print("الرجاء ضبط المتغيرات البيئية: PLATE_API_KEY و SNAPSHOT_API_URL و DATABASE_URL")
     sys.exit(1)
 
+if STORE_IMAGES == "s3":
+    if not S3_BUCKET or not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
+        print("الرجاء ضبط متغيرات S3: S3_BUCKET و AWS_ACCESS_KEY_ID و AWS_SECRET_ACCESS_KEY")
+        sys.exit(1)
+    try:
+        import boto3
+        from botocore.exceptions import ClientError
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            region_name=AWS_REGION
+        )
+    except ImportError:
+        print("الرجاء تثبيت boto3: pip install boto3")
+        sys.exit(1)
+
 HEADERS = {
     "Authorization": f"Token {PLATE_API_KEY}"
 }
+
+# Helper functions
+def calculate_sha256(data):
+    """حساب SHA256 hash للبيانات"""
+    return hashlib.sha256(data).hexdigest()
+
+def detect_mime_type(path_or_url, data=None):
+    """تحديد MIME type للصورة"""
+    if data and data[:4] == b'\x89PNG':
+        return 'image/png'
+    elif data and data[:3] == b'\xff\xd8\xff':
+        return 'image/jpeg'
+    elif data and data[:6] in (b'GIF87a', b'GIF89a'):
+        return 'image/gif'
+    
+    mime_type, _ = mimetypes.guess_type(path_or_url)
+    return mime_type or 'application/octet-stream'
+
+def upload_to_s3(image_bytes, sha256_hash, mime_type):
+    """رفع الصورة إلى S3 وإرجاع URL"""
+    try:
+        # استخدام SHA256 كاسم الملف لتجنب التكرار
+        ext = mimetypes.guess_extension(mime_type) or '.jpg'
+        key = f"vehicle-snapshots/{sha256_hash}{ext}"
+        
+        s3_client.put_object(
+            Bucket=S3_BUCKET,
+            Key=key,
+            Body=image_bytes,
+            ContentType=mime_type,
+            ACL='public-read'  # يمكن تغييره حسب الحاجة
+        )
+        
+        # إرجاع URL العام
+        url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{key}"
+        return url
+    except Exception as e:
+        print(f"خطأ في رفع الصورة إلى S3: {e}")
+        return None
+
+def fetch_image_bytes(path_or_url):
+    """جلب بايتات الصورة من URL أو ملف محلي"""
+    if urlparse(path_or_url).scheme in ("http", "https"):
+        response = requests.get(path_or_url, timeout=30)
+        response.raise_for_status()
+        return response.content
+    else:
+        with open(path_or_url, "rb") as f:
+            return f.read()
 
 # Helper: قراءة صورة محلياً أو إرسال عنوان URL مباشرة
 def build_payload_for_image(path_or_url):
@@ -115,8 +191,10 @@ def insert_into_db(conn, record):
     with conn.cursor() as cur:
         cur.execute("""
             INSERT INTO vehicle_snapshots
-            (snapshot_ref, camera_id, captured_at, plate_text, plate_confidence, makes_models, colors, bbox, raw_response, image_url, meta)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            (snapshot_ref, camera_id, captured_at, plate_text, plate_confidence, 
+             makes_models, colors, bbox, raw_response, image_url, image_data, 
+             image_mime, image_size, image_sha256, meta)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             RETURNING id
         """, (
             record["snapshot_ref"],
@@ -129,6 +207,10 @@ def insert_into_db(conn, record):
             Json(record["bbox"]),
             Json(record["raw_response"]),
             record["image_url"],
+            record.get("image_data"),
+            record.get("image_mime"),
+            record.get("image_size"),
+            record.get("image_sha256"),
             Json(record["meta"])
         ))
         new_id = cur.fetchone()[0]
@@ -139,6 +221,9 @@ def main():
     parser = argparse.ArgumentParser(description="Send images to Plate Recognizer snapshot and store results")
     parser.add_argument("--images", required=True, help="ملف نصي يحتوي على مسار/URL لكل صورة في سطر مستقل")
     parser.add_argument("--delay", type=float, default=0.5, help="تأخير بين الطلبات بالثواني")
+    parser.add_argument("--confidence-threshold", type=float, default=0.0, 
+                        help="الحد الأدنى لثقة اللوحة (0.0-1.0)")
+    parser.add_argument("--retries", type=int, default=3, help="عدد محاولات إعادة الإرسال عند الفشل")
     args = parser.parse_args()
 
     with open(args.images, "r") as f:
@@ -148,27 +233,72 @@ def main():
     register_uuid()
 
     for item in tqdm(items, desc="Processing images"):
-        payload = build_payload_for_image(item)
+        # جلب بايتات الصورة
         try:
-            resp = send_request(payload)
+            image_bytes = fetch_image_bytes(item)
+            image_sha256 = calculate_sha256(image_bytes)
+            image_mime = detect_mime_type(item, image_bytes)
+            image_size = len(image_bytes)
         except Exception as e:
-            print(f"خطأ عند إرسال {item}: {e}")
+            print(f"خطأ في جلب الصورة {item}: {e}")
             time.sleep(args.delay)
             continue
 
+        # إعادة المحاولة عند الفشل
+        resp = None
+        for attempt in range(args.retries):
+            payload = build_payload_for_image(item)
+            try:
+                resp = send_request(payload)
+                break
+            except Exception as e:
+                if attempt == args.retries - 1:
+                    print(f"خطأ عند إرسال {item} بعد {args.retries} محاولات: {e}")
+                    break
+                time.sleep(args.delay * (attempt + 1))
+        
+        if not resp:
+            continue
+
         record = parse_and_normalize_response(resp)
+        
+        # تطبيق مرشح الثقة
+        if record["plate_confidence"] and record["plate_confidence"] < args.confidence_threshold:
+            print(f"تجاهل {item}: الثقة ({record['plate_confidence']}) أقل من الحد الأدنى ({args.confidence_threshold})")
+            time.sleep(args.delay)
+            continue
+        
         record["snapshot_ref"] = record["snapshot_ref"] or item
-        if not record["image_url"] and urlparse(item).scheme in ("http", "https"):
-            record["image_url"] = item
+        record["image_sha256"] = image_sha256
+        record["image_mime"] = image_mime
+        record["image_size"] = image_size
+        
+        # التعامل مع تخزين الصورة
+        if STORE_IMAGES == "s3":
+            # رفع الصورة إلى S3
+            s3_url = upload_to_s3(image_bytes, image_sha256, image_mime)
+            if s3_url:
+                record["image_url"] = s3_url
+            elif not record["image_url"] and urlparse(item).scheme in ("http", "https"):
+                record["image_url"] = item
+            record["image_data"] = None
+        else:  # STORE_IMAGES == "db"
+            # تخزين الصورة في قاعدة البيانات
+            record["image_data"] = psycopg2.Binary(image_bytes)
+            if not record["image_url"] and urlparse(item).scheme in ("http", "https"):
+                record["image_url"] = item
 
         try:
             new_id = insert_into_db(conn, record)
+            print(f"✓ تم إدخال السجل {new_id} للصورة {item}")
         except Exception as e:
             print(f"خطأ في إدخال DB لـ {item}: {e}")
             conn.rollback()
+        
         time.sleep(args.delay)
 
     conn.close()
+    print(f"\nانتهت المعالجة. تم معالجة {len(items)} صورة.")
 
 if __name__ == "__main__":
     main()
