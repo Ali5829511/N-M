@@ -293,33 +293,44 @@ Environment variables required:
         print(f"ERROR: PLATE_API_TYPE must be 'snapshot' or 'sdk', got '{PLATE_API_TYPE}'")
         sys.exit(1)
     
-    # Set API URL based on type
+    # Validate required environment variables based on API type
+    if not DATABASE_URL:
+        print("ERROR: DATABASE_URL is required")
+        sys.exit(1)
+    
+    # Set API URL and validate credentials based on type
     if PLATE_API_TYPE == "snapshot":
         if not SNAPSHOT_API_URL:
             print("ERROR: SNAPSHOT_API_URL must be set when PLATE_API_TYPE=snapshot")
             sys.exit(1)
+        if not PLATE_API_KEY:
+            print("ERROR: PLATE_API_KEY must be set when PLATE_API_TYPE=snapshot")
+            sys.exit(1)
         API_URL = SNAPSHOT_API_URL
+        # Set authentication header for Snapshot API
+        HEADERS = {
+            "Authorization": f"Token {PLATE_API_KEY}"
+        }
     else:  # sdk
         if not SDK_API_URL:
             print("ERROR: SDK_API_URL must be set when PLATE_API_TYPE=sdk")
             sys.exit(1)
+        # Validate SDK_LICENSE_TOKEN for documentation purposes
+        # Note: The token is actually used by the SDK Docker container, not by this script
+        SDK_LICENSE_TOKEN = os.getenv("SDK_LICENSE_TOKEN")
+        if not SDK_LICENSE_TOKEN:
+            print("WARNING: SDK_LICENSE_TOKEN is not set. Make sure your SDK container is configured correctly.")
+            print("         The SDK Docker container requires LICENSE_TOKEN to be set as an environment variable.")
         API_URL = SDK_API_URL
-    
-    # Validate required environment variables
-    if not PLATE_API_KEY or not DATABASE_URL:
-        print("ERROR: Please set required environment variables: PLATE_API_KEY, DATABASE_URL")
-        sys.exit(1)
-    
-    # Set authentication header
-    # Note: SDK/Server may not require authentication if running locally
-    # but we include it for compatibility
-    HEADERS = {
-        "Authorization": f"Token {PLATE_API_KEY}"
-    }
+        # SDK/Server may not require authentication header, but we include a dummy one for compatibility
+        HEADERS = {
+            "Authorization": f"Token {PLATE_API_KEY or 'sdk-no-auth-needed'}"
+        }
     
     print(f"Using Plate Recognizer API type: {PLATE_API_TYPE}")
     print(f"API endpoint: {API_URL}")
     print()
+
     
     # Initialize boto3 only if using S3
     if STORE_IMAGES == "s3":
