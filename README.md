@@ -489,6 +489,295 @@ pages/advanced_analytics_dashboard.html
 - `pages/email_setup.html` - صفحة الإعداد البديلة
 - `pages/password_recovery.html` - صفحة استعادة كلمة المرور
 
+---
+
+## 📸 Plate Recognizer Snapshot - Vehicle Image Ingestion
+
+### Overview / نظرة عامة
+
+This feature enables automated ingestion of vehicle images using the **Plate Recognizer Snapshot API** with PostgreSQL storage for metadata. Images can be stored either in **S3 Object Storage** (recommended for production) or in the **database** (for small tests only).
+
+**نظام متكامل لمعالجة صور المركبات تلقائياً باستخدام Plate Recognizer Snapshot API مع تخزين البيانات في PostgreSQL. يمكن تخزين الصور في S3 (موصى به للإنتاج) أو في قاعدة البيانات (للاختبارات الصغيرة فقط).**
+
+### Features / المميزات
+
+- ✅ Automated plate recognition using Plate Recognizer Snapshot API
+- ✅ Flexible storage: S3 (default) or PostgreSQL (for testing)
+- ✅ SHA256-based image deduplication
+- ✅ Comprehensive metadata extraction (plate, vehicle make/model, color, confidence)
+- ✅ Automatic retry handling for network errors
+- ✅ CLI interface with configurable options
+- ✅ Docker support for easy deployment
+
+### Quick Start / البدء السريع
+
+#### 1. Database Setup / إعداد قاعدة البيانات
+
+```bash
+# Create PostgreSQL database (skip if using existing database)
+createdb platenet
+
+# Run schema initialization
+psql -d platenet -f db_schema.sql
+```
+
+#### 2. Configuration / الإعدادات
+
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Edit .env and fill in your credentials
+# Don't commit the .env file to version control!
+nano .env
+```
+
+**Required Environment Variables:**
+
+```bash
+# Plate Recognizer API (required)
+PLATE_API_KEY=your_plate_recognizer_api_key
+SNAPSHOT_API_URL=https://api.platerecognizer.com/v1/plate-reader/
+
+# Database (required)
+DATABASE_URL=postgresql://user:password@localhost:5432/platenet
+
+# Storage Configuration
+STORE_IMAGES=s3  # Options: "s3" (default) or "db" (for testing)
+
+# AWS S3 Configuration (required when STORE_IMAGES=s3)
+S3_BUCKET=your-bucket-name
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_REGION=us-east-1
+```
+
+#### 3. Install Dependencies / تثبيت المتطلبات
+
+```bash
+pip install -r requirements.txt
+```
+
+#### 4. Prepare Image List / إعداد قائمة الصور
+
+Create `images.txt` with one image path or URL per line:
+
+```
+/path/to/image1.jpg
+https://example.com/image2.png
+/path/to/image3.jpg
+```
+
+#### 5. Run the Script / تشغيل السكربت
+
+```bash
+# Basic usage
+python snapshot_to_postgres.py --images images.txt
+
+# With custom delay and confidence threshold
+python snapshot_to_postgres.py --images images.txt --delay 1 --confidence-threshold 0.7
+```
+
+**CLI Options:**
+- `--images`: Path to text file containing image paths/URLs (required)
+- `--delay`: Delay between API requests in seconds (default: 0.5)
+- `--confidence-threshold`: Minimum confidence for plate detection (0.0-1.0, default: 0.0)
+
+### Storage Options / خيارات التخزين
+
+#### Option 1: S3 Storage (Recommended) / التخزين في S3 (موصى به)
+
+**Advantages:**
+- ✅ Scalable for production
+- ✅ Cost-effective for large datasets
+- ✅ Reduces database size
+- ✅ Fast image retrieval
+- ✅ Works with AWS S3 or MinIO
+
+**Configuration:**
+```bash
+STORE_IMAGES=s3
+S3_BUCKET=your-bucket-name
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_REGION=us-east-1
+
+# Optional: For MinIO or custom S3
+# S3_ENDPOINT_URL=http://localhost:9000
+```
+
+**Retrieving Images:**
+```python
+import requests
+import psycopg2
+
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
+cur.execute("SELECT image_url, plate_text FROM vehicle_snapshots WHERE id = %s", (record_id,))
+image_url, plate = cur.fetchone()
+
+# Download image
+response = requests.get(image_url)
+with open(f"plate_{plate}.jpg", "wb") as f:
+    f.write(response.content)
+```
+
+#### Option 2: Database Storage (Testing Only) / التخزين في قاعدة البيانات (للاختبار فقط)
+
+**⚠️ WARNING: Only use for small test datasets!**
+
+**Disadvantages:**
+- ❌ Large database size
+- ❌ Slower queries
+- ❌ Not scalable
+- ❌ Increased backup time
+
+**Configuration:**
+```bash
+STORE_IMAGES=db
+```
+
+**Retrieving Images:**
+```python
+import psycopg2
+
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
+cur.execute("SELECT image_data, image_mime, plate_text FROM vehicle_snapshots WHERE id = %s", (record_id,))
+image_bytes, mime_type, plate = cur.fetchone()
+
+# Save to file
+ext = mime_type.split('/')[-1]
+with open(f"plate_{plate}.{ext}", "wb") as f:
+    f.write(image_bytes)
+```
+
+### Docker Deployment / النشر باستخدام Docker
+
+#### Using Docker Compose
+
+```bash
+# Configure environment
+cp .env.example .env
+# Edit .env with your credentials
+
+# Start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f app
+
+# Stop services
+docker-compose down
+```
+
+#### MinIO Setup (S3-Compatible Storage)
+
+For local S3-compatible storage, you can use MinIO:
+
+```bash
+# Add to docker-compose.yml
+minio:
+  image: minio/minio
+  command: server /data --console-address ":9001"
+  environment:
+    MINIO_ROOT_USER: minioadmin
+    MINIO_ROOT_PASSWORD: minioadmin
+  ports:
+    - "9000:9000"
+    - "9001:9001"
+  volumes:
+    - minio-data:/data
+
+# Update .env
+S3_ENDPOINT_URL=http://minio:9000
+S3_BUCKET=plate-images
+AWS_ACCESS_KEY_ID=minioadmin
+AWS_SECRET_ACCESS_KEY=minioadmin
+```
+
+### Database Schema / مخطط قاعدة البيانات
+
+The `vehicle_snapshots` table stores:
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | uuid | Primary key |
+| snapshot_ref | text | Reference ID from API or SHA256 |
+| camera_id | text | Camera identifier |
+| captured_at | timestamptz | Capture timestamp |
+| plate_text | text | Detected plate number |
+| plate_confidence | numeric | Detection confidence (0-1) |
+| makes_models | jsonb | Vehicle make/model predictions |
+| colors | jsonb | Vehicle color information |
+| bbox | jsonb | Bounding box coordinates |
+| raw_response | jsonb | Full API response |
+| image_url | text | S3 URL (when STORE_IMAGES=s3) |
+| image_data | bytea | Image bytes (when STORE_IMAGES=db) |
+| image_mime | text | MIME type (e.g., image/jpeg) |
+| image_size | bigint | Image size in bytes |
+| image_sha256 | text | SHA256 hash (for deduplication) |
+| meta | jsonb | Additional metadata |
+| created_at | timestamptz | Record creation time |
+
+**Indexes:**
+- `idx_vehicle_plate_text`: Fast lookup by plate number
+- `idx_vehicle_created_at`: Fast time-based queries
+- `idx_vehicle_plate_jsonb`: GIN index for JSONB queries
+- `idx_vehicle_image_sha256`: Fast duplicate detection
+
+### Privacy & Security / الخصوصية والأمان
+
+⚠️ **Important Considerations:**
+
+1. **API Keys**: Never commit `.env` or expose API keys
+2. **S3 Bucket**: Configure appropriate access policies
+3. **Database Access**: Use strong passwords and restrict network access
+4. **Image Data**: Consider data retention policies and GDPR compliance
+5. **Encryption**: Enable encryption at rest for S3 and database
+6. **Network**: Use HTTPS/TLS for all API communications
+
+### Troubleshooting / استكشاف الأخطاء
+
+**Issue: boto3 not found**
+```bash
+pip install boto3
+```
+
+**Issue: Database connection failed**
+- Verify DATABASE_URL is correct
+- Check PostgreSQL is running
+- Ensure database exists: `createdb platenet`
+
+**Issue: S3 upload failed**
+- Verify AWS credentials
+- Check S3_BUCKET exists and has write permissions
+- For MinIO, ensure S3_ENDPOINT_URL is set
+
+**Issue: Plate Recognizer API errors**
+- Verify PLATE_API_KEY is valid
+- Check API quota/limits
+- Review API documentation: https://guides.platerecognizer.com/
+
+### Files / الملفات
+
+- `snapshot_to_postgres.py` - Main CLI script
+- `db_schema.sql` - Database schema
+- `requirements.txt` - Python dependencies
+- `.env.example` - Environment template (copy to `.env`)
+- `Dockerfile.snapshot` - Docker image definition
+- `docker-compose.yml` - Docker orchestration
+- `images.txt` - Input file (create this with your image paths)
+
+### Support / الدعم
+
+For issues or questions:
+1. Check the troubleshooting section above
+2. Review Plate Recognizer documentation: https://guides.platerecognizer.com/
+3. Open an issue in the repository
+
+---
+
 ## 🛠️ المتطلبات التقنية
 
 - متصفح حديث يدعم:
