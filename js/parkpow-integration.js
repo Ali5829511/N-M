@@ -58,8 +58,7 @@ class ParkPowAPI {
                     }
                 } catch (e) {
                     // Log error and try next path
-                    console.debug(`⚠ فشل تحميل التكوين من ${path}:`, e.message);
-                    continue;
+                    console.log(`⚠ فشل تحميل التكوين من ${path}:`, e.message);
                 }
             }
             
