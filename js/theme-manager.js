@@ -264,9 +264,8 @@ class ThemeManager {
 }
 
 // تهيئة مدير السمات عند تحميل الصفحة
+// يتم تنفيذ هذا الكود في بيئة المتصفح فقط
 let themeManager;
-if (typeof window !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', () => {
-        themeManager = new ThemeManager();
-    });
-}
+document.addEventListener('DOMContentLoaded', () => {
+    themeManager = new ThemeManager();
+});
