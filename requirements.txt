@@ -20,3 +20,4 @@ python-dotenv
 psycopg2-binary
 tqdm
 sqlalchemy
+boto3

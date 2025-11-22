@@ -1,71 +1,163 @@
 #!/usr/bin/env python3
 """
-سكربت لإرسال صور/روابط إلى Plate Recognizer Snapshot API وتخزين النتائج في PostgreSQL.
+CLI script to ingest vehicle images using Plate Recognizer Snapshot API
+and store metadata in PostgreSQL.
 
-ملاحظات:
-- عدّل SNAPSHOT_API_URL حسب الوثائق الرسمية (https://guides.platerecognizer.com/docs/snapshot/getting-started).
-- يدعم السكربت إرسال قائمة روابط صور من ملف نصي أو مسارات ملفات محلية.
+Default behavior: Store images in Object Storage (S3) and save metadata and S3 URL in DB.
+Optional behavior: Set STORE_IMAGES=db to store image bytes in DB (bytea) for small tests.
 """
 
 import os
 import sys
 import argparse
-import json
+import hashlib
+import mimetypes
 import time
 from urllib.parse import urlparse
+from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
 import psycopg2
-from psycopg2.extras import Json, register_uuid
-from datetime import datetime
+from psycopg2.extras import Json, register_uuid, Binary
 
+# Load environment variables
 load_dotenv()
 
+# Required environment variables
 PLATE_API_KEY = os.getenv("PLATE_API_KEY")
-SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")  # ضع هنا endpoint كما في الوثائق
+SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+# Storage configuration
+STORE_IMAGES = os.getenv("STORE_IMAGES", "s3")  # Default to S3
+
+# S3 configuration (only needed when STORE_IMAGES=s3)
+S3_BUCKET = os.getenv("S3_BUCKET")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+
+# Validate required environment variables
 if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
-    print("الرجاء ضبط المتغيرات البيئية: PLATE_API_KEY و SNAPSHOT_API_URL و DATABASE_URL")
+    print("Error: Missing required environment variables.")
+    print("Please set: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
     sys.exit(1)
+
+# Validate S3 configuration if needed
+if STORE_IMAGES == "s3":
+    if not S3_BUCKET or not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
+        print("Error: STORE_IMAGES=s3 but missing S3 configuration.")
+        print("Please set: S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
+        sys.exit(1)
+    # Import boto3 only when needed
+    try:
+        import boto3
+        from botocore.exceptions import ClientError
+    except ImportError:
+        print("Error: boto3 is required for S3 storage. Install with: pip install boto3")
+        sys.exit(1)
 
 HEADERS = {
     "Authorization": f"Token {PLATE_API_KEY}"
 }
 
-# Helper: قراءة صورة محلياً أو إرسال عنوان URL مباشرة
-def build_payload_for_image(path_or_url):
-    # يفضّل استخدام خاصية API التي تقبل url بدلاً من رفع الملفات إن أمكن
+
+def fetch_image_bytes(path_or_url):
+    """
+    Fetch image bytes from URL or local file.
+    Returns: (image_bytes, mime_type, size, sha256_hash)
+    """
     if urlparse(path_or_url).scheme in ("http", "https"):
-        # إن كانت الـ API تدعم إرسال image_url في json body
-        return {"image_url": path_or_url}
+        # Fetch from URL
+        response = requests.get(path_or_url, timeout=30)
+        response.raise_for_status()
+        image_bytes = response.content
+        # Try to get mime type from Content-Type header or guess from URL
+        mime_type = response.headers.get('Content-Type', 'image/jpeg')
+        if ';' in mime_type:
+            mime_type = mime_type.split(';')[0].strip()
     else:
-        # في حالة الملفات المحلية: سنستعمل رفع multipart في send_request
-        return {"local_path": path_or_url}
+        # Read from local file
+        with open(path_or_url, 'rb') as f:
+            image_bytes = f.read()
+        mime_type = mimetypes.guess_type(path_or_url)[0] or 'application/octet-stream'
+    
+    # Compute size and hash
+    size = len(image_bytes)
+    sha256_hash = hashlib.sha256(image_bytes).hexdigest()
+    
+    return image_bytes, mime_type, size, sha256_hash
 
-def send_request(payload):
-    """
-    إذا payload يحتوي 'local_path' نرفع الملف كـ multipart، وإلا نرسل JSON مع image_url.
-    """
-    if "local_path" in payload:
-        path = payload["local_path"]
-        with open(path, "rb") as fh:
-            files = {"image": fh}
-            # تأكد من حقل الملف حسب ما تطلبه الوثائق (قد يكون 'upload' أو 'image')
-            r = requests.post(SNAPSHOT_API_URL, headers=HEADERS, files=files, timeout=60)
-    else:
-        r = requests.post(SNAPSHOT_API_URL, headers={**HEADERS, "Content-Type": "application/json"}, json=payload, timeout=60)
-    r.raise_for_status()
-    return r.json()
 
-def parse_and_normalize_response(resp):
+def upload_to_s3(image_bytes, sha256_hash, mime_type):
     """
-    استخرج الحقول المهمة من ردّ Plate Recognizer.
-    بما أن الرد قد يختلف حسب إعدادات النموذج، ستخزن الرد الخام أيضاً.
+    Upload image bytes to S3 and return the URL.
+    Uses sha256 hash as the object key to avoid duplicates.
     """
-    out = {
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        region_name=AWS_REGION
+    )
+    
+    # Use sha256 as filename with appropriate extension
+    ext = mime_type.split('/')[-1] if '/' in mime_type else 'jpg'
+    object_key = f"vehicle-images/{sha256_hash}.{ext}"
+    
+    try:
+        # Upload to S3
+        s3_client.put_object(
+            Bucket=S3_BUCKET,
+            Key=object_key,
+            Body=image_bytes,
+            ContentType=mime_type
+        )
+        
+        # Generate URL (public or presigned based on bucket policy)
+        # For simplicity, returning the standard S3 URL
+        s3_url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{object_key}"
+        return s3_url
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        raise
+
+
+def send_to_plate_recognizer(image_bytes):
+    """
+    Send image to Plate Recognizer Snapshot API.
+    Returns the API response.
+    """
+    files = {"upload": ("image.jpg", image_bytes, "image/jpeg")}
+    
+    # Retry logic
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(
+                SNAPSHOT_API_URL,
+                headers=HEADERS,
+                files=files,
+                timeout=60
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            if attempt < max_retries - 1:
+                print(f"  Retry {attempt + 1}/{max_retries} after error: {e}")
+                time.sleep(2 ** attempt)  # Exponential backoff
+            else:
+                raise
+
+
+def parse_plate_recognizer_response(resp, confidence_threshold=0.0):
+    """
+    Parse Plate Recognizer response and extract relevant information.
+    Returns a dictionary with extracted fields.
+    """
+    parsed = {
         "snapshot_ref": None,
         "camera_id": None,
         "captured_at": None,
@@ -75,48 +167,63 @@ def parse_and_normalize_response(resp):
         "colors": None,
         "bbox": None,
         "raw_response": resp,
-        "image_url": None,
-        "meta": {}
     }
-
-    results = resp.get("results") or resp.get("vehicles") or [resp]
-
-    if isinstance(results, dict):
-        results = [results]
-
-    if len(results) > 0:
-        r0 = results[0]
-        out["snapshot_ref"] = r0.get("id") or r0.get("snapshot_id") or out["snapshot_ref"]
-        out["camera_id"] = r0.get("camera_id") or r0.get("camera")
-        plate = r0.get("plate") or r0.get("plate_info") or {}
-        if isinstance(plate, dict):
-            out["plate_text"] = plate.get("plate") or plate.get("number") or out["plate_text"]
-            out["plate_confidence"] = plate.get("confidence") or out["plate_confidence"]
-        mm = r0.get("vehicle") or r0.get("vehicle_info") or {}
-        if mm:
-            out["makes_models"] = mm.get("predictions") or mm.get("makes_models") or mm
-        colors = r0.get("color") or r0.get("colors")
-        if colors:
-            out["colors"] = colors
-        bbox = r0.get("box") or r0.get("bounding_box") or r0.get("bbox")
-        if bbox:
-            out["bbox"] = bbox
-        if r0.get("timestamp"):
+    
+    # Extract results (structure may vary)
+    results = resp.get("results", [])
+    
+    if results and len(results) > 0:
+        result = results[0]
+        
+        # Extract plate information
+        plate = result.get("plate", {})
+        plate_text = plate
+        plate_confidence = result.get("score", 0.0)
+        
+        # Apply confidence threshold
+        if plate_confidence < confidence_threshold:
+            return None
+        
+        parsed["plate_text"] = plate
+        parsed["plate_confidence"] = plate_confidence
+        
+        # Extract vehicle information
+        vehicle = result.get("vehicle", {})
+        if vehicle:
+            parsed["makes_models"] = vehicle.get("type", {})
+            parsed["colors"] = vehicle.get("color", [])
+        
+        # Extract bounding box
+        parsed["bbox"] = result.get("box", {})
+        
+        # Extract other metadata
+        parsed["camera_id"] = resp.get("camera_id")
+        parsed["snapshot_ref"] = resp.get("uuid") or resp.get("filename")
+        
+        # Extract timestamp
+        timestamp = resp.get("timestamp")
+        if timestamp:
             try:
-                out["captured_at"] = datetime.fromisoformat(r0.get("timestamp"))
+                parsed["captured_at"] = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
             except Exception:
-                out["captured_at"] = None
-        if r0.get("image_url"):
-            out["image_url"] = r0.get("image_url")
+                parsed["captured_at"] = datetime.now()
+        else:
+            parsed["captured_at"] = datetime.now()
+    
+    return parsed
 
-    return out
 
 def insert_into_db(conn, record):
+    """
+    Insert record into vehicle_snapshots table.
+    """
     with conn.cursor() as cur:
         cur.execute("""
             INSERT INTO vehicle_snapshots
-            (snapshot_ref, camera_id, captured_at, plate_text, plate_confidence, makes_models, colors, bbox, raw_response, image_url, meta)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            (snapshot_ref, camera_id, captured_at, plate_text, plate_confidence,
+             makes_models, colors, bbox, raw_response, image_url, image_data,
+             image_mime, image_size, image_sha256, meta)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
         """, (
             record["snapshot_ref"],
@@ -128,47 +235,117 @@ def insert_into_db(conn, record):
             Json(record["colors"]),
             Json(record["bbox"]),
             Json(record["raw_response"]),
-            record["image_url"],
-            Json(record["meta"])
+            record.get("image_url"),
+            Binary(record["image_data"]) if record.get("image_data") else None,
+            record.get("image_mime"),
+            record.get("image_size"),
+            record.get("image_sha256"),
+            Json(record.get("meta", {}))
         ))
         new_id = cur.fetchone()[0]
         conn.commit()
         return new_id
 
-def main():
-    parser = argparse.ArgumentParser(description="Send images to Plate Recognizer snapshot and store results")
-    parser.add_argument("--images", required=True, help="ملف نصي يحتوي على مسار/URL لكل صورة في سطر مستقل")
-    parser.add_argument("--delay", type=float, default=0.5, help="تأخير بين الطلبات بالثواني")
-    args = parser.parse_args()
 
+def process_image(path_or_url, conn, confidence_threshold, delay):
+    """
+    Process a single image: fetch, upload/store, recognize plate, and save to DB.
+    """
+    try:
+        # Fetch image bytes
+        image_bytes, mime_type, size, sha256_hash = fetch_image_bytes(path_or_url)
+        
+        # Prepare record
+        record = {
+            "image_mime": mime_type,
+            "image_size": size,
+            "image_sha256": sha256_hash,
+            "meta": {"source": path_or_url}
+        }
+        
+        # Store image based on configuration
+        if STORE_IMAGES == "s3":
+            # Upload to S3
+            s3_url = upload_to_s3(image_bytes, sha256_hash, mime_type)
+            record["image_url"] = s3_url
+            record["image_data"] = None
+        else:
+            # Store in DB
+            record["image_url"] = None
+            record["image_data"] = image_bytes
+        
+        # Send to Plate Recognizer API
+        api_response = send_to_plate_recognizer(image_bytes)
+        
+        # Parse response
+        parsed = parse_plate_recognizer_response(api_response, confidence_threshold)
+        
+        if parsed is None:
+            print(f"  Skipped (confidence below threshold): {path_or_url}")
+            return None
+        
+        # Merge parsed data with record
+        record.update(parsed)
+        
+        # Insert into database
+        new_id = insert_into_db(conn, record)
+        
+        return new_id
+        
+    except Exception as e:
+        print(f"  Error processing {path_or_url}: {e}")
+        conn.rollback()
+        return None
+    finally:
+        time.sleep(delay)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Ingest vehicle images using Plate Recognizer Snapshot API"
+    )
+    parser.add_argument(
+        "--images",
+        required=True,
+        help="Path to images.txt file containing image paths/URLs (one per line)"
+    )
+    parser.add_argument(
+        "--delay",
+        type=float,
+        default=0.5,
+        help="Delay between requests in seconds (default: 0.5)"
+    )
+    parser.add_argument(
+        "--confidence-threshold",
+        type=float,
+        default=0.0,
+        help="Minimum confidence threshold for plate recognition (default: 0.0)"
+    )
+    args = parser.parse_args()
+    
+    # Read image paths/URLs
     with open(args.images, "r") as f:
         items = [line.strip() for line in f if line.strip()]
-
+    
+    print(f"Processing {len(items)} images...")
+    print(f"Storage mode: {STORE_IMAGES}")
+    print(f"Confidence threshold: {args.confidence_threshold}")
+    
+    # Connect to database
     conn = psycopg2.connect(DATABASE_URL)
     register_uuid()
-
+    
+    # Process images
+    successful = 0
     for item in tqdm(items, desc="Processing images"):
-        payload = build_payload_for_image(item)
-        try:
-            resp = send_request(payload)
-        except Exception as e:
-            print(f"خطأ عند إرسال {item}: {e}")
-            time.sleep(args.delay)
-            continue
-
-        record = parse_and_normalize_response(resp)
-        record["snapshot_ref"] = record["snapshot_ref"] or item
-        if not record["image_url"] and urlparse(item).scheme in ("http", "https"):
-            record["image_url"] = item
-
-        try:
-            new_id = insert_into_db(conn, record)
-        except Exception as e:
-            print(f"خطأ في إدخال DB لـ {item}: {e}")
-            conn.rollback()
-        time.sleep(args.delay)
-
+        result = process_image(item, conn, args.confidence_threshold, args.delay)
+        if result:
+            successful += 1
+    
     conn.close()
+    
+    print(f"\nCompleted: {successful}/{len(items)} images processed successfully")
+
 
 if __name__ == "__main__":
     main()
