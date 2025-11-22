@@ -1,10 +1,12 @@
-# Example images file for snapshot_to_postgres.py
-# Add one image URL or local path per line
-# 
-# Examples:
-# https://example.com/vehicle1.jpg
-# https://example.com/vehicle2.png
-# /path/to/local/image.jpg
-#
-# Remove the '#' from the lines below to use them:
-# https://platerecognizer.com/static/demo.jpg
+# مثال لملف images.txt
+# ضع رابط أو مسار صورة في كل سطر
+# الأسطر التي تبدأ بـ # تُتجاهل
+
+# أمثلة لروابط صور عبر الإنترنت:
+# https://example.com/car1.jpg
+# https://example.com/car2.png
+
+# أمثلة لملفات محلية:
+# /path/to/local/car1.jpg
+# /path/to/local/car2.png
+# ./relative/path/car3.jpg
