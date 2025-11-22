@@ -20,6 +20,11 @@ services:
       PLATE_API_KEY: ${PLATE_API_KEY}
       SNAPSHOT_API_URL: ${SNAPSHOT_API_URL}
       DATABASE_URL: postgres://user:pass@db:5432/platenet
+      STORE_IMAGES: ${STORE_IMAGES:-s3}
+      S3_BUCKET: ${S3_BUCKET}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
       - db
     volumes:
