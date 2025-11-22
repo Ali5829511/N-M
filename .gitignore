@@ -81,3 +81,11 @@ output_reports/
 
 # Cache
 .cache/
+
+# Plate Recognizer Snapshot Integration
+retrieved_images/
+docker-volumes/
+postgres_data/
+
+# Docker
+.dockerignore

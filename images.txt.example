@@ -1,23 +1,12 @@
-# Example images.txt file for Plate Recognizer Snapshot ingestion
-# Each line should contain either:
-# - A local file path (absolute or relative)
-# - An HTTP/HTTPS URL to an image
-#
-# Lines starting with # are comments and will be ignored
-# Empty lines will be ignored
-#
-# Examples:
+# مثال لملف images.txt
+# ضع رابط أو مسار صورة في كل سطر
+# الأسطر التي تبدأ بـ # تُتجاهل
 
-# Local files (uncomment and adjust paths)
-# /path/to/vehicle1.jpg
-# /path/to/vehicle2.png
-# ./images/car1.jpg
-# ./images/car2.jpeg
+# أمثلة لروابط صور عبر الإنترنت:
+# https://example.com/car1.jpg
+# https://example.com/car2.png
 
-# URLs (uncomment to use)
-# https://example.com/vehicle-images/car1.jpg
-# https://example.com/vehicle-images/car2.png
-# https://platerecognizer.com/static/demo.jpg
-
-# Note: Before running, copy this file to images.txt and add your actual image paths/URLs
-# cp images.txt.example images.txt
+# أمثلة لملفات محلية:
+# /path/to/local/car1.jpg
+# /path/to/local/car2.png
+# ./relative/path/car3.jpg

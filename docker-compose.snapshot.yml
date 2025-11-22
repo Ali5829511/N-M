@@ -4,16 +4,16 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: platenet
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pass}
+      POSTGRES_DB: ${POSTGRES_DB:-platenet}
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d platenet"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,25 +25,26 @@ services:
     environment:
       # Plate Recognizer API (required)
       PLATE_API_KEY: ${PLATE_API_KEY}
-      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL:-https://api.platerecognizer.com/v1/plate-reader/}
-      
-      # Database connection
-      DATABASE_URL: postgresql://user:pass@db:5432/platenet
-      
-      # Storage configuration (s3 or db)
+      SNAPSHOT_API_URL: ${SNAPSHOT_API_URL}
+      DATABASE_URL: postgres://user:pass@db:5432/platenet
       STORE_IMAGES: ${STORE_IMAGES:-s3}
-      
-      # S3 configuration (only needed when STORE_IMAGES=s3)
       S3_BUCKET: ${S3_BUCKET}
+      AWS_REGION: ${AWS_REGION}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_REGION: ${AWS_REGION:-us-east-1}
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - ./images.txt:/app/images.txt:ro
-      - ./snapshot_to_postgres.py:/app/snapshot_to_postgres.py:ro
+      - .:/app
+    # Override CMD to wait for manual execution
+    # Remove the default CMD from Dockerfile to allow interactive use
+    command: tail -f /dev/null
 
 volumes:
   db-data:
+
+# Usage:
+# 1. Copy .env.example to .env and fill in your credentials
+# 2. Run: docker-compose -f docker-compose.snapshot.yml up -d
+# 3. Execute the script: docker-compose -f docker-compose.snapshot.yml exec app python snapshot_to_postgres.py --images images.txt
