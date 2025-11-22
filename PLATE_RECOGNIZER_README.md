@@ -14,7 +14,7 @@
 - ✅ إعادة محاولة تلقائية عند فشل الشبكة
 - ✅ دعم MinIO كبديل لـ AWS S3
 
-## الإعداد
+## Features
 
 ### 1. إنشاء قاعدة البيانات
 أنشئ قاعدة بيانات PostgreSQL:
@@ -99,9 +99,15 @@ mc mb local/plate-snapshots
 ### 6. تحضير ملف الصور
 حضّر ملف نصي `images.txt` مع رابط/مسار صورة لكل سطر:
 ```
-https://example.com/image1.jpg
-https://example.com/image2.jpg
-/path/to/local/image3.jpg
+
+### 5. Prepare Images File
+
+Create a text file `images.txt` with one image path/URL per line:
+
+```
+https://example.com/vehicle1.jpg
+https://example.com/vehicle2.jpg
+/path/to/local/vehicle3.jpg
 ```
 
 ### 7. تشغيل السكربت
@@ -113,7 +119,96 @@ python snapshot_to_postgres.py --images images.txt
 
 #### مع تأخير مخصص بين الطلبات:
 ```bash
+# With delay between requests
 python snapshot_to_postgres.py --images images.txt --delay 1.0
+
+# With confidence threshold (only store plates with >80% confidence)
+python snapshot_to_postgres.py --images images.txt --confidence-threshold 0.8
+
+# Combined options
+python snapshot_to_postgres.py --images images.txt --delay 1.0 --confidence-threshold 0.8
+```
+
+## Running with Docker
+
+### Build and Run
+
+1. **Set up environment variables** (copy `.env.example` to `.env` and fill credentials)
+
+2. **Start services:**
+```bash
+docker-compose -f docker-compose.snapshot.yml up -d
+```
+
+This will:
+- Create a PostgreSQL 15 database
+- Build the application Docker image
+- Start both services
+
+3. **Execute the script:**
+```bash
+docker-compose -f docker-compose.snapshot.yml exec app python snapshot_to_postgres.py --images images.txt
+```
+
+4. **Stop services:**
+```bash
+docker-compose -f docker-compose.snapshot.yml down
+```
+
+To remove database data as well:
+```bash
+docker-compose -f docker-compose.snapshot.yml down -v
+```
+
+## Data Structure
+
+Data is stored in the `vehicle_snapshots` table with the following columns:
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | Unique identifier (auto-generated) |
+| `snapshot_ref` | TEXT | Reference ID from Plate Recognizer API |
+| `camera_id` | TEXT | Camera identifier |
+| `captured_at` | TIMESTAMPTZ | Image capture timestamp |
+| `plate_text` | TEXT | Detected license plate text |
+| `plate_confidence` | NUMERIC | Confidence score (0.0-1.0) |
+| `makes_models` | JSONB | Vehicle make/model predictions |
+| `colors` | JSONB | Detected colors |
+| `bbox` | JSONB | Bounding box coordinates |
+| `raw_response` | JSONB | Full API response |
+| `image_url` | TEXT | S3 URL or original image reference |
+| `image_data` | BYTEA | Image bytes (only when STORE_IMAGES=db) |
+| `image_mime` | TEXT | MIME type (e.g., 'image/jpeg') |
+| `image_size` | INTEGER | Image size in bytes |
+| `image_sha256` | TEXT | SHA256 hash (for deduplication) |
+| `meta` | JSONB | Additional metadata |
+| `created_at` | TIMESTAMPTZ | Record creation timestamp |
+
+### Indexes
+
+The schema includes indexes for efficient queries:
+- `idx_vehicle_plate_text`: Search by plate text
+- `idx_vehicle_created_at`: Search by date
+- `idx_vehicle_makes_models_jsonb`: GIN index for JSONB queries on vehicle data
+- `idx_vehicle_image_sha256`: Deduplication queries
+
+## Image Storage Options
+
+### Option 1: S3 Storage (Default, Recommended)
+
+**Advantages:**
+- Scalable storage
+- Cost-effective for large datasets
+- Fast access via CDN
+- Automatic backups
+
+**Configuration:**
+```bash
+STORE_IMAGES=s3
+S3_BUCKET=your-bucket-name
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_REGION=us-east-1
 ```
 
 #### مع حد أدنى للثقة:
@@ -131,7 +226,13 @@ python snapshot_to_postgres.py \
 
 ## التشغيل باستخدام Docker
 
-### البناء والتشغيل
+**⚠️ WARNING:** Storing images in database can cause:
+- Large database size
+- Slower queries
+- Backup/restore issues
+- Higher costs
+
+**Configuration:**
 ```bash
 docker-compose up -d
 ```
@@ -226,21 +327,94 @@ url = s3.generate_presigned_url('get_object',
 ### معالجة دفعات كبيرة
 للمعالجة المجدولة، يمكن استخدام cron:
 ```bash
-0 * * * * /usr/bin/python3 /path/to/snapshot_to_postgres.py --images /path/to/images.txt
+# Run every hour
+0 * * * * cd /path/to/project && python snapshot_to_postgres.py --images /path/to/images.txt --delay 1.0 >> /var/log/plate-recognizer.log 2>&1
 ```
 
-### التكامل مع أنظمة أخرى
-يمكن استيراد الدوال من السكربت واستخدامها في تطبيقات أخرى:
+### Integration with Other Systems
+
+Import functions from the script for use in other applications:
+
 ```python
 from snapshot_to_postgres import send_request, parse_and_normalize_response, upload_to_s3
 
-# استخدام الدوال
-payload = {"image_url": "https://example.com/image.jpg"}
-response = send_request(payload)
+# Process single image
+image_bytes, mime, size, sha256 = fetch_image_bytes("path/to/image.jpg")
+s3_url = upload_to_s3(image_bytes, sha256, mime)
+response = send_request_with_retry(None, image_url=s3_url)
 record = parse_and_normalize_response(response)
 ```
 
-## الدعم والمساعدة
+### Querying Data
+
+**Find all vehicles of a specific make:**
+```sql
+SELECT plate_text, captured_at, image_url
+FROM vehicle_snapshots
+WHERE makes_models @> '[{"make": "Toyota"}]'
+ORDER BY captured_at DESC;
+```
+
+**Find high-confidence plates:**
+```sql
+SELECT plate_text, plate_confidence, image_url
+FROM vehicle_snapshots
+WHERE plate_confidence > 0.9
+ORDER BY plate_confidence DESC;
+```
+
+**Check for duplicate images:**
+```sql
+SELECT image_sha256, COUNT(*) as count
+FROM vehicle_snapshots
+GROUP BY image_sha256
+HAVING COUNT(*) > 1;
+```
+
+## GitHub Secrets Configuration
+
+For CI/CD or automated workflows, add these secrets to your GitHub repository:
+
+1. Go to Repository Settings → Secrets and variables → Actions
+2. Add the following secrets:
+   - `PLATE_API_KEY`
+   - `DATABASE_URL`
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
+   - `S3_BUCKET`
+
+**Never commit these values to the repository!**
+
+## Troubleshooting
+
+### Issue: "boto3 not found"
+**Solution:** Install boto3: `pip install boto3`
+
+### Issue: "S3 upload failed - Access Denied"
+**Solution:** Check IAM permissions include `s3:PutObject` and `s3:GetObject`
+
+### Issue: "Database column not found"
+**Solution:** Re-run `db_schema.sql` to update table schema
+
+### Issue: "Rate limit exceeded"
+**Solution:** Increase `--delay` parameter or upgrade your Plate Recognizer plan
+
+### Issue: "Low confidence results"
+**Solution:** 
+- Use higher quality images
+- Use `--confidence-threshold` to filter low-quality results
+- Check image resolution and lighting
+
+## Support and Resources
+
+For more information:
+- [Plate Recognizer Documentation](https://guides.platerecognizer.com/docs/snapshot/getting-started)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [AWS S3 Documentation](https://docs.aws.amazon.com/s3/)
+- [MinIO Documentation](https://min.io/docs/minio/linux/index.html)
+- [boto3 Documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+
+## License
 
 للمزيد من المعلومات، راجع:
 - [توثيق Plate Recognizer](https://guides.platerecognizer.com/docs/snapshot/getting-started)

@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS vehicle_snapshots (
   created_at timestamptz DEFAULT now()
 );
 
+-- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_vehicle_plate_text ON vehicle_snapshots (plate_text);
 CREATE INDEX IF NOT EXISTS idx_vehicle_created_at ON vehicle_snapshots (created_at);
 CREATE INDEX IF NOT EXISTS idx_vehicle_makes_models_jsonb ON vehicle_snapshots USING gin (makes_models);

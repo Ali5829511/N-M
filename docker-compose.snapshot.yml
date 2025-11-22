@@ -1,22 +1,29 @@
 version: '3.8'
+
 services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: platenet
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pass}
+      POSTGRES_DB: ${POSTGRES_DB:-platenet}
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build:
       context: .
       dockerfile: Dockerfile.snapshot
     environment:
+      # Plate Recognizer API (required)
       PLATE_API_KEY: ${PLATE_API_KEY}
       SNAPSHOT_API_URL: ${SNAPSHOT_API_URL}
       DATABASE_URL: postgres://user:pass@db:5432/platenet
@@ -26,9 +33,18 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - .:/app
+    # Override CMD to wait for manual execution
+    # Remove the default CMD from Dockerfile to allow interactive use
+    command: tail -f /dev/null
 
 volumes:
   db-data:
+
+# Usage:
+# 1. Copy .env.example to .env and fill in your credentials
+# 2. Run: docker-compose -f docker-compose.snapshot.yml up -d
+# 3. Execute the script: docker-compose -f docker-compose.snapshot.yml exec app python snapshot_to_postgres.py --images images.txt

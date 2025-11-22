@@ -17,6 +17,7 @@ import time
 import hashlib
 import mimetypes
 from urllib.parse import urlparse
+from io import BytesIO
 
 import requests
 from dotenv import load_dotenv
@@ -28,6 +29,7 @@ from datetime import datetime
 
 load_dotenv()
 
+# Required environment variables (will be validated in main())
 PLATE_API_KEY = os.getenv("PLATE_API_KEY")
 SNAPSHOT_API_URL = os.getenv("SNAPSHOT_API_URL")
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -37,9 +39,9 @@ AWS_REGION = os.getenv("AWS_REGION")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
-if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
-    print("الرجاء ضبط المتغيرات البيئية: PLATE_API_KEY و SNAPSHOT_API_URL و DATABASE_URL")
-    sys.exit(1)
+# S3 configuration (only if STORE_IMAGES=s3)
+S3_BUCKET = os.getenv("S3_BUCKET")
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 
 # Initialize boto3 client only if STORE_IMAGES is s3
 boto3_client = None
@@ -134,11 +136,28 @@ def build_payload_for_image(path_or_url):
     إنشاء payload لإرسال الصورة إلى API
     """
     if urlparse(path_or_url).scheme in ("http", "https"):
-        # إن كانت الـ API تدعم إرسال image_url في json body
-        return {"image_url": path_or_url}
+        # Fetch from URL
+        response = requests.get(path_or_url, timeout=60)
+        response.raise_for_status()
+        image_bytes = response.content
+        # Try to determine MIME type from Content-Type header
+        mime_type = response.headers.get('Content-Type', 'image/jpeg')
+        if ';' in mime_type:
+            mime_type = mime_type.split(';')[0].strip()
     else:
-        # في حالة الملفات المحلية: سنستعمل رفع multipart في send_request
-        return {"local_path": path_or_url}
+        # Read local file
+        with open(path_or_url, "rb") as f:
+            image_bytes = f.read()
+        # Determine MIME type from file extension
+        mime_type, _ = mimetypes.guess_type(path_or_url)
+        if not mime_type:
+            mime_type = 'image/jpeg'  # Default
+    
+    # Calculate SHA256 hash
+    sha256_hash = hashlib.sha256(image_bytes).hexdigest()
+    size = len(image_bytes)
+    
+    return image_bytes, mime_type, size, sha256_hash
 
 def send_request(payload, retry_count=3):
     """
@@ -165,8 +184,8 @@ def send_request(payload, retry_count=3):
 
 def parse_and_normalize_response(resp):
     """
-    استخرج الحقول المهمة من ردّ Plate Recognizer.
-    بما أن الرد قد يختلف حسب إعدادات النموذج، ستخزن الرد الخام أيضاً.
+    Extract important fields from Plate Recognizer response.
+    Since response may vary based on model settings, we also store the raw response.
     """
     out = {
         "snapshot_ref": None,
@@ -247,6 +266,69 @@ def insert_into_db(conn, record, image_data=None):
         conn.commit()
         return new_id
 
+def process_image(item, confidence_threshold=0.0):
+    """
+    Process a single image: fetch bytes, compute metadata, store to S3/DB, 
+    send to Plate Recognizer API, and return record data.
+    """
+    # Step 1: Fetch image bytes and compute metadata
+    try:
+        image_bytes, mime_type, size, sha256_hash = fetch_image_bytes(item)
+    except Exception as e:
+        print(f"  ERROR fetching image from {item}: {e}")
+        return None
+    
+    # Step 2: Store image (S3 or DB)
+    image_url = None
+    image_data = None
+    
+    if STORE_IMAGES == "s3":
+        try:
+            image_url = upload_to_s3(image_bytes, sha256_hash, mime_type)
+        except Exception as e:
+            print(f"  ERROR uploading to S3: {e}")
+            return None
+    elif STORE_IMAGES == "db":
+        # Store in database
+        image_data = Binary(image_bytes)
+        # For DB storage, we can optionally keep the original URL as reference
+        if urlparse(item).scheme in ("http", "https"):
+            image_url = item
+    
+    # Step 3: Send to Plate Recognizer API
+    try:
+        # If we have S3 URL, send that; otherwise send bytes
+        if STORE_IMAGES == "s3" and image_url:
+            resp = send_request_with_retry(None, image_url=image_url)
+        else:
+            resp = send_request_with_retry(image_bytes)
+    except Exception as e:
+        print(f"  ERROR calling Plate Recognizer API: {e}")
+        return None
+    
+    # Step 4: Parse response
+    record = parse_and_normalize_response(resp)
+    record["snapshot_ref"] = record["snapshot_ref"] or sha256_hash
+    
+    # Apply confidence threshold filter
+    if record["plate_confidence"] is not None:
+        if float(record["plate_confidence"]) < confidence_threshold:
+            print(f"  Skipping - confidence {record['plate_confidence']} below threshold {confidence_threshold}")
+            return None
+    
+    # Add image metadata
+    record["image_url"] = image_url
+    record["image_data"] = image_data
+    record["image_mime"] = mime_type
+    record["image_size"] = size
+    record["image_sha256"] = sha256_hash
+    
+    # Keep original URL in metadata if available
+    if not record["image_url"] and urlparse(item).scheme in ("http", "https"):
+        record["image_url"] = item
+    
+    return record
+
 def main():
     parser = argparse.ArgumentParser(description="Send images to Plate Recognizer snapshot and store results")
     parser.add_argument("--images", required=True, help="ملف نصي يحتوي على مسار/URL لكل صورة في سطر مستقل")
@@ -254,13 +336,71 @@ def main():
     parser.add_argument("--confidence-threshold", type=float, default=0.0, 
                        help="الحد الأدنى للثقة في نتيجة اللوحة (0.0-1.0)")
     args = parser.parse_args()
+    
+    # Validate environment variables after parsing args (so --help works without env vars)
+    global s3_client, HEADERS
+    
+    if not PLATE_API_KEY or not SNAPSHOT_API_URL or not DATABASE_URL:
+        print("ERROR: Please set required environment variables: PLATE_API_KEY, SNAPSHOT_API_URL, DATABASE_URL")
+        sys.exit(1)
+    
+    HEADERS = {
+        "Authorization": f"Token {PLATE_API_KEY}"
+    }
+    
+    # Initialize boto3 only if using S3
+    if STORE_IMAGES == "s3":
+        try:
+            import boto3
+            s3_client = boto3.client(
+                's3',
+                region_name=AWS_REGION,
+                aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+                aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+            )
+            if not S3_BUCKET:
+                print("ERROR: S3_BUCKET must be set when STORE_IMAGES=s3")
+                sys.exit(1)
+            print(f"Using S3 storage: {S3_BUCKET}")
+        except ImportError:
+            print("ERROR: boto3 is required when STORE_IMAGES=s3. Install it with: pip install boto3")
+            sys.exit(1)
+    elif STORE_IMAGES == "db":
+        print("Using database storage for images")
+    else:
+        print(f"WARNING: Unknown STORE_IMAGES value '{STORE_IMAGES}', defaulting to 's3'")
+        STORE_IMAGES = "s3"
 
-    with open(args.images, "r") as f:
-        items = [line.strip() for line in f if line.strip()]
+    # Read images list
+    try:
+        with open(args.images, "r") as f:
+            items = [line.strip() for line in f if line.strip()]
+    except FileNotFoundError:
+        print(f"ERROR: Images file not found: {args.images}")
+        sys.exit(1)
+    
+    if not items:
+        print("ERROR: No images found in file")
+        sys.exit(1)
+    
+    print(f"Processing {len(items)} images...")
+    print(f"Storage mode: {STORE_IMAGES}")
+    print(f"Confidence threshold: {args.confidence_threshold}")
+    print()
 
-    conn = psycopg2.connect(DATABASE_URL)
-    register_uuid()
+    # Connect to database
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        register_uuid()
+    except Exception as e:
+        print(f"ERROR: Cannot connect to database: {e}")
+        sys.exit(1)
 
+    # Process images
+    success_count = 0
+    error_count = 0
+    skipped_count = 0
+    
     for item in tqdm(items, desc="Processing images"):
         try:
             # 1. احصل على بايتات الصورة
