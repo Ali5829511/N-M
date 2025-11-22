@@ -432,7 +432,7 @@
             <div class="form-group">
                 <label for="ftpPort">منفذ FTP (FTP Port):</label>
                 <input type="number" id="ftpPort" placeholder="21" value="21">
-                <small>المنفذ الافتراضي: 21 (FTP)، 2121 (FTPS)، 2022 (SFTP)</small>
+                <small>المنافذ الشائعة: 21 (FTP)، 990 (FTPS)، 22 (SFTP) - قد تختلف حسب الإعداد</small>
             </div>
 
             <div class="form-group">
@@ -444,7 +444,7 @@
             <div class="form-group">
                 <label for="ftpPassword">كلمة مرور FTP (FTP Password):</label>
                 <input type="password" id="ftpPassword" placeholder="••••••••">
-                <small>كلمة المرور للوصول إلى خادم FTP</small>
+                <small>⚠️ تحذير أمني: سيتم حفظ كلمة المرور في المتصفح - استخدم كلمات مرور خاصة بهذا التطبيق فقط</small>
             </div>
 
             <div class="form-group">
@@ -505,8 +505,8 @@
 
             <div class="form-group">
                 <label for="maxCallsPerSecond">الحد الأقصى للطلبات في الثانية (Max Calls/Second):</label>
-                <input type="number" id="maxCallsPerSecond" placeholder="8" min="1" max="20" value="8">
-                <small>عدد الطلبات المسموح بها في الثانية - القيمة الافتراضية: 8</small>
+                <input type="number" id="maxCallsPerSecond" placeholder="8" min="1" value="8">
+                <small>عدد الطلبات المسموح بها في الثانية - القيمة الافتراضية: 8 (يعتمد على خطة الاشتراك)</small>
             </div>
 
             <div class="form-group">
@@ -517,8 +517,8 @@
 
             <div class="form-group">
                 <label for="apiResetDate">تاريخ إعادة تعيين الطلبات (API Reset Date):</label>
-                <input type="text" id="apiResetDate" placeholder="2025-12-01 05:38 PM">
-                <small>التاريخ الذي سيتم فيه إعادة تعيين عداد الطلبات</small>
+                <input type="datetime-local" id="apiResetDate">
+                <small>التاريخ والوقت الذي سيتم فيه إعادة تعيين عداد الطلبات</small>
             </div>
 
             <h3 style="color: #2c3e50; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
