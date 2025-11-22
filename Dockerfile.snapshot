@@ -6,37 +6,15 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-# تثبيت تبعيات النظام
-RUN apt-get update && apt-get install -y \
-    postgresql-client \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements and install Python dependencies
-# نسخ المتطلبات وتثبيت تبعيات Python
+# Install dependencies
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application files
-# نسخ ملفات التطبيق
+# Copy application code
 COPY snapshot_to_postgres.py ./
 COPY db_schema.sql ./
-COPY .env.example ./
 
-# Create directory for images
-# إنشاء دليل للصور
-RUN mkdir -p /app/images
-
-# Set environment variables
-# تعيين متغيرات البيئة
-ENV PYTHONUNBUFFERED=1
-
-# Default command (can be overridden)
-# الأمر الافتراضي (يمكن تجاوزه)
-CMD ["python", "snapshot_to_postgres.py", "--images", "images.txt", "--delay", "1.0"]
-
-# Health check
-# فحص الصحة
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD python -c "import psycopg2; import os; psycopg2.connect(os.getenv('DATABASE_URL'))" || exit 1
+# Default command: run snapshot_to_postgres.py with images.txt
+# Can be overridden in docker-compose or at runtime
+# Example: docker run <image> python snapshot_to_postgres.py --images images.txt --delay 1.0
+CMD ["python", "snapshot_to_postgres.py", "--images", "images.txt"]
