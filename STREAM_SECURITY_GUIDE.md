@@ -328,10 +328,17 @@ def create_secure_config():
         'image_type': 'car'
     }
     
+    # إنشاء المجلد بصلاحيات آمنة
+    config_dir = os.path.dirname(config_path)
+    os.makedirs(config_dir, mode=0o700, exist_ok=True)
+    
     # حفظ في موقع آمن (ليس في Git)
     config_path = os.path.expanduser('~/.stream/config.ini')
     with open(config_path, 'w') as f:
         config.write(f)
+    
+    # تعيين صلاحيات الملف
+    os.chmod(config_path, 0o600)
     
     return config_path
 
