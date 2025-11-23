@@ -51,19 +51,21 @@
 1. احصل على API Token من: https://app.platerecognizer.com/start/
 2. افتح صفحة api_settings.html
 3. اختر "Plate Recognizer API - احترافي"
-4. أدخل API Token: 560a4728fc1f0fee1f76d1eb67f001d762a941d9
+4. أدخل API Token الخاص بك
 5. اختر المنطقة: السعودية (SA)
 6. اضغط "اختبار الاتصال" للتحقق
 7. اضغط "حفظ الإعدادات"
 ```
 
-### 3. API Token المكوّن
+### 3. إعداد API Token
 
 ```
-API Token: 560a4728fc1f0fee1f76d1eb67f001d762a941d9
+API Token: احصل على token من https://app.platerecognizer.com/start/
 API Endpoint: https://api.platerecognizer.com/v1/plate-reader/
 المنطقة: السعودية (SA)
 ```
+
+**ملاحظة:** لا تشارك API Token الخاص بك مع أحد. احفظه في متغيرات البيئة (.env file).
 
 ---
 

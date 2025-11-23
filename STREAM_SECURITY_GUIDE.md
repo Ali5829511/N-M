@@ -32,10 +32,10 @@ Your API token is available in your ParkPow dashboard:
 
 **مثال على رمز API / Example API Token:**
 ```
-7c13be422713a758a42a0bc453cf3331fbf4d346
+YOUR_PARKPOW_API_TOKEN_HERE
 ```
 
-⚠️ **هذا مثال فقط! / This is just an example!**  
+⚠️ **هذا مجرد placeholder! / This is just a placeholder!**  
 استخدم رمزك الخاص من لوحة التحكم.  
 Use your own token from your dashboard.
 

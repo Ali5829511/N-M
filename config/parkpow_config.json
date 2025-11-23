@@ -1,6 +1,6 @@
 {
   "api_url": "https://app.parkpow.com/api/v1/",
-  "api_token": "560a4728fc1f0fee1f76d1eb67f001d762a941d9",
+  "api_token": "YOUR_PARKPOW_API_TOKEN_HERE",
   "enabled": true,
   "auto_sync": false,
   "sync_interval": 3600,
