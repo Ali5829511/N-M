@@ -54,7 +54,9 @@ public class ApiClient {
                 });
             
             // إضافة logging في وضع التطوير
-            if (BuildConfig.DEBUG) {
+            // TODO: Replace with your own debug flag
+            boolean DEBUG = true; // Set to false in production
+            if (DEBUG) {
                 HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
                 loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                 httpClient.addInterceptor(loggingInterceptor);

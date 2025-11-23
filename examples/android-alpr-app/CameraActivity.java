@@ -115,7 +115,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
         try {
             camera = Camera.open();
-            camera.setPreview Display(holder);
+            camera.setPreviewDisplay(holder);
             camera.startPreview();
             
             // ضبط التركيز التلقائي

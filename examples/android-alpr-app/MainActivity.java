@@ -142,8 +142,10 @@ public class MainActivity extends AppCompatActivity {
      * فتح نشاط المخالفات
      */
     private void openViolationsActivity() {
-        Intent intent = new Intent(this, ViolationsListActivity.class);
-        startActivity(intent);
+        // TODO: Create ViolationsListActivity or use alternative
+        Toast.makeText(this, "عرض المخالفات - قيد التطوير", Toast.LENGTH_SHORT).show();
+        // Intent intent = new Intent(this, ViolationsListActivity.class);
+        // startActivity(intent);
     }
     
     /**
