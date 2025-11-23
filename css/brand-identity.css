@@ -1,0 +1,508 @@
+/**
+ * ========================================
+ * نظام الهوية البصرية - جامعة الإمام محمد بن سعود الإسلامية
+ * Brand Identity System - Imam University
+ * ========================================
+ * 
+ * مستوحى من شعار الجامعة
+ * Inspired by University Logo
+ */
+
+/* ========================================
+   1. نظام الألوان - Color System
+   ======================================== */
+
+:root {
+    /* الألوان الأساسية - Primary Colors */
+    --primary-sky-blue: #87CEEB;        /* أزرق سماوي فاتح */
+    --primary-steel-blue: #4682B4;      /* أزرق داكن */
+    --primary-brown: #8B7355;           /* بني ذهبي */
+    --primary-gold: #D4AF37;            /* ذهبي */
+    --primary-white: #FFFFFF;           /* أبيض */
+    
+    /* الألوان الثانوية - Secondary Colors */
+    --secondary-light-blue: #B0E0E6;    /* أزرق فاتح جداً */
+    --secondary-dark-blue: #36648B;     /* أزرق غامق */
+    --secondary-tan: #A0826D;           /* بني فاتح */
+    --secondary-bronze: #CD7F32;        /* برونزي */
+    
+    /* الألوان الوظيفية - Functional Colors */
+    --success-green: #52c41a;           /* أخضر النجاح */
+    --warning-orange: #faad14;          /* برتقالي التحذير */
+    --error-red: #f5222d;               /* أحمر الخطأ */
+    --info-blue: #1890ff;               /* أزرق المعلومات */
+    
+    /* الألوان الحيادية - Neutral Colors */
+    --neutral-50: #fafafa;
+    --neutral-100: #f5f5f5;
+    --neutral-200: #eeeeee;
+    --neutral-300: #e0e0e0;
+    --neutral-400: #bdbdbd;
+    --neutral-500: #9e9e9e;
+    --neutral-600: #757575;
+    --neutral-700: #616161;
+    --neutral-800: #424242;
+    --neutral-900: #212121;
+    
+    /* التدرجات - Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--primary-steel-blue) 0%, var(--primary-sky-blue) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--primary-brown) 0%, var(--primary-gold) 100%);
+    --gradient-overlay: linear-gradient(135deg, rgba(70, 130, 180, 0.9) 0%, rgba(135, 206, 235, 0.9) 100%);
+    
+    /* الظلال - Shadows */
+    --shadow-sm: 0 2px 8px rgba(70, 130, 180, 0.1);
+    --shadow-md: 0 4px 16px rgba(70, 130, 180, 0.15);
+    --shadow-lg: 0 8px 32px rgba(70, 130, 180, 0.2);
+    --shadow-xl: 0 12px 48px rgba(70, 130, 180, 0.25);
+    
+    /* نصف القطر - Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    --radius-full: 9999px;
+    
+    /* التباعد - Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+}
+
+/* ========================================
+   2. الخطوط - Typography
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+
+:root {
+    --font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    
+    /* أحجام الخطوط - Font Sizes */
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 24px;
+    --font-size-3xl: 30px;
+    --font-size-4xl: 36px;
+    --font-size-5xl: 48px;
+    
+    /* أوزان الخطوط - Font Weights */
+    --font-weight-thin: 200;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    --font-weight-black: 900;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.6;
+    color: var(--neutral-800);
+}
+
+/* ========================================
+   3. العناوين - Headings
+   ======================================== */
+
+.brand-heading {
+    font-family: var(--font-family);
+    font-weight: var(--font-weight-extrabold);
+    line-height: 1.2;
+    margin: 0;
+}
+
+.brand-heading-1 {
+    font-size: var(--font-size-5xl);
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-heading-2 {
+    font-size: var(--font-size-4xl);
+    color: var(--primary-steel-blue);
+}
+
+.brand-heading-3 {
+    font-size: var(--font-size-3xl);
+    color: var(--primary-steel-blue);
+}
+
+.brand-heading-4 {
+    font-size: var(--font-size-2xl);
+    color: var(--neutral-800);
+}
+
+/* ========================================
+   4. البطاقات - Cards
+   ======================================== */
+
+.brand-card {
+    background: var(--primary-white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--neutral-100);
+    position: relative;
+    overflow: hidden;
+}
+
+.brand-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+}
+
+.brand-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-sky-blue);
+}
+
+/* بطاقة مميزة */
+.brand-card-featured {
+    background: var(--gradient-primary);
+    color: var(--primary-white);
+}
+
+.brand-card-featured::before {
+    background: var(--gradient-secondary);
+}
+
+/* بطاقة مع أيقونة */
+.brand-card-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.brand-card-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-xl);
+    background: var(--gradient-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    font-size: 40px;
+}
+
+/* بطاقة إحصائية */
+.brand-stat-card {
+    background: var(--primary-white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.brand-stat-card:hover {
+    border-color: var(--primary-sky-blue);
+    transform: scale(1.05);
+}
+
+.brand-stat-number {
+    font-size: var(--font-size-5xl);
+    font-weight: var(--font-weight-extrabold);
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: var(--spacing-md) 0;
+}
+
+.brand-stat-label {
+    font-size: var(--font-size-lg);
+    color: var(--neutral-600);
+    font-weight: var(--font-weight-medium);
+}
+
+.brand-stat-icon {
+    font-size: 60px;
+    margin-bottom: var(--spacing-sm);
+}
+
+/* ========================================
+   5. الأزرار - Buttons
+   ======================================== */
+
+.brand-btn {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    padding: 14px 32px;
+    border-radius: var(--radius-full);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.brand-btn-primary {
+    background: var(--gradient-primary);
+    color: var(--primary-white);
+}
+
+.brand-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.brand-btn-secondary {
+    background: var(--gradient-secondary);
+    color: var(--primary-white);
+}
+
+.brand-btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.brand-btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-steel-blue);
+    color: var(--primary-steel-blue);
+}
+
+.brand-btn-outline:hover {
+    background: var(--primary-steel-blue);
+    color: var(--primary-white);
+}
+
+/* ========================================
+   6. الخلفيات - Backgrounds
+   ======================================== */
+
+.brand-bg-primary {
+    background: var(--gradient-primary);
+}
+
+.brand-bg-secondary {
+    background: var(--gradient-secondary);
+}
+
+.brand-bg-pattern {
+    background-color: var(--neutral-50);
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(135, 206, 235, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(70, 130, 180, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+}
+
+.brand-bg-overlay {
+    position: relative;
+}
+
+.brand-bg-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-overlay);
+    z-index: -1;
+}
+
+/* ========================================
+   7. الهيدر - Header
+   ======================================== */
+
+.brand-header {
+    background: var(--gradient-primary);
+    color: var(--primary-white);
+    padding: var(--spacing-2xl) var(--spacing-xl);
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.brand-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 40%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: headerGlow 10s ease-in-out infinite;
+}
+
+@keyframes headerGlow {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.1); }
+}
+
+.brand-logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.brand-logo {
+    width: 100px;
+    height: 100px;
+    background: var(--primary-white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--primary-gold);
+}
+
+.brand-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ========================================
+   8. التأثيرات - Effects
+   ======================================== */
+
+.brand-glow {
+    box-shadow: 0 0 20px rgba(135, 206, 235, 0.5);
+}
+
+.brand-shimmer {
+    position: relative;
+    overflow: hidden;
+}
+
+.brand-shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.brand-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* ========================================
+   9. الشبكة - Grid
+   ======================================== */
+
+.brand-grid {
+    display: grid;
+    gap: var(--spacing-xl);
+}
+
+.brand-grid-2 {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.brand-grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.brand-grid-4 {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* ========================================
+   10. المتجاوب - Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    :root {
+        --font-size-5xl: 32px;
+        --font-size-4xl: 28px;
+        --font-size-3xl: 24px;
+    }
+    
+    .brand-logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .brand-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .brand-header {
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+}
+
+/* ========================================
+   11. الأدوات المساعدة - Utilities
+   ======================================== */
+
+.brand-text-primary {
+    color: var(--primary-steel-blue);
+}
+
+.brand-text-secondary {
+    color: var(--primary-brown);
+}
+
+.brand-text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-divider {
+    height: 3px;
+    background: var(--gradient-secondary);
+    border: none;
+    margin: var(--spacing-xl) 0;
+    border-radius: var(--radius-full);
+}
+
+.brand-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    background: var(--gradient-primary);
+    color: var(--primary-white);
+}
