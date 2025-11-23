@@ -146,9 +146,11 @@
 
 ### البيانات الأساسية
 - [x] إضافة ParkPow Token في .env.example
-- [x] Token: 7c13be422713a758a42a0bc453cf3331fbf4d346
+- [x] Token: [Get from https://app.parkpow.com]
 - [x] API URL: https://app.parkpow.com/api/v1
 - [x] Webhook URL: https://app.parkpow.com/api/v1/webhook-receiver/
+
+**⚠️ Security:** Store actual token in .env file (not in repository)
 
 ### API Endpoints
 - [x] /api/parkpow/status - التحقق من الاتصال
@@ -170,8 +172,8 @@
 ### بيانات الاتصال
 - [x] إضافة FTP Host في .env.example
 - [x] Host: ftp.platerecognizer.com
-- [x] Username: aliayashi522
-- [x] Password: 708c4bbfdde0
+- [x] Username: [Your FTP Username]
+- [x] Password: [Your FTP Password]
 - [x] Port 21 (FTP)
 - [x] Port 2121 (FTPS - Secure)
 - [x] Port 2022 (SFTP)

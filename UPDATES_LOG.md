@@ -331,7 +331,9 @@ data/real_data.json          (تحديث وصف الفلل)
 
 #### API Integration
 - Plate Recognizer API
-- Token: `22ba3cf7155a1ea730a0b64787f98ab5f9a3de94`
+- Token: احصل على token من https://app.platerecognizer.com
+
+**ملاحظة أمنية:** احفظ Token في ملف `.env` (راجع `.env.example`)
 
 #### التصميم
 - Responsive Design مع دعم RTL
