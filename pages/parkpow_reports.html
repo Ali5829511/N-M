@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقارير ParkPow - نظام N-M</title>
+    <link rel="stylesheet" href="../css/brand-identity.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: var(--brand-bg-pattern);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .content-section {
+            background: var(--primary-white);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .content-section h2 {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-extrabold);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: var(--font-weight-bold);
+            color: var(--neutral-700);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--neutral-200);
+            border-radius: var(--radius-md);
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-sky-blue);
+            box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.1);
+        }
+
+        .export-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+        }
+
+        .export-btn {
+            background: var(--gradient-primary);
+            color: var(--primary-white);
+            border: none;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-xl);
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-bold);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .export-btn i {
+            font-size: 40px;
+        }
+
+        .export-btn.excel {
+            background: linear-gradient(135deg, #217346 0%, #2d9f5e 100%);
+        }
+
+        .export-btn.html {
+            background: linear-gradient(135deg, #e34c26 0%, #f06529 100%);
+        }
+
+        .export-btn.pdf {
+            background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+        }
+
+        .results-section {
+            margin-top: var(--spacing-2xl);
+            padding: var(--spacing-xl);
+            background: var(--neutral-50);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--neutral-200);
+        }
+
+        .results-section h3 {
+            margin-bottom: var(--spacing-md);
+            color: var(--primary-steel-blue);
+        }
+
+        .result-item {
+            padding: var(--spacing-md);
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .download-link {
+            background: var(--gradient-secondary);
+            color: var(--primary-white);
+            padding: 8px 20px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-sm);
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: var(--spacing-xl);
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid var(--neutral-200);
+            border-top: 4px solid var(--primary-steel-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--spacing-md);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: rgba(135, 206, 235, 0.1);
+            border-right: 4px solid var(--primary-sky-blue);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .info-box h4 {
+            color: var(--primary-steel-blue);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .info-box ul {
+            margin: 0;
+            padding-right: 20px;
+        }
+
+        .info-box li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--neutral-700);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="brand-header">
+            <div class="brand-logo-container">
+                <div class="brand-logo">
+                    <img src="../assets/logo.png" alt="شعار الجامعة">
+                </div>
+            </div>
+            <h1 class="brand-heading brand-heading-1">📊 تقارير ParkPow</h1>
+            <p style="font-size: var(--font-size-lg); font-weight: var(--font-weight-medium); margin-top: var(--spacing-md);">
+                نظام التقارير الاحترافي للمركبات
+            </p>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <h4>📋 معلومات النظام</h4>
+            <ul>
+                <li>✅ تصدير البيانات إلى Excel مع الصور المصغرة</li>
+                <li>✅ تصدير إلى HTML جاهز للطباعة</li>
+                <li>✅ تصدير إلى PDF احترافي للمحاكم</li>
+                <li>✅ دعم كامل للغة العربية</li>
+                <li>✅ تقارير جودة البيانات</li>
+            </ul>
+        </div>
+
+        <!-- Report Configuration -->
+        <div class="content-section">
+            <h2>⚙️ إعدادات التقرير</h2>
+            
+            <form id="reportForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="dateFrom">
+                            <i class="fas fa-calendar-alt"></i> من تاريخ
+                        </label>
+                        <input type="datetime-local" id="dateFrom" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateTo">
+                            <i class="fas fa-calendar-alt"></i> إلى تاريخ
+                        </label>
+                        <input type="datetime-local" id="dateTo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="site">
+                            <i class="fas fa-map-marker-alt"></i> الموقع (اختياري)
+                        </label>
+                        <input type="text" id="site" placeholder="اترك فارغاً للكل">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="camera">
+                            <i class="fas fa-video"></i> الكاميرا (اختياري)
+                        </label>
+                        <input type="text" id="camera" placeholder="اترك فارغاً للكل">
+                    </div>
+                </div>
+
+                <div class="export-buttons">
+                    <button type="button" class="export-btn excel" onclick="exportReport('excel')">
+                        <i class="fas fa-file-excel"></i>
+                        <span>تصدير Excel</span>
+                    </button>
+
+                    <button type="button" class="export-btn html" onclick="exportReport('html')">
+                        <i class="fas fa-file-code"></i>
+                        <span>تصدير HTML</span>
+                    </button>
+
+                    <button type="button" class="export-btn pdf" onclick="exportReport('pdf')">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>تصدير PDF</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>جاري إنشاء التقرير...</p>
+            </div>
+
+            <!-- Results -->
+            <div class="results-section" id="results" style="display: none;">
+                <h3>✅ اكتمل التقرير</h3>
+                <div id="resultsList"></div>
+            </div>
+        </div>
+
+        <!-- Recent Reports -->
+        <div class="content-section">
+            <h2>📁 التقارير الأخيرة</h2>
+            <div id="recentReports">
+                <p style="color: var(--neutral-500); text-align: center; padding: var(--spacing-xl);">
+                    لا توجد تقارير سابقة
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تعيين التواريخ الافتراضية
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            document.getElementById('dateTo').value = formatDateTimeLocal(now);
+            document.getElementById('dateFrom').value = formatDateTimeLocal(yesterday);
+            
+            loadRecentReports();
+        });
+
+        function formatDateTimeLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        function exportReport(format) {
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const site = document.getElementById('site').value;
+            const camera = document.getElementById('camera').value;
+
+            if (!dateFrom || !dateTo) {
+                alert('يرجى تحديد التواريخ');
+                return;
+            }
+
+            // عرض التحميل
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('results').style.display = 'none';
+
+            // محاكاة استدعاء API
+            // في الإنتاج، استبدل هذا باستدعاء حقيقي للخادم
+            setTimeout(() => {
+                const reportData = {
+                    format: format,
+                    dateFrom: dateFrom,
+                    dateTo: dateTo,
+                    site: site,
+                    camera: camera,
+                    timestamp: new Date().toISOString(),
+                    eventsCount: Math.floor(Math.random() * 100) + 10
+                };
+
+                // حفظ في التقارير الأخيرة
+                saveReport(reportData);
+
+                // عرض النتائج
+                showResults(reportData);
+
+                // إخفاء التحميل
+                document.getElementById('loading').classList.remove('active');
+            }, 2000);
+        }
+
+        function showResults(data) {
+            const resultsDiv = document.getElementById('results');
+            const resultsList = document.getElementById('resultsList');
+            
+            const filename = `parkpow_report_${new Date().getTime()}`;
+            const extension = data.format === 'excel' ? 'xlsx' : data.format;
+            
+            resultsList.innerHTML = `
+                <div class="result-item">
+                    <div>
+                        <strong>التنسيق:</strong> ${data.format.toUpperCase()} |
+                        <strong>الأحداث:</strong> ${data.eventsCount} |
+                        <strong>التاريخ:</strong> ${new Date(data.timestamp).toLocaleString('ar-SA')}
+                    </div>
+                    <a href="#" class="download-link" onclick="downloadReport('${filename}.${extension}'); return false;">
+                        <i class="fas fa-download"></i> تحميل
+                    </a>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function downloadReport(filename) {
+            alert(`سيتم تحميل الملف: ${filename}\n\nملاحظة: في النسخة الإنتاجية، سيتم تحميل الملف الفعلي من الخادم.`);
+        }
+
+        function saveReport(data) {
+            let reports = JSON.parse(localStorage.getItem('parkpowReports') || '[]');
+            reports.unshift(data);
+            reports = reports.slice(0, 10); // الاحتفاظ بآخر 10 تقارير
+            localStorage.setItem('parkpowReports', JSON.stringify(reports));
+            loadRecentReports();
+        }
+
+        function loadRecentReports() {
+            const reports = JSON.parse(localStorage.getItem('parkpowReports') || '[]');
+            const container = document.getElementById('recentReports');
+            
+            if (reports.length === 0) {
+                container.innerHTML = `
+                    <p style="color: var(--neutral-500); text-align: center; padding: var(--spacing-xl);">
+                        لا توجد تقارير سابقة
+                    </p>
+                `;
+                return;
+            }
+            
+            container.innerHTML = reports.map(report => {
+                const date = new Date(report.timestamp);
+                const formatIcon = {
+                    'excel': 'fa-file-excel',
+                    'html': 'fa-file-code',
+                    'pdf': 'fa-file-pdf'
+                }[report.format] || 'fa-file';
+                
+                return `
+                    <div class="result-item">
+                        <div>
+                            <i class="fas ${formatIcon}" style="color: var(--primary-steel-blue);"></i>
+                            <strong>${report.format.toUpperCase()}</strong> |
+                            ${report.eventsCount} حدث |
+                            ${date.toLocaleString('ar-SA')}
+                        </div>
+                        <a href="#" class="download-link" onclick="downloadReport('report_${date.getTime()}.${report.format}'); return false;">
+                            <i class="fas fa-download"></i> تحميل
+                        </a>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
