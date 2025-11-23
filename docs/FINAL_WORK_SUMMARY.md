@@ -112,8 +112,9 @@ localStorage.users = [{...}];
 ## 🔐 بيانات الاعتماد المكونة
 
 ### ParkPow API:
+### ParkPow API:
 ```
-Token: 7c13be422713a758a42a0bc453cf3331fbf4d346
+Token: [احصل على token من https://app.parkpow.com]
 API URL: https://app.parkpow.com/api/v1
 Webhook: https://app.parkpow.com/api/v1/webhook-receiver/
 ```
@@ -121,8 +122,8 @@ Webhook: https://app.parkpow.com/api/v1/webhook-receiver/
 ### Plate Recognizer FTP:
 ```
 Host: ftp.platerecognizer.com
-Username: aliayashi522
-Password: 708c4bbfdde0
+Username: [Your FTP Username]
+Password: [Your FTP Password]
 Ports: 21 (FTP), 2121 (FTPS), 2022 (SFTP)
 ```
 

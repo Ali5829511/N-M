@@ -21,7 +21,8 @@ This guide explains how to set up the Automatic License Plate Recognition (ALPR)
 
 **API Token:**
 ```
-7c13be422713a758a42a0bc453cf3331fbf4d346
+احصل على Token الخاص بك من: https://app.parkpow.com
+(Do NOT commit your actual token to the repository)
 ```
 
 **API Base URL:**
@@ -48,13 +49,17 @@ ftp.platerecognizer.com
 
 **Username:**
 ```
-aliayashi522
+YOUR_FTP_USERNAME
 ```
 
 **Password:**
 ```
-708c4bbfdde0
+YOUR_FTP_PASSWORD
 ```
+
+**⚠️ ملاحظة أمنية:** احصل على بيانات الاعتماد من حسابك الشخصي ولا تشاركها في Git.
+
+**⚠️ Security Note:** Get your credentials from your personal account and never share them in Git.
 
 ---
 
@@ -64,7 +69,7 @@ aliayashi522
 
 ```env
 # ParkPow API Configuration
-PARKPOW_API_TOKEN=7c13be422713a758a42a0bc453cf3331fbf4d346
+PARKPOW_API_TOKEN=your_parkpow_api_token_here
 PARKPOW_API_URL=https://app.parkpow.com/api/v1
 PARKPOW_WEBHOOK_URL=https://app.parkpow.com/api/v1/webhook-receiver/
 
@@ -73,9 +78,11 @@ FTP_HOST=ftp.platerecognizer.com
 FTP_PORT=21
 FTP_PORT_FTPS=2121
 FTP_PORT_SFTP=2022
-FTP_USERNAME=aliayashi522
-FTP_PASSWORD=708c4bbfdde0
+FTP_USERNAME=your_ftp_username_here
+FTP_PASSWORD=your_ftp_password_here
 ```
+
+**ملاحظة:** يمكنك نسخ ملف `.env.example` واستبدال القيم الخاصة بك.
 
 ---
 
@@ -162,6 +169,7 @@ app.post('/webhook/parkpow', async (req, res) => {
 
 **باستخدام Node.js:**
 ```javascript
+require('dotenv').config(); // Load environment variables first
 const ftp = require('basic-ftp');
 const fs = require('fs');
 
@@ -170,12 +178,17 @@ async function uploadImageToFTP(imagePath) {
     client.ftp.verbose = true;
     
     try {
+        // Validate required environment variables
+        if (!process.env.FTP_HOST || !process.env.FTP_USERNAME || !process.env.FTP_PASSWORD) {
+            throw new Error('Missing required FTP credentials in .env file');
+        }
+        
         // الاتصال
         await client.access({
-            host: 'ftp.platerecognizer.com',
-            port: 21,
-            user: 'aliayashi522',
-            password: '708c4bbfdde0',
+            host: process.env.FTP_HOST || 'ftp.platerecognizer.com',
+            port: parseInt(process.env.FTP_PORT) || 21,
+            user: process.env.FTP_USERNAME,
+            password: process.env.FTP_PASSWORD,
             secure: false
         });
         
@@ -187,7 +200,8 @@ async function uploadImageToFTP(imagePath) {
         console.log('✅ تم رفع الصورة');
         
     } catch (err) {
-        console.error('❌ خطأ:', err);
+        console.error('❌ خطأ:', err.message);
+        throw err;
     } finally {
         client.close();
     }
@@ -202,10 +216,10 @@ async function downloadResults() {
     
     try {
         await client.access({
-            host: 'ftp.platerecognizer.com',
-            port: 21,
-            user: 'aliayashi522',
-            password: '708c4bbfdde0'
+            host: process.env.FTP_HOST || 'ftp.platerecognizer.com',
+            port: parseInt(process.env.FTP_PORT) || 21,
+            user: process.env.FTP_USERNAME,
+            password: process.env.FTP_PASSWORD
         });
         
         // قائمة الملفات
@@ -243,10 +257,10 @@ async function uploadSecure(imagePath) {
     const client = new ftp.Client();
     
     await client.access({
-        host: 'ftp.platerecognizer.com',
-        port: 2121, // FTPS port
-        user: 'aliayashi522',
-        password: '708c4bbfdde0',
+        host: process.env.FTP_HOST || 'ftp.platerecognizer.com',
+        port: parseInt(process.env.FTP_PORT_FTPS) || 2121, // FTPS port
+        user: process.env.FTP_USERNAME,
+        password: process.env.FTP_PASSWORD,
         secure: true, // تفعيل SSL/TLS
         secureOptions: {
             rejectUnauthorized: false
@@ -313,10 +327,10 @@ async function batchProcessImages(imagesFolder) {
     try {
         // 1. الاتصال بـ FTP
         await client.access({
-            host: 'ftp.platerecognizer.com',
-            port: 21,
-            user: 'aliayashi522',
-            password: '708c4bbfdde0'
+            host: process.env.FTP_HOST || 'ftp.platerecognizer.com',
+            port: parseInt(process.env.FTP_PORT) || 21,
+            user: process.env.FTP_USERNAME,
+            password: process.env.FTP_PASSWORD
         });
         
         // 2. رفع جميع الصور
@@ -459,8 +473,8 @@ curl -X GET "http://localhost:8080/api/parkpow/status" \
 ```bash
 # اختبار الاتصال
 ftp ftp.platerecognizer.com 21
-# Username: aliayashi522
-# Password: 708c4bbfdde0
+# Username: [YOUR_FTP_USERNAME]
+# Password: [YOUR_FTP_PASSWORD]
 
 # الأوامر:
 ls          # قائمة الملفات

@@ -78,24 +78,28 @@ The following letters are **NOT allowed** in Saudi license plates:
 
 ```json
 {
-    "api_token": "560a4728fc1f0fee1f76d1eb67f001d762a941d9",
+    "api_token": "YOUR_API_TOKEN_HERE",
     "api_url": "https://api.platerecognizer.com/v1/plate-reader/",
     "regions": ["sa"],
-    "api_calls": "6418 / 50000",
+    "api_calls": "Example: 6418 / 50000",
     "max_calls_per_sec": "8 / second",
-    "reset_date": "2025-12-01 05:38 PM"
+    "reset_date": "Check your account"
 }
 ```
+
+**ملاحظة:** احصل على API Token الخاص بك من https://app.platerecognizer.com/start/
 
 ### معلومات FTP / FTP Information
 
 ```
 Host: ftp.platerecognizer.com
 Port: 21 (FTP) / 2121 (FTPS) / 2022 (SFTP)
-Username: aliayashi522
-Password: 708c4bbfdde0
+Username: YOUR_FTP_USERNAME
+Password: YOUR_FTP_PASSWORD
 Passive Port Range: 55000-65000
 ```
+
+**⚠️ ملاحظة أمنية:** لا تشارك بيانات FTP الخاصة بك مع أحد. احفظها في ملف .env (راجع .env.example)
 
 ### Webhook Integration
 
@@ -150,9 +154,10 @@ test_plate_validation()
 ```python
 from plate_recognition_utils import PlateRecognizerAPI
 from saudi_plate_validator import SaudiPlateValidator
+import os
 
-# إعداد API
-api = PlateRecognizerAPI(api_token="560a4728fc1f0fee1f76d1eb67f001d762a941d9")
+# إعداد API - استخدم متغير البيئة أو قيمة من ملف .env
+api = PlateRecognizerAPI(api_token=os.environ.get('PLATE_API_KEY', 'YOUR_API_TOKEN_HERE'))
 validator = SaudiPlateValidator()
 
 # معالجة صورة

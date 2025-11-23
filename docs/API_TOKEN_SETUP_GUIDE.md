@@ -41,7 +41,7 @@ cp .env.example .env
 
 ```env
 # ParkPow API Configuration
-PARKPOW_API_TOKEN=22ba3cf7155a1ea730a0b64787f98ab5f9a3de94
+PARKPOW_API_TOKEN=your_parkpow_api_token_here
 ```
 
 **⚠️ تحذير أمني مهم:**
@@ -69,7 +69,7 @@ if (!PARKPOW_API_TOKEN) {
 
 ```javascript
 // ❌ لا تفعل هذا أبداً!
-const PARKPOW_API_TOKEN = '22ba3cf7155a1ea730a0b64787f98ab5f9a3de94';
+const PARKPOW_API_TOKEN = 'your_actual_token_here'; // Never hardcode tokens!
 ```
 
 ---
@@ -117,25 +117,25 @@ env:
 
 ```
 Key: PARKPOW_API_TOKEN
-Value: 22ba3cf7155a1ea730a0b64787f98ab5f9a3de94
+Value: YOUR_PARKPOW_API_TOKEN_HERE
 ```
 
 ### Fly.io
 
 ```bash
-fly secrets set PARKPOW_API_TOKEN=22ba3cf7155a1ea730a0b64787f98ab5f9a3de94
+fly secrets set PARKPOW_API_TOKEN=YOUR_PARKPOW_API_TOKEN_HERE
 ```
 
 ### Heroku
 
 ```bash
-heroku config:set PARKPOW_API_TOKEN=22ba3cf7155a1ea730a0b64787f98ab5f9a3de94
+heroku config:set PARKPOW_API_TOKEN=YOUR_PARKPOW_API_TOKEN_HERE
 ```
 
 ### Docker
 
 ```bash
-docker run -e PARKPOW_API_TOKEN=22ba3cf7155a1ea730a0b64787f98ab5f9a3de94 myapp
+docker run -e PARKPOW_API_TOKEN=YOUR_PARKPOW_API_TOKEN_HERE myapp
 ```
 
 ---
@@ -146,11 +146,11 @@ docker run -e PARKPOW_API_TOKEN=22ba3cf7155a1ea730a0b64787f98ab5f9a3de94 myapp
 
 ```bash
 # Windows
-set PARKPOW_API_TOKEN=22ba3cf7155a1ea730a0b64787f98ab5f9a3de94
+set PARKPOW_API_TOKEN=YOUR_PARKPOW_API_TOKEN_HERE
 npm start
 
 # Linux/Mac
-export PARKPOW_API_TOKEN=22ba3cf7155a1ea730a0b64787f98ab5f9a3de94
+export PARKPOW_API_TOKEN=YOUR_PARKPOW_API_TOKEN_HERE
 npm start
 ```
 
@@ -296,7 +296,7 @@ app.get('/api/parkpow/status', async (req, res) => {
 1. ❌ **لا تضع التوكن في الكود**
    ```javascript
    // ❌ خطأ!
-   const token = '22ba3cf7155a1ea730a0b64787f98ab5f9a3de94';
+   const token = 'YOUR_PARKPOW_API_TOKEN_HERE';
    ```
 
 2. ❌ **لا تشارك التوكن عبر البريد أو الدردشة**
@@ -329,7 +329,7 @@ HOST=0.0.0.0
 NODE_ENV=development
 
 # ParkPow API (Plate Recognition)
-PARKPOW_API_TOKEN=22ba3cf7155a1ea730a0b64787f98ab5f9a3de94
+PARKPOW_API_TOKEN=YOUR_PARKPOW_API_TOKEN_HERE
 PARKPOW_API_URL=https://app.parkpow.com/api/v1
 
 # EmailJS (Notifications)
@@ -393,7 +393,7 @@ if (!PARKPOW_API_TOKEN) {
 3. غيّر التوكن من ParkPow Dashboard
 4. تأكد من عدم وجوده في تاريخ Git:
    ```bash
-   git log -S "22ba3cf7155a1ea730a0b64787f98ab5f9a3de94"
+   git log -S "YOUR_PARKPOW_API_TOKEN_HERE"
    ```
 
 ---
