@@ -59,6 +59,8 @@ YOUR_FTP_PASSWORD
 
 **⚠️ ملاحظة أمنية:** احصل على بيانات الاعتماد من حسابك الشخصي ولا تشاركها في Git.
 
+**⚠️ Security Note:** Get your credentials from your personal account and never share them in Git.
+
 ---
 
 ## ⚙️ إعداد ملف .env
@@ -167,15 +169,20 @@ app.post('/webhook/parkpow', async (req, res) => {
 
 **باستخدام Node.js:**
 ```javascript
+require('dotenv').config(); // Load environment variables first
 const ftp = require('basic-ftp');
 const fs = require('fs');
-require('dotenv').config();
 
 async function uploadImageToFTP(imagePath) {
     const client = new ftp.Client();
     client.ftp.verbose = true;
     
     try {
+        // Validate required environment variables
+        if (!process.env.FTP_HOST || !process.env.FTP_USERNAME || !process.env.FTP_PASSWORD) {
+            throw new Error('Missing required FTP credentials in .env file');
+        }
+        
         // الاتصال
         await client.access({
             host: process.env.FTP_HOST || 'ftp.platerecognizer.com',
@@ -193,7 +200,8 @@ async function uploadImageToFTP(imagePath) {
         console.log('✅ تم رفع الصورة');
         
     } catch (err) {
-        console.error('❌ خطأ:', err);
+        console.error('❌ خطأ:', err.message);
+        throw err;
     } finally {
         client.close();
     }
