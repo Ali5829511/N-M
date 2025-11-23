@@ -22,6 +22,18 @@ The system fetches data from multiple endpoints:
 
 **Confirmation:** Data fetching from `https://app.parkpow.com/vehicles/` has been fully added.
 
+### 📱 تكامل Android / Android Integration
+
+**جديد!** تم دمج مكتبة ParkPow Android ALPR:
+- 📱 تطبيق Android للتعرف على اللوحات في الوقت الفعلي
+- 🔗 [دليل التكامل الكامل](ANDROID_ALPR_INTEGRATION.md)
+- 📂 [أمثلة الكود](examples/android-alpr-app/)
+
+**New!** ParkPow Android ALPR library integrated:
+- 📱 Android app for real-time plate recognition
+- 🔗 [Complete Integration Guide](ANDROID_ALPR_INTEGRATION.md)
+- 📂 [Code Examples](examples/android-alpr-app/)
+
 ## 🎯 الأهداف الرئيسية / Main Objectives
 
 ### ✅ 1. قاعدة بيانات السيارات

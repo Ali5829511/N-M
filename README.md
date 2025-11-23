@@ -130,6 +130,42 @@ npm install && npm start
 
 ---
 
+## 📱 تكامل Android ALPR - Android ALPR Integration
+
+**✨ جديد! تطبيق Android للتعرف على اللوحات**
+
+تم دمج مكتبة [ParkPow Android ALPR](https://github.com/parkpow/alpr-anpr-android) مع النظام لتوفير:
+- 📱 تطبيق Android محمول للتعرف على اللوحات
+- 📸 التقاط ومعالجة الصور في الوقت الفعلي
+- 🔄 مزامنة تلقائية مع النظام الحالي
+- 📍 تحديد الموقع الجغرافي للمخالفات
+- 💾 تخزين محلي للبيانات قبل المزامنة
+
+**New! Android app for license plate recognition**
+
+Integrated [ParkPow Android ALPR](https://github.com/parkpow/alpr-anpr-android) library provides:
+- 📱 Mobile Android app for plate recognition
+- 📸 Real-time image capture and processing
+- 🔄 Auto-sync with current system
+- 📍 GPS location for violations
+- 💾 Local data storage before sync
+
+### 🚀 البدء السريع / Quick Start
+
+📖 **[دليل التكامل الكامل / Complete Integration Guide →](ANDROID_ALPR_INTEGRATION.md)**
+
+📂 **[أمثلة الكود / Code Examples →](examples/android-alpr-app/)**
+
+### ✨ الميزات / Features:
+- ✅ تطبيق Android كامل وجاهز للاستخدام
+- ✅ أمثلة كود شاملة (MainActivity, CameraActivity, API Client)
+- ✅ دعم قاعدة بيانات محلية (SQLite)
+- ✅ مزامنة تلقائية مع الخادم
+- ✅ واجهة مستخدم سهلة ومتجاوبة
+- ✅ دعم اللغتين العربية والإنجليزية
+
+---
+
 ## 🚗 Plate Recognizer Integration
 
 **Automatic vehicle detection and license plate recognition using Plate Recognizer API**
