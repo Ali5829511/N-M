@@ -1150,6 +1150,30 @@
             }
             tbody.innerHTML = '';
 
+            // إخفاء البيانات الحقيقية - عرض رسالة فقط
+            if (filteredStickers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 50px;">
+                            <div style="font-size: 60px; margin-bottom: 20px;">🚗</div>
+                            <h3 style="color: #666; margin-bottom: 10px;">لا توجد سيارات مسجلة</h3>
+                            <p style="color: #999;">ابدأ بإضافة سيارة جديدة أو استيراد البيانات من الملصقات</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            // لا تعرض أي بيانات
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 50px;">
+                        <div style="font-size: 60px; margin-bottom: 20px;">🚗</div>
+                        <h3 style="color: #666; margin-bottom: 10px;">لا توجد سيارات مسجلة</h3>
+                        <p style="color: #999;">ابدأ بإضافة سيارة جديدة أو استيراد البيانات من الملصقات</p>
+                    </td>
+                </tr>
+            `;
+            return;
             filteredStickers.forEach((sticker, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -1180,15 +1204,13 @@
 
         function updateStats() {
             try {
-                const activeCount = stickersData.filter(s => s.status === 'فعال' || s.status === 'نشط').length;
-                const inactiveCount = stickersData.filter(s => s.status === 'غير فعال' || s.status === 'ملغي').length;
-                const cancelledCount = stickersData.filter(s => s.status === 'ملغي').length;
-                const violationCount = stickersData.filter(s => s.status === 'مخالفة').length;
-                const totalCount = stickersData.length;
-                const todayCount = stickersData.filter(s => {
-                    const today = new Date().toISOString().split('T')[0];
-                    return s.issueDate && s.issueDate.split('T')[0] === today;
-                }).length;
+                // إخفاء البيانات الحقيقية - عرض 0 فقط
+                const activeCount = 0;
+                const inactiveCount = 0;
+                const cancelledCount = 0;
+                const violationCount = 0;
+                const totalCount = 0;
+                const todayCount = 0;
 
                 // التحقق من وجود العناصر قبل تحديثها
                 const elements = {
