@@ -3,246 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم الموحدة - وحدة إسكان أعضاء هيئة التدريس</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tajawal:700,400&display=swap">
+    <title>لوحة التحكم - وحدة إسكان أعضاء هيئة التدريس</title>
+    <link rel="stylesheet" href="../css/brand-identity.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/unified-color-scheme.css">
-    
-    <link rel="stylesheet" href="../css/print-template.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Tajawal', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-attachment: fixed;
-            direction: rtl;
+            background: var(--brand-bg-pattern);
             min-height: 100vh;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* تأثير الخلفية المتحركة */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
-            animation: backgroundPulse 8s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes backgroundPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
+            padding: 0;
+            margin: 0;
         }
 
         .container {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
-            position: relative;
-            z-index: 1;
+            padding: 20px;
         }
 
-        .header {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 35px;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3), 
-                        0 0 0 1px rgba(255,255,255,0.3) inset;
+        /* Welcome Message */
+        .welcome-message {
+            background: var(--primary-white);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
             position: relative;
             overflow: hidden;
         }
 
-        .header::before {
+        .welcome-message::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            z-index: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient-secondary);
         }
 
-        .header-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 15px;
-            position: relative;
-            z-index: 1;
+        .welcome-message h2 {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-extrabold);
+            color: var(--primary-steel-blue);
+            margin-bottom: var(--spacing-md);
         }
 
-        .header h1 {
-            font-size: 36px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-weight: 700;
-            text-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+        .welcome-message p {
+            color: var(--neutral-700);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-medium);
         }
 
-        .back-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 30px;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .back-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .back-btn:hover::before {
-            left: 100%;
-        }
-
-        .back-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
-        }
-
-        /* التبويبات */
-        .tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            padding: 15px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: #667eea;
-            padding: 16px 32px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tab-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-            z-index: -1;
-        }
-
-        .tab-btn:hover {
-            color: white;
-            transform: translateY(-3px) scale(1.05);
-        }
-
-        .tab-btn:hover::before {
-            width: 120%;
-            height: 120%;
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-            transform: scale(1.05);
-        }
-
-        .tab-btn.active::before {
-            display: none;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes fadeInUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(30px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
-
-        /* بطاقات الإحصائيات */
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
         }
 
         .stat-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.2);
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: var(--primary-white);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .stat-card::before {
@@ -250,533 +79,317 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            opacity: 0;
-            transition: opacity 0.4s;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
         }
 
         .stat-card:hover {
-            transform: translateY(-10px) scale(1.03);
-            box-shadow: 0 25px 60px rgba(102, 126, 234, 0.3);
-        }
-
-        .stat-card:hover::before {
-            opacity: 1;
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-sky-blue);
         }
 
         .stat-icon {
-            font-size: 3.5em;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
-            animation: float 3s ease-in-out infinite;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-md);
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .stat-icon i {
+            font-size: 28px;
+            color: var(--primary-white);
         }
 
         .stat-number {
-            font-size: 3em;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-extrabold);
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+            margin-bottom: var(--spacing-sm);
         }
 
         .stat-label {
-            color: #555;
-            font-size: 1.15em;
-            font-weight: 600;
+            color: var(--neutral-700);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-bold);
         }
 
-        /* جدول التقرير */
-        .report-table {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        /* Quick Actions */
+        .quick-actions {
+            background: var(--primary-white);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-2xl);
+            box-shadow: var(--shadow-lg);
         }
 
-        .report-table thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .report-table th {
-            padding: 18px;
+        .quick-actions h2 {
             text-align: center;
-            font-weight: bold;
-            font-size: 1.05em;
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-extrabold);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-xl);
         }
 
-        .report-table td {
-            padding: 15px;
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .action-btn {
+            background: var(--gradient-primary);
+            color: var(--primary-white);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            text-decoration: none;
             text-align: center;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+            font-weight: var(--font-weight-bold);
         }
 
-        .report-table tbody tr {
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .action-btn i {
+            font-size: 40px;
+        }
+
+        .action-btn.secondary {
+            background: var(--gradient-secondary);
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+        }
+
+        /* Recent Activity */
+        .recent-activity {
+            background: var(--primary-white);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .recent-activity h2 {
+            text-align: center;
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-extrabold);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .activity-item {
+            padding: var(--spacing-lg);
+            background: var(--neutral-50);
+            border-radius: var(--radius-lg);
+            border-right: 4px solid var(--primary-sky-blue);
             transition: all 0.3s ease;
         }
 
-        .report-table tbody tr:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            transform: scale(1.01);
+        .activity-item:hover {
+            background: rgba(135, 206, 235, 0.1);
+            transform: translateX(-5px);
         }
 
-        /* أدوات التحكم */
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            align-items: center;
+        .activity-item h4 {
+            color: var(--primary-steel-blue);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-xs);
         }
 
-        .controls input[type="text"] {
-            flex-grow: 1;
-            padding: 15px 20px;
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            border-radius: 15px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
+        .activity-item p {
+            color: var(--neutral-600);
+            font-size: var(--font-size-sm);
         }
 
-        .controls input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
-            transform: scale(1.02);
+        .activity-time {
+            color: var(--neutral-500);
+            font-size: var(--font-size-xs);
+            margin-top: var(--spacing-xs);
         }
 
-        .btn-primary, .btn-info {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 28px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
-        }
-
-        .btn-primary::before, .btn-info::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn-primary:hover::before, .btn-info:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn-primary:hover, .btn-info:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-        }
-
-        .btn-info:hover {
-            box-shadow: 0 15px 40px rgba(240, 147, 251, 0.5);
-        }
-
-        /* Print styles are now in print-template.css */
-    </style>
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 28px;
-            }
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            .tabs {
-                flex-direction: column;
+
+            .actions-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
-            .tab-btn {
-                width: 100%;
-                justify-content: center;
+
+            .welcome-message h2 {
+                font-size: var(--font-size-2xl);
             }
-        }
 
-        /* تأثيرات إضافية */
-        .content-wrapper {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 35px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        /* تحسين مظهر الأيقونات */
-        i.fas, i.far {
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover i.fas {
-            transform: scale(1.2) rotate(5deg);
-        }
-
-        /* تحسين الشعار */
-        .logo-img {
-            height: 60px; 
-            border-radius: 15px; 
-            margin-left: 15px;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .logo-img:hover {
-            transform: scale(1.1) rotate(3deg);
-        }
-
-        /* تحسين تسمية badge في الجدول */
-        .violation-badge {
-            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
-            color: white; 
-            padding: 8px 18px; 
-            border-radius: 25px; 
-            font-weight: bold;
-            display: inline-block;
-            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .violation-badge:hover {
-            transform: scale(1.1);
+            .stat-number {
+                font-size: var(--font-size-3xl);
+            }
         }
     </style>
-    <link rel="stylesheet" href="../css/responsive-style.css">
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="header-title">
-                <h1>
-                    <img src="../assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="logo-img">
-                    <i class="fas fa-chart-line"></i>
-                    لوحة التحكم الموحدة
-                </h1>
-                <a href="home.html" class="back-btn">
-                    <i class="fas fa-home"></i>
-                    العودة للصفحة الرئيسية
-                </a>
+        <!-- Header -->
+        <div class="brand-header">
+            <div class="brand-logo-container">
+                <div class="brand-logo">
+                    <img src="../assets/logo.png" alt="شعار الجامعة">
+                </div>
             </div>
-            <p style="color: #555; font-size: 17px; position: relative; z-index: 1;">
-                <i class="fas fa-info-circle" style="color: #667eea;"></i>
-                عرض شامل للإحصائيات والمخالفات في واجهة حديثة ومتطورة
+            <h1 class="brand-heading brand-heading-1">📊 لوحة التحكم</h1>
+            <p style="font-size: var(--font-size-lg); font-weight: var(--font-weight-medium); margin-top: var(--spacing-md); color: var(--neutral-700);">
+                جامعة الإمام محمد بن سعود الإسلامية
             </p>
         </div>
 
-        <!-- التبويبات -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('statistics')">
-                <i class="fas fa-chart-pie"></i>
-                الإحصائيات العامة
-            </button>
-            <button class="tab-btn" onclick="location.href='general_statistics.html'" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
-                <i class="fas fa-chart-bar"></i>
-                تقرير الإحصائيات الشامل
-            </button>
-            <button class="tab-btn" onclick="location.href='stickers_comprehensive_report.html'" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white;">
-                <i class="fas fa-id-card"></i>
-                تقرير ملصقات السيارات
-            </button>
-            <button class="tab-btn" onclick="location.href='violations_report.html'" style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); color: white;">
-                <i class="fas fa-exclamation-triangle"></i>
-                تقرير المخالفات
-            </button>
-            <button class="tab-btn" onclick="location.href='forms_hub.html'" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
-                <i class="fas fa-clipboard-list"></i>
-                مركز النماذج
-            </button>
-            <button class="tab-btn" onclick="location.href='advanced_analytics_dashboard.html'" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <i class="fas fa-chart-line"></i>
-                التحليلات المتقدمة
-            </button>
-            <button class="tab-btn" onclick="location.href='email_settings.html'">
-                <i class="fas fa-envelope"></i>
-                إعدادات البريد الإلكتروني
-            </button>
-            <button class="tab-btn" onclick="location.href='advanced_vehicle_analyzer.html'" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); color: white;">
-                <i class="fas fa-camera-retro"></i>
-                تحليل صور السيارات
-            </button>
-            <button class="tab-btn" onclick="location.href='vehicle_database_manager.html'" style="background: linear-gradient(135deg, #4dabf7 0%, #1864ab 100%); color: white;">
-                <i class="fas fa-database"></i>
-                قاعدة بيانات السيارات
-            </button>
-            <button class="tab-btn" onclick="location.href='advanced_export_page.html'" style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); color: white;">
-                <i class="fas fa-file-export"></i>
-                التصدير المتقدم
-            </button>
+        <!-- Welcome Message -->
+        <div class="welcome-message">
+            <h2>مرحباً بك في النظام</h2>
+            <p>اختر الخدمة المطلوبة من القوائم أدناه</p>
         </div>
 
-        <!-- تبويب الإحصائيات -->
-        <div id="statistics" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <i class="fas fa-users stat-icon" style="color: #667eea;"></i>
-                    <div class="stat-number" id="totalResidents">1,057</div>
-                    <div class="stat-label">إجمالي السكان</div>
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-building"></i>
                 </div>
-                <div class="stat-card">
-                    <i class="fas fa-building stat-icon" style="color: #764ba2;"></i>
-                    <div class="stat-number" id="totalBuildings">165</div>
-                    <div class="stat-label">المباني</div>
+                <div class="stat-number">0</div>
+                <div class="stat-label">إجمالي الشقق</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: var(--gradient-secondary);">
+                    <i class="fas fa-users"></i>
                 </div>
-                <div class="stat-card">
-                    <i class="fas fa-car stat-icon" style="color: #f093fb;"></i>
-                    <div class="stat-number" id="totalStickers">2,382</div>
-                    <div class="stat-label">ملصقات السيارات</div>
+                <div class="stat-number" style="background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
+                <div class="stat-label">إجمالي الساكنين</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);">
+                    <i class="fas fa-car"></i>
                 </div>
-                <div class="stat-card">
-                    <i class="fas fa-home stat-icon" style="color: #f5576c;"></i>
-                    <div class="stat-number" id="totalUnits">1,134</div>
-                    <div class="stat-label">الوحدات السكنية</div>
+                <div class="stat-number" style="background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
+                <div class="stat-label">إجمالي السيارات</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);">
+                    <i class="fas fa-tag"></i>
                 </div>
-                <div class="stat-card">
-                    <i class="fas fa-parking stat-icon" style="color: #667eea;"></i>
-                    <div class="stat-number" id="totalParking">1,308</div>
-                    <div class="stat-label">المواقف</div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-exclamation-circle stat-icon" style="color: #f5576c;"></i>
-                    <div class="stat-number" id="activeViolations">12</div>
-                    <div class="stat-label">المخالفات النشطة</div>
-                </div>
+                <div class="stat-number" style="background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
+                <div class="stat-label">الملصقات النشطة</div>
             </div>
         </div>
 
-        <!-- تبويب تقرير المخالفات -->
-        <div id="violations" class="tab-content">
-            <div class="content-wrapper">
-                <div class="controls">
-                    <input type="text" id="plateSearch" placeholder="🔍 ابحث برقم اللوحة..." />
-                    <button class="btn-primary" onclick="searchReport()">
-                        <i class="fas fa-search"></i> بحث
-                    </button>
-                    <button class="btn-info" onclick="exportToCSV()">
-                        <i class="fas fa-file-csv"></i> تصدير CSV
-                    </button>
-                    <button class="btn-info" onclick="window.print()">
-                        <i class="fas fa-print"></i> طباعة
-                    </button>
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>⚡ إجراءات سريعة</h2>
+            <div class="actions-grid">
+                <a href="enhanced_stickers_management.html" class="action-btn">
+                    <i class="fas fa-tag"></i>
+                    <span>إدارة الملصقات</span>
+                </a>
+
+                <a href="vehicles_management.html" class="action-btn secondary">
+                    <i class="fas fa-car"></i>
+                    <span>إدارة السيارات</span>
+                </a>
+
+                <a href="parkpow_reports.html" class="action-btn danger">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>تقارير ParkPow</span>
+                </a>
+
+                <a href="api_settings.html" class="action-btn success">
+                    <i class="fas fa-cog"></i>
+                    <span>الإعدادات</span>
+                </a>
+
+                <a href="home.html" class="action-btn">
+                    <i class="fas fa-home"></i>
+                    <span>الصفحة الرئيسية</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <h2>📋 النشاطات الأخيرة</h2>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <h4>🎉 مرحباً بك في النظام</h4>
+                    <p>تم تحديث النظام بنجاح</p>
+                    <div class="activity-time">
+                        <i class="fas fa-clock"></i> الآن
+                    </div>
                 </div>
 
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th><i class="fas fa-id-card"></i> رقم اللوحة</th>
-                            <th><i class="fas fa-redo"></i> عدد تكرار المخالفة</th>
-                            <th><i class="fas fa-car-side"></i> نوع السيارة</th>
-                            <th><i class="fas fa-calendar"></i> تاريخ المخالفة</th>
-                            <th><i class="fas fa-user"></i> اسم الساكن</th>
-                            <th><i class="fas fa-building"></i> المبنى</th>
-                            <th><i class="fas fa-door-open"></i> الوحدة</th>
-                        </tr>
-                    </thead>
-                    <tbody id="violationsTableBody">
-                        <tr>
-                            <td colspan="7" style="text-align: center; padding: 40px;">
-                                <i class="fas fa-spinner fa-spin" style="font-size: 3em; color: #667eea;"></i>
-                                <p style="margin-top: 20px; color: #666; font-size: 1.1em;">جاري تحميل البيانات...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="activity-item">
+                    <h4>✨ هوية بصرية جديدة</h4>
+                    <p>تم تطبيق الهوية البصرية المستوحاة من شعار الجامعة</p>
+                    <div class="activity-time">
+                        <i class="fas fa-clock"></i> منذ ساعة
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <h4>🚗 نظام إدارة السيارات</h4>
+                    <p>تم إضافة نظام شامل لإدارة سيارات الساكنين</p>
+                    <div class="activity-time">
+                        <i class="fas fa-clock"></i> منذ ساعتين
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <h4>📊 نظام التقارير</h4>
+                    <p>تم إضافة نظام تقارير ParkPow الاحترافي</p>
+                    <div class="activity-time">
+                        <i class="fas fa-clock"></i> منذ 3 ساعات
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- تحميل مكتبات النظام -->
-    <script src="../js/crypto-utils.js"></script>
-    <script src="../js/database.js"></script>
-    <script src="../js/auth.js"></script>
-    
     <script>
-        'use strict';
-        
-        // حماية الصفحة - السماح فقط للمدراء
-        if (!window.authManager.requireAuth(['admin'])) {
-            // سيتم إعادة التوجيه تلقائياً
-        }
-        
-        let fullReportData = [];
-
-        // تبديل التبويبات
-        function showTab(tabName) {
-            // إخفاء جميع التبويبات
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // إظهار التبويب المحدد
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-
-            // تحميل البيانات إذا لزم الأمر
-            if (tabName === 'violations' && fullReportData.length === 0) {
-                loadViolationsReport();
-            }
-        }
-
-        // تحميل الإحصائيات
-        async function loadStatistics() {
-            try {
-                const response = await fetch('/api/statistics');
-                const result = await response.json();
-                if (result.success) {
-                    const stats = result.data;
-                    document.getElementById('totalResidents').textContent = (stats.total_residents || 1057).toLocaleString('ar-SA');
-                    document.getElementById('totalBuildings').textContent = (stats.total_buildings || 165).toLocaleString('ar-SA');
-                    document.getElementById('totalStickers').textContent = (stats.total_stickers || 2382).toLocaleString('ar-SA');
-                    document.getElementById('totalUnits').textContent = (stats.total_units || 1134).toLocaleString('ar-SA');
-                    document.getElementById('totalParking').textContent = (stats.total_parking || 1308).toLocaleString('ar-SA');
-                    document.getElementById('activeViolations').textContent = (stats.active_violations || 12).toLocaleString('ar-SA');
-                }
-            } catch (error) {
-                console.error('خطأ في تحميل الإحصائيات:', error);
-            }
-        }
-
-        // تحميل تقرير المخالفات
-        async function loadViolationsReport() {
-            try {
-                const response = await fetch('/api/violation-report');
-                const result = await response.json();
-                if (result.success) {
-                    fullReportData = result.data;
-                    displayReport(fullReportData);
-                } else {
-                    document.getElementById('violationsTableBody').innerHTML = 
-                        '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #dc3545;">فشل تحميل البيانات</td></tr>';
-                }
-            } catch (error) {
-                console.error('خطأ في تحميل تقرير المخالفات:', error);
-                document.getElementById('violationsTableBody').innerHTML = 
-                    '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #dc3545;">خطأ في الاتصال بالخادم</td></tr>';
-            }
-        }
-
-        // عرض التقرير
-        function displayReport(data) {
-            const tbody = document.getElementById('violationsTableBody');
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;"><i class="fas fa-info-circle" style="font-size: 2em; color: #667eea; margin-bottom: 10px;"></i><p style="color: #666;">لا توجد مخالفات مسجلة</p></td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(item => `
-                <tr>
-                    <td><strong style="color: #667eea;">${item.plateNumber || 'غير محدد'}</strong></td>
-                    <td><span class="violation-badge">${item.violationCount || 1}</span></td>
-                    <td>${item.vehicleType || 'غير محدد'}</td>
-                    <td>${new Date(item.processingDate).toLocaleDateString('ar-SA')}</td>
-                    <td>${item.residentName || 'غير محدد'}</td>
-                    <td>${item.buildingNumber || 'غير محدد'}</td>
-                    <td>${item.unitNumber || 'غير محدد'}</td>
-                </tr>
-            `).join('');
-        }
-
-        // البحث
-        function searchReport() {
-            const searchTerm = document.getElementById('plateSearch').value.toLowerCase();
-            if (!searchTerm) {
-                displayReport(fullReportData);
-                return;
-            }
-            const filteredData = fullReportData.filter(item => 
-                (item.plateNumber || '').toLowerCase().includes(searchTerm)
-            );
-            displayReport(filteredData);
-        }
-
-        // تصدير CSV
-        function exportToCSV() {
-            if (fullReportData.length === 0) {
-                alert('لا توجد بيانات للتصدير.');
-                return;
-            }
-
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-            const headers = ["رقم اللوحة", "عدد تكرار المخالفة", "نوع السيارة", "تاريخ المخالفة", "اسم الساكن", "المبنى", "الوحدة"];
-            csvContent += headers.join(",") + "\n";
-
-            fullReportData.forEach(item => {
-                const row = [
-                    `"${item.plateNumber || ''}"`,
-                    item.violationCount || 1,
-                    `"${item.vehicleType || ''}"`,
-                    `"${new Date(item.processingDate).toLocaleDateString('ar-SA')}"`,
-                    `"${item.residentName || ''}"`,
-                    `"${item.buildingNumber || ''}"`,
-                    `"${item.unitNumber || ''}"`
-                ];
-                csvContent += row.join(",") + "\n";
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `violations_report_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // تحميل البيانات عند تحميل الصفحة
-        window.addEventListener('DOMContentLoaded', () => {
-            loadStatistics();
-            // تحديث الإحصائيات كل 30 ثانية
-            setInterval(loadStatistics, 30000);
-        });
-    </script>
-
-    <script src="../js/print-template.js"></script>
-    <script>
-        PrintTemplate.init({
-            reportTitle: 'لوحة التحكم الموحدة',
-            reportSubtitle: 'نظام إدارة إسكان أعضاء هيئة التدريس',
-            showDate: true,
-            showLogo: true
-        });
-        PrintTemplate.prepareTable('table');
-        PrintTemplate.preventPageBreak('.stat-card');
-        PrintTemplate.preventPageBreak('.report-section');
+        // يمكن إضافة JavaScript هنا لجلب البيانات الحقيقية
+        console.log('لوحة التحكم جاهزة');
     </script>
 </body>
 </html>
