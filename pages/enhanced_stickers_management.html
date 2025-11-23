@@ -1546,6 +1546,7 @@
 
     <!-- نظام التعرف على لوحات السيارات -->
     <script src="../js/plate-recognition.js"></script>
+    <script src="../js/vehicles-database.js"></script>
     
     <!-- نافذة مسح اللوحة -->
     <div id="plateScannerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center;">
@@ -1704,8 +1705,74 @@
                 document.getElementById('plateNumber').value = recognizedPlateNumber;
                 closePlateScanner();
                 
-                // إظهار رسالة نجاح
-                alert('✅ تم إدخال رقم اللوحة بنجاح!');
+                // التحقق من وجود السيارة في قاعدة البيانات
+                if (window.vehiclesDB) {
+                    const vehicle = window.vehiclesDB.getVehicleByPlate(recognizedPlateNumber);
+                    if (vehicle) {
+                        // ملء البيانات من قاعدة البيانات
+                        if (vehicle.vehicleType) document.getElementById('vehicleType').value = vehicle.vehicleType;
+                        if (vehicle.nationalId) document.getElementById('nationalId').value = vehicle.nationalId;
+                        if (vehicle.residentName) document.getElementById('residentName').value = vehicle.residentName;
+                        if (vehicle.unitType) document.getElementById('unitType').value = vehicle.unitType;
+                        if (vehicle.building) document.getElementById('building').value = vehicle.building;
+                        if (vehicle.apartment) document.getElementById('apartment').value = vehicle.apartment;
+                        
+                        alert('✅ تم إدخال رقم اللوحة وملء البيانات من قاعدة بيانات السيارات!');
+                    } else {
+                        alert('✅ تم إدخال رقم اللوحة بنجاح!');
+                    }
+                } else {
+                    alert('✅ تم إدخال رقم اللوحة بنجاح!');
+                }
+            }
+        }
+
+        // تحديث وظيفة حفظ الملصق لإضافة/تحديث السيارة
+        const originalSaveSticker = window.saveSticker;
+        window.saveSticker = function() {
+            // حفظ الملصق أولاً
+            if (originalSaveSticker) {
+                originalSaveSticker();
+            }
+
+            // إضافة/تحديث السيارة في قاعدة البيانات
+            if (window.vehiclesDB) {
+                const plateNumber = document.getElementById('plateNumber').value;
+                const vehicleType = document.getElementById('vehicleType').value;
+                const nationalId = document.getElementById('nationalId').value;
+                const residentName = document.getElementById('residentName').value;
+                const unitType = document.getElementById('unitType').value;
+                const building = document.getElementById('building').value;
+                const apartment = document.getElementById('apartment').value;
+
+                if (plateNumber) {
+                    const existingVehicle = window.vehiclesDB.getVehicleByPlate(plateNumber);
+                    
+                    if (existingVehicle) {
+                        // تحديث السيارة الموجودة
+                        window.vehiclesDB.updateVehicle(existingVehicle.id, {
+                            vehicleType: vehicleType,
+                            nationalId: nationalId,
+                            residentName: residentName,
+                            unitType: unitType,
+                            building: building,
+                            apartment: apartment,
+                            status: 'نشط'
+                        });
+                    } else {
+                        // إضافة سيارة جديدة
+                        window.vehiclesDB.addVehicle({
+                            plateNumber: plateNumber,
+                            vehicleType: vehicleType,
+                            nationalId: nationalId,
+                            residentName: residentName,
+                            unitType: unitType,
+                            building: building,
+                            apartment: apartment,
+                            status: 'نشط'
+                        });
+                    }
+                }
             }
         }
     </script>
