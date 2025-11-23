@@ -10,11 +10,13 @@ This guide explains how to set up and use the Plate Recognizer SDK/Server (on-pr
 Plate Recognizer offers two deployment options:
 
 1. **Snapshot API (Cloud)**: Cloud-based API, no installation required
+   - Service URL: https://app.platerecognizer.com/service/snapshot-cloud/
 2. **SDK/Server (On-Premise)**: Self-hosted solution running on your infrastructure
 
 توفر Plate Recognizer خيارين للنشر:
 
 1. **Snapshot API (السحابي)**: خدمة سحابية، لا تحتاج تثبيت
+   - رابط الخدمة: https://app.platerecognizer.com/service/snapshot-cloud/
 2. **SDK/Server (المحلي)**: حل محلي يعمل على بنيتك التحتية
 
 ### When to Use SDK/Server / متى تستخدم SDK/Server
@@ -241,6 +243,7 @@ SDK_API_URL=http://plate-recognizer-sdk:8080/v1/plate-reader/
 
 ## References / المراجع
 
+- **Snapshot Cloud Service**: https://app.platerecognizer.com/service/snapshot-cloud/
 - **Official SDK Documentation**: https://guides.platerecognizer.com/docs/tech-references/server/
 - **Snapshot API Documentation**: https://guides.platerecognizer.com/docs/snapshot/api-reference/
 - **Docker Hub**: https://hub.docker.com/r/platerecognizer/alpr
