@@ -323,18 +323,32 @@
 
         .imamu-header-title {
             font-size: var(--imamu-font-size-4xl);
-            font-weight: var(--imamu-font-weight-extrabold);
-            color: var(--imamu-white);
+            font-weight: var(--imamu-font-weight-black);
+            color: #FFFFFF;
             margin-bottom: var(--imamu-spacing-md);
-            text-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 2px 5px rgba(0,0,0,0.3);
-            letter-spacing: 1px;
+            text-shadow: 
+                0 0 10px rgba(0,0,0,0.8),
+                0 0 20px rgba(0,0,0,0.6),
+                0 2px 4px rgba(0,0,0,0.9),
+                0 4px 8px rgba(0,0,0,0.7);
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 10;
+            background: rgba(0,0,0,0.3);
+            padding: var(--imamu-spacing-md) var(--imamu-spacing-xl);
+            border-radius: var(--imamu-radius-xl);
+            display: inline-block;
         }
 
         .imamu-header-subtitle {
-            font-size: var(--imamu-font-size-lg);
-            color: var(--imamu-white);
-            opacity: 0.9;
-            font-weight: var(--imamu-font-weight-medium);
+            font-size: var(--imamu-font-size-xl);
+            color: #FFFFFF;
+            font-weight: var(--imamu-font-weight-bold);
+            text-shadow: 
+                0 0 8px rgba(0,0,0,0.7),
+                0 2px 4px rgba(0,0,0,0.8);
+            position: relative;
+            z-index: 10;
         }
 
         /* User Info */
