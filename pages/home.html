@@ -267,12 +267,12 @@
             margin-bottom: var(--imamu-spacing-sm);
         }
 
-        /* Header Styles */
+        /* Header Styles - Official IMAMU Style */
         .imamu-header {
-            background: var(--imamu-gradient-primary);
-            color: var(--imamu-white);
-            padding: var(--imamu-spacing-2xl);
-            border-radius: 0 0 var(--imamu-radius-2xl) var(--imamu-radius-2xl);
+            background: var(--imamu-white);
+            color: var(--imamu-primary);
+            padding: var(--imamu-spacing-2xl) var(--imamu-spacing-xl);
+            border-radius: var(--imamu-radius-2xl);
             box-shadow: var(--imamu-shadow-xl);
             text-align: center;
             position: relative;
@@ -283,17 +283,21 @@
         .imamu-header::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 40%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-            animation: headerGlow 10s ease-in-out infinite;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--imamu-secondary) 0%, var(--imamu-primary) 50%, var(--imamu-secondary) 100%);
         }
 
-        @keyframes headerGlow {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-20px) scale(1.1); }
+        .imamu-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--imamu-secondary);
         }
 
         .imamu-logo-container {
@@ -303,16 +307,16 @@
         }
 
         .imamu-logo {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             background: var(--imamu-white);
-            border-radius: var(--imamu-radius-xl);
-            padding: var(--imamu-spacing-md);
-            box-shadow: var(--imamu-shadow-xl);
+            border-radius: 50%;
+            padding: var(--imamu-spacing-sm);
+            box-shadow: 0 4px 20px rgba(4, 93, 132, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid var(--imamu-secondary);
+            border: 4px solid var(--imamu-secondary);
         }
 
         .imamu-logo img {
@@ -324,40 +328,27 @@
         .imamu-header-title {
             font-size: var(--imamu-font-size-4xl);
             font-weight: var(--imamu-font-weight-black);
-            color: #FFFFFF;
+            color: var(--imamu-primary);
             margin-bottom: var(--imamu-spacing-md);
-            text-shadow: 
-                0 0 10px rgba(0,0,0,0.8),
-                0 0 20px rgba(0,0,0,0.6),
-                0 2px 4px rgba(0,0,0,0.9),
-                0 4px 8px rgba(0,0,0,0.7);
-            letter-spacing: 2px;
+            text-shadow: none;
+            letter-spacing: 1px;
             position: relative;
             z-index: 10;
-            background: rgba(0,0,0,0.3);
-            padding: var(--imamu-spacing-md) var(--imamu-spacing-xl);
-            border-radius: var(--imamu-radius-xl);
-            display: inline-block;
         }
 
         .imamu-header-subtitle {
             font-size: var(--imamu-font-size-xl);
-            color: #FFFFFF;
+            color: var(--imamu-secondary);
             font-weight: var(--imamu-font-weight-bold);
-            text-shadow: 
-                0 0 8px rgba(0,0,0,0.7),
-                0 2px 4px rgba(0,0,0,0.8);
-            position: relative;
-            z-index: 10;
+            margin-bottom: var(--imamu-spacing-lg);
         }
 
         /* User Info */
         .user-info {
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border-radius: var(--imamu-radius-xl);
-            padding: var(--imamu-spacing-md) var(--imamu-spacing-xl);
-            margin-top: var(--imamu-spacing-lg);
+            background: var(--imamu-primary);
+            border-radius: var(--imamu-radius-full);
+            padding: var(--imamu-spacing-sm) var(--imamu-spacing-xl);
+            margin-top: var(--imamu-spacing-md);
             display: inline-flex;
             align-items: center;
             gap: var(--imamu-spacing-lg);
@@ -371,7 +362,7 @@
         }
 
         .logout-btn {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            background: var(--imamu-secondary);
             color: var(--imamu-white);
             border: none;
             padding: 10px 25px;
@@ -384,6 +375,7 @@
         }
 
         .logout-btn:hover {
+            background: var(--imamu-secondary-dark);
             transform: translateY(-2px);
             box-shadow: var(--imamu-shadow-md);
         }
