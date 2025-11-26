@@ -25,6 +25,8 @@ This guide explains how to set up and use API Tokens in the Traffic Management S
 
 ### الخطوة 2: إنشاء ملف .env
 
+النظام يستخدم مكتبة **dotenv** لتحميل المتغيرات البيئية من ملف `.env` بشكل آمن.
+
 **على Windows:**
 ```bash
 copy .env.example .env
@@ -34,6 +36,8 @@ copy .env.example .env
 ```bash
 cp .env.example .env
 ```
+
+📖 **للحصول على دليل شامل لإعداد البيئة:** [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)
 
 ### الخطوة 3: إضافة التوكن
 
@@ -54,16 +58,29 @@ PARKPOW_API_TOKEN=your_parkpow_api_token_here
 
 ## 🚀 استخدام API Token في التطوير
 
-### الطريقة الصحيحة:
+النظام يستخدم **dotenv** لتحميل المتغيرات البيئية تلقائياً عند بدء الخادم.
+
+### كيف يعمل في server.js:
 
 ```javascript
-// في server.js - الطريقة الآمنة ✅
+// في server.js - تحميل dotenv في بداية الملف
+import dotenv from 'dotenv';
+dotenv.config();
+
+// استخدام المتغيرات البيئية - الطريقة الآمنة ✅
 const PARKPOW_API_TOKEN = process.env.PARKPOW_API_TOKEN;
 
 if (!PARKPOW_API_TOKEN) {
   console.warn('⚠️  WARNING: PARKPOW_API_TOKEN is not set.');
+  console.warn('⚠️  تحذير: لم يتم تعيين PARKPOW_API_TOKEN.');
 }
 ```
+
+### التحقق من تحميل .env بنجاح:
+
+عند تشغيل `npm start`، سيظهر:
+- ✅ رسالة من dotenv تؤكد تحميل الملف
+- ⚠️ تحذير إذا لم يتم تعيين PARKPOW_API_TOKEN
 
 ### الطريقة الخاطئة (تجنبها):
 
