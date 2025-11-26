@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإحصائيات والتقارير - نظام المرور المتكامل</title>
+    <link rel="stylesheet" href="../css/imamu-brand-identity.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js with SRI for security -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" 
+            integrity="sha384-fMsGV4NXbhTTl7EStJRAlUXqAMc/yftw8E/p+XchLTCnILBUqmjOavcNrFQFaGCi" 
+            crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: var(--brand-bg-pattern);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-xl);
+            color: var(--primary-white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .page-header h1 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-extrabold);
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-base);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-white {
+            background: var(--primary-white);
+            color: #8e44ad;
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background: var(--primary-white);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card.vehicles::before { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+        .stat-card.images::before { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+        .stat-card.violations::before { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        .stat-card.open::before { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .stat-icon {
+            font-size: 50px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stat-card.vehicles .stat-icon { color: #2ecc71; }
+        .stat-card.images .stat-icon { color: #3498db; }
+        .stat-card.violations .stat-icon { color: #e74c3c; }
+        .stat-card.open .stat-icon { color: #f39c12; }
+
+        .stat-value {
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-extrabold);
+            color: var(--primary-steel-blue);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-label {
+            color: var(--neutral-600);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .chart-card {
+            background: var(--primary-white);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .chart-card h3 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-steel-blue);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Tables Section */
+        .tables-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .table-card {
+            background: var(--primary-white);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .table-card h3 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-steel-blue);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: var(--primary-white);
+        }
+
+        .data-table th {
+            padding: var(--spacing-md);
+            text-align: center;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-sm);
+        }
+
+        .data-table td {
+            padding: var(--spacing-md);
+            text-align: center;
+            border-bottom: 1px solid var(--neutral-100);
+            font-size: var(--font-size-sm);
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--neutral-50);
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: var(--radius-full);
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-sm);
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%); color: white; }
+        .rank-2 { background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%); color: white; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%); color: white; }
+        .rank-default { background: var(--neutral-200); color: var(--neutral-700); }
+
+        .violation-count {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-weight: var(--font-weight-bold);
+        }
+
+        /* Export Section */
+        .export-section {
+            background: var(--primary-white);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .export-section h3 {
+            font-size: var(--font-size-xl);
+            color: var(--primary-steel-blue);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            font-weight: var(--font-weight-bold);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn.pdf { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; }
+        .export-btn.excel { background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); color: white; }
+        .export-btn.print { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; }
+
+        .export-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .charts-section,
+            .tables-section {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="brand-header">
+            <div class="brand-logo-container">
+                <div class="brand-logo">
+                    <img src="../assets/شعار.jpg" alt="شعار الجامعة">
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-chart-bar"></i>
+                الإحصائيات والتقارير
+            </h1>
+            <div class="header-actions">
+                <a href="traffic_system_section.html" class="btn btn-white">
+                    <i class="fas fa-arrow-right"></i>
+                    العودة
+                </a>
+                <button class="btn btn-white" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i>
+                    تحديث البيانات
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card vehicles">
+                <div class="stat-icon">🚗</div>
+                <div class="stat-value" id="totalVehicles">0</div>
+                <div class="stat-label">إجمالي المركبات</div>
+            </div>
+            <div class="stat-card images">
+                <div class="stat-icon">📷</div>
+                <div class="stat-value" id="totalImages">0</div>
+                <div class="stat-label">الصور المسجلة</div>
+            </div>
+            <div class="stat-card violations">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-value" id="totalViolations">0</div>
+                <div class="stat-label">إجمالي المخالفات</div>
+            </div>
+            <div class="stat-card open">
+                <div class="stat-icon">🔓</div>
+                <div class="stat-value" id="openViolations">0</div>
+                <div class="stat-label">مخالفات مفتوحة</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie"></i> توزيع المخالفات حسب النوع</h3>
+                <div class="chart-container">
+                    <canvas id="violationsByTypeChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-bar"></i> المخالفات حسب الحالة</h3>
+                <div class="chart-container">
+                    <canvas id="violationsByStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Section -->
+        <div class="tables-section">
+            <div class="table-card">
+                <h3><i class="fas fa-trophy"></i> المركبات الأكثر مخالفة</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>الترتيب</th>
+                            <th>رقم اللوحة</th>
+                            <th>نوع المركبة</th>
+                            <th>عدد المخالفات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topViolatorsTable">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-card">
+                <h3><i class="fas fa-clock"></i> آخر المخالفات المسجلة</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>رقم اللوحة</th>
+                            <th>نوع المخالفة</th>
+                            <th>التاريخ</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentViolationsTable">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Detailed Stats Table -->
+        <div class="table-card" style="margin-bottom: var(--spacing-2xl);">
+            <h3><i class="fas fa-list-alt"></i> إحصائيات تفصيلية حسب المركبة ونوع المخالفة</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>رقم اللوحة</th>
+                        <th>نوع المخالفة</th>
+                        <th>عدد المخالفات</th>
+                        <th>إجمالي الغرامات</th>
+                        <th>متوسط الغرامة</th>
+                        <th>آخر مخالفة</th>
+                    </tr>
+                </thead>
+                <tbody id="detailedStatsTable">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <h3><i class="fas fa-download"></i> تصدير التقارير</h3>
+            <div class="export-buttons">
+                <button class="export-btn pdf" onclick="exportPDF()">
+                    <i class="fas fa-file-pdf"></i>
+                    تصدير PDF
+                </button>
+                <button class="export-btn excel" onclick="exportExcel()">
+                    <i class="fas fa-file-excel"></i>
+                    تصدير Excel
+                </button>
+                <button class="export-btn print" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    طباعة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const statsData = {
+            totalVehicles: 156,
+            totalImages: 423,
+            totalViolations: 89,
+            openViolations: 12
+        };
+
+        const violationsByType = {
+            'وقوف خاطئ': 35,
+            'تجاوز السرعة': 22,
+            'انتهاء الملصق': 18,
+            'عدم حمل رخصة': 8,
+            'مخالفة أخرى': 6
+        };
+
+        const violationsByStatus = {
+            'مفتوحة': 12,
+            'قيد المعالجة': 8,
+            'مغلقة': 65,
+            'ملغاة': 4
+        };
+
+        const topViolators = [
+            { plateNumber: 'ي ك ل 3456', vehicleType: 'شاحنة صغيرة', count: 8 },
+            { plateNumber: 'ز ح ط 9012', vehicleType: 'سيارة صالون', count: 6 },
+            { plateNumber: 'د ه و 5678', vehicleType: 'دفع رباعي', count: 5 },
+            { plateNumber: 'أ ب ج 1234', vehicleType: 'سيارة صالون', count: 4 },
+            { plateNumber: 'م ن س 7890', vehicleType: 'دراجة نارية', count: 3 }
+        ];
+
+        const recentViolations = [
+            { plateNumber: 'ز ح ط 9012', type: 'وقوف خاطئ', date: '2024-06-19', status: 'مفتوحة' },
+            { plateNumber: 'ي ك ل 3456', type: 'انتهاء الملصق', date: '2024-06-18', status: 'قيد المعالجة' },
+            { plateNumber: 'د ه و 5678', type: 'تجاوز السرعة', date: '2024-06-17', status: 'مفتوحة' },
+            { plateNumber: 'أ ب ج 1234', type: 'وقوف خاطئ', date: '2024-06-15', status: 'مغلقة' },
+            { plateNumber: 'م ن س 7890', type: 'عدم حمل رخصة', date: '2024-06-14', status: 'مغلقة' }
+        ];
+
+        const detailedStats = [
+            { plateNumber: 'ي ك ل 3456', type: 'وقوف خاطئ', count: 5, totalFines: 500, avgFine: 100, lastViolation: '2024-06-18' },
+            { plateNumber: 'ي ك ل 3456', type: 'انتهاء الملصق', count: 3, totalFines: 300, avgFine: 100, lastViolation: '2024-06-10' },
+            { plateNumber: 'ز ح ط 9012', type: 'وقوف خاطئ', count: 4, totalFines: 400, avgFine: 100, lastViolation: '2024-06-19' },
+            { plateNumber: 'د ه و 5678', type: 'تجاوز السرعة', count: 3, totalFines: 600, avgFine: 200, lastViolation: '2024-06-17' },
+            { plateNumber: 'أ ب ج 1234', type: 'وقوف خاطئ', count: 2, totalFines: 200, avgFine: 100, lastViolation: '2024-06-15' }
+        ];
+
+        let violationsByTypeChart, violationsByStatusChart;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadCharts();
+            loadTables();
+        });
+
+        function loadStats() {
+            animateCounter('totalVehicles', statsData.totalVehicles);
+            animateCounter('totalImages', statsData.totalImages);
+            animateCounter('totalViolations', statsData.totalViolations);
+            animateCounter('openViolations', statsData.openViolations);
+        }
+
+        function animateCounter(elementId, target) {
+            const element = document.getElementById(elementId);
+            const duration = 1500;
+            const increment = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current).toLocaleString('ar-SA');
+            }, 16);
+        }
+
+        function loadCharts() {
+            // Violations by Type Chart
+            const typeCtx = document.getElementById('violationsByTypeChart').getContext('2d');
+            violationsByTypeChart = new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(violationsByType),
+                    datasets: [{
+                        data: Object.values(violationsByType),
+                        backgroundColor: [
+                            '#e74c3c',
+                            '#3498db',
+                            '#f39c12',
+                            '#2ecc71',
+                            '#9b59b6'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            rtl: true,
+                            labels: {
+                                font: { family: 'Tajawal' }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Violations by Status Chart
+            const statusCtx = document.getElementById('violationsByStatusChart').getContext('2d');
+            violationsByStatusChart = new Chart(statusCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(violationsByStatus),
+                    datasets: [{
+                        label: 'عدد المخالفات',
+                        data: Object.values(violationsByStatus),
+                        backgroundColor: [
+                            '#e74c3c',
+                            '#f39c12',
+                            '#2ecc71',
+                            '#95a5a6'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f0f0f0' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadTables() {
+            // Top Violators Table
+            const topViolatorsBody = document.getElementById('topViolatorsTable');
+            topViolatorsBody.innerHTML = topViolators.map((v, i) => `
+                <tr>
+                    <td><span class="rank-badge ${i < 3 ? 'rank-' + (i + 1) : 'rank-default'}">${i + 1}</span></td>
+                    <td><strong>${v.plateNumber}</strong></td>
+                    <td>${v.vehicleType}</td>
+                    <td><span class="violation-count">${v.count}</span></td>
+                </tr>
+            `).join('');
+
+            // Recent Violations Table
+            const recentBody = document.getElementById('recentViolationsTable');
+            recentBody.innerHTML = recentViolations.map(v => `
+                <tr>
+                    <td><strong>${v.plateNumber}</strong></td>
+                    <td>${v.type}</td>
+                    <td>${formatDate(v.date)}</td>
+                    <td><span class="status-badge status-${getStatusClass(v.status)}" style="padding: 4px 10px; border-radius: 20px; font-size: 11px;">${v.status}</span></td>
+                </tr>
+            `).join('');
+
+            // Detailed Stats Table
+            const detailedBody = document.getElementById('detailedStatsTable');
+            detailedBody.innerHTML = detailedStats.map(s => `
+                <tr>
+                    <td><strong>${s.plateNumber}</strong></td>
+                    <td>${s.type}</td>
+                    <td><span class="violation-count">${s.count}</span></td>
+                    <td>${s.totalFines.toLocaleString('ar-SA')} ريال</td>
+                    <td>${s.avgFine.toLocaleString('ar-SA')} ريال</td>
+                    <td>${formatDate(s.lastViolation)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusClass(status) {
+            const map = {
+                'مفتوحة': 'open',
+                'مغلقة': 'closed',
+                'قيد المعالجة': 'processing',
+                'ملغاة': 'cancelled'
+            };
+            return map[status] || 'open';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            return new Date(dateStr).toLocaleDateString('ar-SA');
+        }
+
+        function refreshData() {
+            // Reload all data
+            loadStats();
+            loadCharts();
+            loadTables();
+            alert('تم تحديث البيانات بنجاح');
+        }
+
+        function exportPDF() {
+            alert('جاري تصدير التقرير بصيغة PDF...');
+            // Implement PDF export logic
+        }
+
+        function exportExcel() {
+            alert('جاري تصدير التقرير بصيغة Excel...');
+            // Implement Excel export logic
+        }
+
+        // Add CSS for status badges in tables
+        const style = document.createElement('style');
+        style.textContent = `
+            .status-open { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; }
+            .status-closed { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; }
+            .status-processing { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; }
+            .status-cancelled { background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); color: white; }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
