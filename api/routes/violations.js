@@ -63,21 +63,51 @@ router.post("/", async (req, res) => {
   try {
     const { vehicle_id, violation_type, violation_date, location, officer_name, action_taken, status, image_path } = req.body;
     
+    // Enhanced input validation
     if (!vehicle_id || !violation_type || !violation_date) {
       return res.status(400).json({ error: "البيانات الإلزامية مطلوبة: vehicle_id, violation_type, violation_date" });
     }
 
+    // Validate vehicle_id is a positive integer
+    const vehicleIdNum = parseInt(vehicle_id);
+    if (isNaN(vehicleIdNum) || vehicleIdNum <= 0) {
+      return res.status(400).json({ error: "معرف المركبة غير صالح" });
+    }
+
+    // Validate violation_type length
+    if (typeof violation_type !== 'string' || violation_type.length > 100) {
+      return res.status(400).json({ error: "نوع المخالفة غير صالح" });
+    }
+
+    // Validate date format
+    const dateObj = new Date(violation_date);
+    if (isNaN(dateObj.getTime())) {
+      return res.status(400).json({ error: "تاريخ المخالفة غير صالح" });
+    }
+
+    // Verify vehicle exists (foreign key validation)
+    const [vehicleCheck] = await pool.query("SELECT vehicle_id FROM vehicles WHERE vehicle_id = ?", [vehicleIdNum]);
+    if (vehicleCheck.length === 0) {
+      return res.status(400).json({ error: "المركبة غير موجودة" });
+    }
+
+    // Sanitize optional string inputs (limit length)
+    const sanitizedLocation = location ? String(location).slice(0, 100) : null;
+    const sanitizedOfficer = officer_name ? String(officer_name).slice(0, 100) : null;
+    const sanitizedAction = action_taken ? String(action_taken).slice(0, 100) : null;
+    const sanitizedImagePath = image_path ? String(image_path).slice(0, 255) : null;
+
     const [result] = await pool.query(
       `INSERT INTO violations (vehicle_id, violation_type, violation_date, location, officer_name, action_taken, violation_status, image_path) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [vehicle_id, violation_type, violation_date, location, officer_name, action_taken, status || 'مفتوحة', image_path]
+      [vehicleIdNum, violation_type, violation_date, sanitizedLocation, sanitizedOfficer, sanitizedAction, status || 'مفتوحة', sanitizedImagePath]
     );
     
     // تحديث last_seen للمركبة
-    await pool.query("UPDATE vehicles SET last_seen = CURDATE() WHERE vehicle_id = ?", [vehicle_id]);
+    await pool.query("UPDATE vehicles SET last_seen = CURDATE() WHERE vehicle_id = ?", [vehicleIdNum]);
     
     // تحديث الإحصائيات
-    await updateViolationStats(vehicle_id, violation_type);
+    await updateViolationStats(vehicleIdNum, violation_type);
     
     res.status(201).json({ 
       message: "🚨 تم تسجيل المخالفة بنجاح",

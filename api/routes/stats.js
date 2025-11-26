@@ -63,7 +63,10 @@ router.get("/by-status", async (req, res) => {
 // إحصائيات المركبات الأكثر مخالفة - Top violating vehicles
 router.get("/top-violators", async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 10;
+    // Add bounds checking for limit parameter (max 100)
+    const requestedLimit = parseInt(req.query.limit) || 10;
+    const limit = Math.min(Math.max(1, requestedLimit), 100);
+    
     const [rows] = await pool.query(`
       SELECT v.plate_number, v.vehicle_type, COUNT(vio.violation_id) AS violation_count
       FROM vehicles v

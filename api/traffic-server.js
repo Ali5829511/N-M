@@ -13,10 +13,57 @@ import statsRoutes from "./routes/stats.js";
 
 const app = express();
 
+// Simple in-memory rate limiter
+const rateLimitStore = new Map();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 100; // max requests per window
+
+function rateLimiter(req, res, next) {
+  const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+  const now = Date.now();
+  
+  if (!rateLimitStore.has(clientIP)) {
+    rateLimitStore.set(clientIP, { count: 1, startTime: now });
+    return next();
+  }
+  
+  const clientData = rateLimitStore.get(clientIP);
+  
+  // Reset window if expired
+  if (now - clientData.startTime > RATE_LIMIT_WINDOW_MS) {
+    rateLimitStore.set(clientIP, { count: 1, startTime: now });
+    return next();
+  }
+  
+  // Check rate limit
+  if (clientData.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return res.status(429).json({
+      error: "تم تجاوز الحد الأقصى للطلبات",
+      message: "Too many requests. Please try again later.",
+      retryAfter: Math.ceil((clientData.startTime + RATE_LIMIT_WINDOW_MS - now) / 1000)
+    });
+  }
+  
+  // Increment count
+  clientData.count++;
+  next();
+}
+
+// Clean up old entries periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, data] of rateLimitStore.entries()) {
+    if (now - data.startTime > RATE_LIMIT_WINDOW_MS) {
+      rateLimitStore.delete(ip);
+    }
+  }
+}, RATE_LIMIT_WINDOW_MS);
+
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(rateLimiter);
 
 // Request logging middleware
 app.use((req, res, next) => {
