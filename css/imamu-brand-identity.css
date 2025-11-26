@@ -1,0 +1,481 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * الهوية البصرية الرسمية لجامعة الإمام محمد بن سعود الإسلامية
+ * Official Visual Identity for Imam Muhammad ibn Saud Islamic University
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * نظام إدارة إسكان أعضاء هيئة التدريس
+ * Faculty Housing Management System
+ * 
+ * © 2024 جامعة الإمام محمد بن سعود الإسلامية
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 1. الألوان الرسمية للجامعة (Official University Colors)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* الألوان الأساسية (Primary Colors) */
+    --imamu-primary: #045D84;           /* اللون الأساسي - أزرق داكن */
+    --imamu-secondary: #B7A362;         /* اللون الثانوي - ذهبي */
+    --imamu-light-blue: #B3DDF5;        /* أزرق فاتح */
+    --imamu-light-gray: #DFE7F4;        /* رمادي فاتح */
+    
+    /* ألوان إضافية للتدرجات */
+    --imamu-primary-dark: #023d5a;      /* أزرق داكن جداً */
+    --imamu-primary-light: #0a7fb8;     /* أزرق فاتح */
+    --imamu-secondary-dark: #9a8a4f;    /* ذهبي داكن */
+    --imamu-secondary-light: #d4c17b;   /* ذهبي فاتح */
+    
+    /* ألوان محايدة */
+    --imamu-white: #FFFFFF;
+    --imamu-black: #000000;
+    --imamu-gray-50: #f9fafb;
+    --imamu-gray-100: #f3f4f6;
+    --imamu-gray-200: #e5e7eb;
+    --imamu-gray-300: #d1d5db;
+    --imamu-gray-400: #9ca3af;
+    --imamu-gray-500: #6b7280;
+    --imamu-gray-600: #4b5563;
+    --imamu-gray-700: #374151;
+    --imamu-gray-800: #1f2937;
+    --imamu-gray-900: #111827;
+    
+    /* ألوان الحالة */
+    --imamu-success: #10b981;
+    --imamu-warning: #f59e0b;
+    --imamu-error: #ef4444;
+    --imamu-info: #3b82f6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 2. التدرجات (Gradients)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* التدرج الأساسي */
+    --imamu-gradient-primary: linear-gradient(135deg, #045D84 0%, #0a7fb8 100%);
+    
+    /* التدرج الثانوي */
+    --imamu-gradient-secondary: linear-gradient(135deg, #B7A362 0%, #d4c17b 100%);
+    
+    /* تدرج مركب */
+    --imamu-gradient-combined: linear-gradient(135deg, #045D84 0%, #B7A362 100%);
+    
+    /* تدرج الخلفية */
+    --imamu-gradient-background: linear-gradient(135deg, #DFE7F4 0%, #B3DDF5 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 3. الخطوط (Typography)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* عائلات الخطوط */
+    --imamu-font-main: 'Bahij TheSansArabic', 'Tajawal', 'Arial', sans-serif;
+    --imamu-font-formal: 'AL-Mohanad', 'Traditional Arabic', serif;
+    --imamu-font-fallback: 'Arial', sans-serif;
+    
+    /* أحجام الخطوط */
+    --imamu-font-size-xs: 0.75rem;      /* 12px */
+    --imamu-font-size-sm: 0.875rem;     /* 14px */
+    --imamu-font-size-base: 1rem;       /* 16px */
+    --imamu-font-size-lg: 1.125rem;     /* 18px */
+    --imamu-font-size-xl: 1.25rem;      /* 20px */
+    --imamu-font-size-2xl: 1.5rem;      /* 24px */
+    --imamu-font-size-3xl: 1.875rem;    /* 30px */
+    --imamu-font-size-4xl: 2.25rem;     /* 36px */
+    --imamu-font-size-5xl: 3rem;        /* 48px */
+    
+    /* أوزان الخطوط */
+    --imamu-font-weight-light: 300;
+    --imamu-font-weight-normal: 400;
+    --imamu-font-weight-medium: 500;
+    --imamu-font-weight-semibold: 600;
+    --imamu-font-weight-bold: 700;
+    --imamu-font-weight-extrabold: 800;
+    --imamu-font-weight-black: 900;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 4. المسافات (Spacing)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --imamu-spacing-xs: 0.25rem;    /* 4px */
+    --imamu-spacing-sm: 0.5rem;     /* 8px */
+    --imamu-spacing-md: 1rem;       /* 16px */
+    --imamu-spacing-lg: 1.5rem;     /* 24px */
+    --imamu-spacing-xl: 2rem;       /* 32px */
+    --imamu-spacing-2xl: 3rem;      /* 48px */
+    --imamu-spacing-3xl: 4rem;      /* 64px */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 5. الحواف المستديرة (Border Radius)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --imamu-radius-sm: 0.25rem;     /* 4px */
+    --imamu-radius-md: 0.5rem;      /* 8px */
+    --imamu-radius-lg: 0.75rem;     /* 12px */
+    --imamu-radius-xl: 1rem;        /* 16px */
+    --imamu-radius-2xl: 1.5rem;     /* 24px */
+    --imamu-radius-full: 9999px;    /* دائري كامل */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 6. الظلال (Shadows)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --imamu-shadow-sm: 0 1px 2px 0 rgba(4, 93, 132, 0.05);
+    --imamu-shadow-md: 0 4px 6px -1px rgba(4, 93, 132, 0.1), 0 2px 4px -1px rgba(4, 93, 132, 0.06);
+    --imamu-shadow-lg: 0 10px 15px -3px rgba(4, 93, 132, 0.1), 0 4px 6px -2px rgba(4, 93, 132, 0.05);
+    --imamu-shadow-xl: 0 20px 25px -5px rgba(4, 93, 132, 0.1), 0 10px 10px -5px rgba(4, 93, 132, 0.04);
+    --imamu-shadow-2xl: 0 25px 50px -12px rgba(4, 93, 132, 0.25);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 7. الأنماط العامة (Global Styles)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--imamu-font-main);
+    font-size: var(--imamu-font-size-base);
+    font-weight: var(--imamu-font-weight-normal);
+    color: var(--imamu-gray-800);
+    background-color: var(--imamu-light-gray);
+    line-height: 1.6;
+    direction: rtl;
+    text-align: right;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 8. العناوين (Headings)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--imamu-font-main);
+    font-weight: var(--imamu-font-weight-extrabold);
+    color: var(--imamu-primary);
+    line-height: 1.2;
+    margin-bottom: var(--imamu-spacing-md);
+}
+
+h1 {
+    font-size: var(--imamu-font-size-5xl);
+}
+
+h2 {
+    font-size: var(--imamu-font-size-4xl);
+}
+
+h3 {
+    font-size: var(--imamu-font-size-3xl);
+}
+
+h4 {
+    font-size: var(--imamu-font-size-2xl);
+}
+
+h5 {
+    font-size: var(--imamu-font-size-xl);
+}
+
+h6 {
+    font-size: var(--imamu-font-size-lg);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 9. الأزرار (Buttons)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.imamu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--imamu-spacing-sm);
+    padding: var(--imamu-spacing-md) var(--imamu-spacing-xl);
+    font-family: var(--imamu-font-main);
+    font-size: var(--imamu-font-size-base);
+    font-weight: var(--imamu-font-weight-bold);
+    text-decoration: none;
+    border: none;
+    border-radius: var(--imamu-radius-lg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--imamu-shadow-md);
+}
+
+.imamu-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--imamu-shadow-lg);
+}
+
+.imamu-btn-primary {
+    background: var(--imamu-gradient-primary);
+    color: var(--imamu-white);
+}
+
+.imamu-btn-secondary {
+    background: var(--imamu-gradient-secondary);
+    color: var(--imamu-white);
+}
+
+.imamu-btn-outline {
+    background: transparent;
+    color: var(--imamu-primary);
+    border: 2px solid var(--imamu-primary);
+}
+
+.imamu-btn-outline:hover {
+    background: var(--imamu-primary);
+    color: var(--imamu-white);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 10. البطاقات (Cards)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.imamu-card {
+    background: var(--imamu-white);
+    border-radius: var(--imamu-radius-xl);
+    padding: var(--imamu-spacing-xl);
+    box-shadow: var(--imamu-shadow-md);
+    transition: all 0.3s ease;
+}
+
+.imamu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--imamu-shadow-xl);
+}
+
+.imamu-card-header {
+    border-bottom: 3px solid var(--imamu-primary);
+    padding-bottom: var(--imamu-spacing-md);
+    margin-bottom: var(--imamu-spacing-lg);
+}
+
+.imamu-card-title {
+    font-size: var(--imamu-font-size-2xl);
+    font-weight: var(--imamu-font-weight-extrabold);
+    color: var(--imamu-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 11. الهيدر (Header)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.imamu-header {
+    background: var(--imamu-white);
+    border-radius: var(--imamu-radius-2xl);
+    padding: var(--imamu-spacing-2xl);
+    margin-bottom: var(--imamu-spacing-2xl);
+    box-shadow: var(--imamu-shadow-lg);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.imamu-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--imamu-gradient-combined);
+}
+
+.imamu-logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--imamu-spacing-lg);
+}
+
+.imamu-logo {
+    width: 120px;
+    height: 120px;
+    background: var(--imamu-white);
+    border-radius: var(--imamu-radius-xl);
+    padding: var(--imamu-spacing-md);
+    box-shadow: var(--imamu-shadow-md);
+    border: 3px solid var(--imamu-secondary);
+}
+
+.imamu-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.imamu-header-title {
+    font-size: var(--imamu-font-size-4xl);
+    font-weight: var(--imamu-font-weight-extrabold);
+    background: var(--imamu-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--imamu-spacing-md);
+}
+
+.imamu-header-subtitle {
+    font-size: var(--imamu-font-size-lg);
+    color: var(--imamu-gray-600);
+    font-weight: var(--imamu-font-weight-medium);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 12. الفوتر (Footer)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.imamu-footer {
+    background: var(--imamu-primary);
+    color: var(--imamu-white);
+    padding: var(--imamu-spacing-xl);
+    text-align: center;
+    border-radius: var(--imamu-radius-xl);
+    margin-top: var(--imamu-spacing-2xl);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 13. الخلفية (Background)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.imamu-bg-pattern {
+    background: var(--imamu-light-gray);
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(4, 93, 132, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(183, 163, 98, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 14. الجداول (Tables)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.imamu-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--imamu-white);
+    border-radius: var(--imamu-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--imamu-shadow-md);
+}
+
+.imamu-table thead {
+    background: var(--imamu-gradient-primary);
+    color: var(--imamu-white);
+}
+
+.imamu-table th {
+    padding: var(--imamu-spacing-md);
+    font-weight: var(--imamu-font-weight-bold);
+    text-align: right;
+}
+
+.imamu-table td {
+    padding: var(--imamu-spacing-md);
+    border-bottom: 1px solid var(--imamu-gray-200);
+}
+
+.imamu-table tbody tr:hover {
+    background: var(--imamu-light-blue);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 15. النماذج (Forms)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.imamu-form-group {
+    margin-bottom: var(--imamu-spacing-lg);
+}
+
+.imamu-form-label {
+    display: block;
+    font-weight: var(--imamu-font-weight-bold);
+    color: var(--imamu-primary);
+    margin-bottom: var(--imamu-spacing-sm);
+}
+
+.imamu-form-input {
+    width: 100%;
+    padding: var(--imamu-spacing-md);
+    font-family: var(--imamu-font-main);
+    font-size: var(--imamu-font-size-base);
+    border: 2px solid var(--imamu-gray-300);
+    border-radius: var(--imamu-radius-md);
+    transition: all 0.3s ease;
+}
+
+.imamu-form-input:focus {
+    outline: none;
+    border-color: var(--imamu-primary);
+    box-shadow: 0 0 0 3px rgba(4, 93, 132, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 16. التجاوب (Responsive)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    :root {
+        --imamu-font-size-5xl: 2rem;
+        --imamu-font-size-4xl: 1.75rem;
+        --imamu-font-size-3xl: 1.5rem;
+    }
+    
+    .imamu-logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .imamu-header {
+        padding: var(--imamu-spacing-lg);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 17. الأدوات المساعدة (Utilities)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.imamu-text-primary {
+    color: var(--imamu-primary) !important;
+}
+
+.imamu-text-secondary {
+    color: var(--imamu-secondary) !important;
+}
+
+.imamu-bg-primary {
+    background-color: var(--imamu-primary) !important;
+}
+
+.imamu-bg-secondary {
+    background-color: var(--imamu-secondary) !important;
+}
+
+.imamu-text-center {
+    text-align: center !important;
+}
+
+.imamu-text-right {
+    text-align: right !important;
+}
+
+.imamu-text-left {
+    text-align: left !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * نهاية ملف الهوية البصرية
+ * End of Visual Identity File
+ * ═══════════════════════════════════════════════════════════════════════════ */
