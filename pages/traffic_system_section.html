@@ -792,20 +792,37 @@
             }, 16);
         }
 
-        // 🥧 توزيع أنواع المخالفات - Pie Chart
-        async function loadViolationsPie() {
-            let data;
+        // Shared function to fetch violations data
+        async function fetchViolationsData() {
             try {
                 const res = await fetch(`${API_URL}/violations`);
                 if (res.ok) {
-                    data = await res.json();
-                } else {
-                    data = demoViolationsData;
+                    return await res.json();
                 }
+                return demoViolationsData;
             } catch (error) {
-                console.log('Using demo data for pie chart');
-                data = demoViolationsData;
+                console.log('Using demo violations data');
+                return demoViolationsData;
             }
+        }
+
+        // Generate colors for chart based on number of items
+        function generateChartColors(count) {
+            const baseColors = [
+                "#3498db", "#e74c3c", "#f1c40f", "#2ecc71", "#9b59b6", 
+                "#34495e", "#1abc9c", "#e67e22", "#95a5a6", "#d35400",
+                "#27ae60", "#2980b9", "#8e44ad", "#c0392b", "#16a085"
+            ];
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                colors.push(baseColors[i % baseColors.length]);
+            }
+            return colors;
+        }
+
+        // 🥧 توزيع أنواع المخالفات - Pie Chart
+        async function loadViolationsPie() {
+            const data = await fetchViolationsData();
 
             // تجميع المخالفات حسب النوع
             const countsByType = {};
@@ -825,9 +842,7 @@
                     datasets: [{
                         label: "توزيع المخالفات",
                         data: values,
-                        backgroundColor: [
-                            "#3498db", "#e74c3c", "#f1c40f", "#2ecc71", "#9b59b6", "#34495e"
-                        ]
+                        backgroundColor: generateChartColors(labels.length)
                     }]
                 },
                 options: {
@@ -849,23 +864,16 @@
 
         // 📈 تطور المخالفات بمرور الوقت - Line Chart
         async function loadViolationsTrend() {
-            let data;
-            try {
-                const res = await fetch(`${API_URL}/violations`);
-                if (res.ok) {
-                    data = await res.json();
-                } else {
-                    data = demoViolationsData;
-                }
-            } catch (error) {
-                console.log('Using demo data for trend chart');
-                data = demoViolationsData;
-            }
+            const data = await fetchViolationsData();
 
             // تجميع المخالفات حسب الشهر
             const countsByMonth = {};
             data.forEach(vl => {
+                // Validate date before processing
+                if (!vl.violation_date) return;
                 const date = new Date(vl.violation_date);
+                if (isNaN(date.getTime())) return; // Skip invalid dates
+                
                 const monthKey = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}`;
                 countsByMonth[monthKey] = (countsByMonth[monthKey] || 0) + 1;
             });
