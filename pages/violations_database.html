@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قاعدة بيانات المخالفات المرورية - جامعة الإمام محمد بن سعود الإسلامية</title>
+    
+    <!-- الهوية البصرية -->
+    <link rel="stylesheet" href="../css/imamu-brand-identity.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Bahij TheSansArabic', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .stat-card.total .icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .stat-card.pending .icon {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            color: white;
+        }
+
+        .stat-card.paid .icon {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .stat-card.fines .icon {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #f5576c;
+        }
+
+        .stat-card .sub-value {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .control-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        /* Violations Table */
+        .violations-table-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-header h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .violations-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .violations-table thead {
+            background: #fff5f7;
+        }
+
+        .violations-table th {
+            padding: 15px;
+            text-align: right;
+            font-weight: bold;
+            color: #f5576c;
+            border-bottom: 2px solid #ffe0e6;
+        }
+
+        .violations-table td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .violations-table tbody tr {
+            transition: background 0.3s;
+        }
+
+        .violations-table tbody tr:hover {
+            background: #fff5f7;
+        }
+
+        .violation-number {
+            font-weight: bold;
+            color: #f5576c;
+        }
+
+        .plate-number {
+            font-weight: bold;
+            color: #333;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .status-badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.appealed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-badge.cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .severity-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .severity-badge.low {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .severity-badge.medium {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .severity-badge.high {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .severity-badge.critical {
+            background: #dc3545;
+            color: white;
+        }
+
+        .fine-amount {
+            font-weight: bold;
+            color: #f5576c;
+            font-size: 1.1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .action-btn.view {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .action-btn.pay {
+            background: #28a745;
+            color: white;
+        }
+
+        .action-btn.appeal {
+            background: #ffc107;
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #999;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .control-row {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .violations-table {
+                font-size: 0.9rem;
+            }
+
+            .violations-table th,
+            .violations-table td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-exclamation-triangle"></i>
+                قاعدة بيانات المخالفات المرورية
+            </h1>
+            <p>إدارة شاملة لجميع المخالفات المرورية في الجامعة</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card total">
+                <div class="icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>إجمالي المخالفات</h3>
+                <div class="value" id="totalViolations">0</div>
+            </div>
+
+            <div class="stat-card pending">
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>المخالفات المعلقة</h3>
+                <div class="value" id="pendingViolations">0</div>
+            </div>
+
+            <div class="stat-card paid">
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>المخالفات المدفوعة</h3>
+                <div class="value" id="paidViolations">0</div>
+            </div>
+
+            <div class="stat-card fines">
+                <div class="icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <h3>إجمالي الغرامات</h3>
+                <div class="value" id="totalFines">0</div>
+                <div class="sub-value">المدفوع: <span id="paidFines">0</span> ريال</div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-row">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="البحث برقم اللوحة، رقم المخالفة...">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <div class="filter-group">
+                    <select class="filter-select" id="filterStatus">
+                        <option value="">جميع الحالات</option>
+                        <option value="pending">معلقة</option>
+                        <option value="paid">مدفوعة</option>
+                        <option value="appealed">معترض عليها</option>
+                        <option value="cancelled">ملغاة</option>
+                    </select>
+
+                    <select class="filter-select" id="filterSeverity">
+                        <option value="">جميع الخطورات</option>
+                        <option value="low">منخفضة</option>
+                        <option value="medium">متوسطة</option>
+                        <option value="high">عالية</option>
+                        <option value="critical">حرجة</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i>
+                    إضافة مخالفة
+                </button>
+
+                <button class="btn btn-success" onclick="exportData()">
+                    <i class="fas fa-file-excel"></i>
+                    تصدير
+                </button>
+            </div>
+        </div>
+
+        <!-- Violations Table -->
+        <div class="violations-table-container">
+            <div class="table-header">
+                <h2>
+                    <i class="fas fa-list"></i>
+                    قائمة المخالفات
+                </h2>
+                <span id="violationCount">0 مخالفة</span>
+            </div>
+
+            <div id="tableContent">
+                <table class="violations-table">
+                    <thead>
+                        <tr>
+                            <th>رقم المخالفة</th>
+                            <th>رقم اللوحة</th>
+                            <th>نوع المخالفة</th>
+                            <th>الغرامة</th>
+                            <th>الخطورة</th>
+                            <th>التاريخ</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="violationsTableBody">
+                        <!-- سيتم ملؤها ديناميكياً -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Violation Modal -->
+    <div class="modal" id="violationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>إضافة مخالفة جديدة</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="violationForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>رقم اللوحة *</label>
+                            <input type="text" id="plateNumber" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>نوع المخالفة *</label>
+                            <select id="violationType" required onchange="updateViolationInfo()">
+                                <option value="">اختر نوع المخالفة</option>
+                                <option value="speeding">تجاوز السرعة المحددة</option>
+                                <option value="wrong_parking">الوقوف في مكان غير مصرح</option>
+                                <option value="no_sticker">عدم وجود ملصق</option>
+                                <option value="expired_sticker">ملصق منتهي الصلاحية</option>
+                                <option value="restricted_area">دخول منطقة محظورة</option>
+                                <option value="reckless_driving">قيادة متهورة</option>
+                                <option value="wrong_direction">السير عكس الاتجاه</option>
+                                <option value="blocking_traffic">إعاقة حركة المرور</option>
+                                <option value="pedestrian_area">دخول منطقة مشاة</option>
+                                <option value="no_license">عدم وجود رخصة قيادة</option>
+                                <option value="unauthorized_vehicle">مركبة غير مصرح لها</option>
+                                <option value="other">مخالفة أخرى</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>الغرامة (ريال) *</label>
+                            <input type="number" id="fine" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>النقاط</label>
+                            <input type="number" id="points" value="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>الموقع</label>
+                            <input type="text" id="location" placeholder="مثال: بوابة رقم 1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>الكاميرا</label>
+                            <input type="text" id="camera" placeholder="مثال: CAM-001">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>الوصف</label>
+                        <textarea id="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ملاحظات</label>
+                        <textarea id="notes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveViolation()">
+                    <i class="fas fa-save"></i>
+                    حفظ
+                </button>
+                <button class="btn btn-danger" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/vehicles-database-system.js"></script>
+    <script src="../js/violations-database-system.js"></script>
+    <script src="../js/parkpow-advanced-integration.js"></script>
+
+    <script>
+        // تحميل البيانات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            loadViolations();
+            updateStatistics();
+
+            // إضافة مستمعي الأحداث
+            document.getElementById('searchInput').addEventListener('input', filterViolations);
+            document.getElementById('filterStatus').addEventListener('change', filterViolations);
+            document.getElementById('filterSeverity').addEventListener('change', filterViolations);
+        });
+
+        // تحميل المخالفات
+        function loadViolations() {
+            const violations = window.violationsDB.getAllViolations();
+            displayViolations(violations);
+        }
+
+        // عرض المخالفات
+        function displayViolations(violations) {
+            const tbody = document.getElementById('violationsTableBody');
+            const tableContent = document.getElementById('tableContent');
+            
+            if (violations.length === 0) {
+                tableContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>لا توجد مخالفات</h3>
+                        <p>لم يتم تسجيل أي مخالفات بعد</p>
+                    </div>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = violations.map(violation => `
+                <tr>
+                    <td><span class="violation-number">${violation.violationNumber}</span></td>
+                    <td><span class="plate-number">${violation.plateNumber}</span></td>
+                    <td>${violation.violationName}</td>
+                    <td><span class="fine-amount">${violation.fine} ريال</span></td>
+                    <td>
+                        <span class="severity-badge ${violation.severity}">
+                            ${getSeverityLabel(violation.severity)}
+                        </span>
+                    </td>
+                    <td>${violation.date}</td>
+                    <td>
+                        <span class="status-badge ${violation.status}">
+                            ${getStatusLabel(violation.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn view" onclick="viewViolation('${violation.id}')" title="عرض">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${violation.status === 'pending' ? `
+                                <button class="action-btn pay" onclick="payViolation('${violation.id}')" title="دفع">
+                                    <i class="fas fa-money-bill"></i>
+                                </button>
+                                <button class="action-btn appeal" onclick="appealViolation('${violation.id}')" title="اعتراض">
+                                    <i class="fas fa-gavel"></i>
+                                </button>
+                            ` : ''}
+                            <button class="action-btn delete" onclick="deleteViolation('${violation.id}')" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('violationCount').textContent = `${violations.length} مخالفة`;
+        }
+
+        // تحديث الإحصائيات
+        function updateStatistics() {
+            const stats = window.violationsDB.getStatistics();
+            
+            document.getElementById('totalViolations').textContent = stats.total;
+            document.getElementById('pendingViolations').textContent = stats.pending;
+            document.getElementById('paidViolations').textContent = stats.paid;
+            document.getElementById('totalFines').textContent = stats.totalFines.toLocaleString('ar-SA');
+            document.getElementById('paidFines').textContent = stats.paidFines.toLocaleString('ar-SA');
+        }
+
+        // تصفية المخالفات
+        function filterViolations() {
+            const searchTerm = document.getElementById('searchInput').value;
+            const status = document.getElementById('filterStatus').value;
+            const severity = document.getElementById('filterSeverity').value;
+
+            const criteria = {};
+            if (searchTerm) criteria.plateNumber = searchTerm;
+            if (status) criteria.status = status;
+            if (severity) criteria.severity = severity;
+
+            const filtered = window.violationsDB.search(criteria);
+            displayViolations(filtered);
+        }
+
+        // فتح نافذة الإضافة
+        function openAddModal() {
+            document.getElementById('violationForm').reset();
+            document.getElementById('violationModal').classList.add('active');
+        }
+
+        // تحديث معلومات المخالفة عند اختيار النوع
+        function updateViolationInfo() {
+            const type = document.getElementById('violationType').value;
+            if (!type) return;
+
+            const typeInfo = window.violationsDB.violationTypes[type];
+            if (typeInfo) {
+                document.getElementById('fine').value = typeInfo.fine;
+                document.getElementById('points').value = typeInfo.points;
+                document.getElementById('description').value = typeInfo.name;
+            }
+        }
+
+        // حفظ المخالفة
+        function saveViolation() {
+            const violationData = {
+                plateNumber: document.getElementById('plateNumber').value,
+                violationType: document.getElementById('violationType').value,
+                fine: parseInt(document.getElementById('fine').value),
+                points: parseInt(document.getElementById('points').value),
+                location: document.getElementById('location').value,
+                camera: document.getElementById('camera').value,
+                description: document.getElementById('description').value,
+                notes: document.getElementById('notes').value
+            };
+
+            const result = window.violationsDB.addViolation(violationData);
+
+            if (result.success) {
+                alert('تم إضافة المخالفة بنجاح');
+                closeModal();
+                loadViolations();
+                updateStatistics();
+            } else {
+                alert('خطأ: ' + result.error);
+            }
+        }
+
+        // دفع مخالفة
+        function payViolation(violationId) {
+            if (!confirm('هل تريد تسجيل دفع هذه المخالفة؟')) return;
+
+            const paymentData = {
+                method: 'cash',
+                reference: 'PAY-' + Date.now()
+            };
+
+            const result = window.violationsDB.payViolation(violationId, paymentData);
+            if (result.success) {
+                alert('تم تسجيل الدفع بنجاح');
+                loadViolations();
+                updateStatistics();
+            } else {
+                alert('خطأ: ' + result.error);
+            }
+        }
+
+        // الاعتراض على مخالفة
+        function appealViolation(violationId) {
+            const reason = prompt('أدخل سبب الاعتراض:');
+            if (!reason) return;
+
+            const result = window.violationsDB.appealViolation(violationId, { reason: reason });
+            if (result.success) {
+                alert('تم تسجيل الاعتراض بنجاح');
+                loadViolations();
+                updateStatistics();
+            } else {
+                alert('خطأ: ' + result.error);
+            }
+        }
+
+        // حذف مخالفة
+        function deleteViolation(violationId) {
+            if (!confirm('هل أنت متأكد من حذف هذه المخالفة؟')) return;
+
+            const result = window.violationsDB.deleteViolation(violationId);
+            if (result.success) {
+                alert('تم حذف المخالفة بنجاح');
+                loadViolations();
+                updateStatistics();
+            } else {
+                alert('خطأ: ' + result.error);
+            }
+        }
+
+        // عرض تفاصيل المخالفة
+        function viewViolation(violationId) {
+            const violation = window.violationsDB.findById(violationId);
+            if (!violation) return;
+
+            alert(`
+تفاصيل المخالفة:
+رقم المخالفة: ${violation.violationNumber}
+رقم اللوحة: ${violation.plateNumber}
+نوع المخالفة: ${violation.violationName}
+الغرامة: ${violation.fine} ريال
+النقاط: ${violation.points}
+الخطورة: ${getSeverityLabel(violation.severity)}
+الموقع: ${violation.location}
+التاريخ: ${violation.date}
+الوقت: ${violation.time}
+الحالة: ${getStatusLabel(violation.status)}
+            `);
+        }
+
+        // إغلاق النافذة المنبثقة
+        function closeModal() {
+            document.getElementById('violationModal').classList.remove('active');
+        }
+
+        // تصدير البيانات
+        function exportData() {
+            const result = window.violationsDB.exportToCSV();
+            if (result.success) {
+                alert('تم تصدير البيانات بنجاح');
+            } else {
+                alert('خطأ في التصدير: ' + result.error);
+            }
+        }
+
+        // دوال مساعدة
+        function getStatusLabel(status) {
+            const labels = {
+                pending: 'معلقة',
+                paid: 'مدفوعة',
+                appealed: 'معترض عليها',
+                cancelled: 'ملغاة'
+            };
+            return labels[status] || status;
+        }
+
+        function getSeverityLabel(severity) {
+            const labels = {
+                low: 'منخفضة',
+                medium: 'متوسطة',
+                high: 'عالية',
+                critical: 'حرجة'
+            };
+            return labels[severity] || severity;
+        }
+    </script>
+</body>
+</html>
