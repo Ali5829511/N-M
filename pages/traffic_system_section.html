@@ -6,6 +6,8 @@
     <title>نظام المرور المتكامل - إدارة المركبات والمخالفات</title>
     <link rel="stylesheet" href="../css/imamu-brand-identity.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             background: var(--brand-bg-pattern);
@@ -370,6 +372,48 @@
             font-size: var(--font-size-sm);
         }
 
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .chart-card {
+            background: var(--primary-white);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .chart-card h3 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-steel-blue);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .chart-card h3 i {
+            color: var(--primary-sky-blue);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .hero-section {
@@ -390,6 +434,14 @@
 
             .stats-bar {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 250px;
             }
         }
     </style>
@@ -562,6 +614,29 @@
             </a>
         </div>
 
+        <!-- Charts Section - Violations Analysis -->
+        <div class="section-title">
+            <h2><i class="fas fa-chart-pie"></i> تحليل المخالفات</h2>
+        </div>
+
+        <div class="charts-section">
+            <!-- Violations Pie Chart -->
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie"></i> 🥧 توزيع أنواع المخالفات</h3>
+                <div class="chart-container">
+                    <canvas id="violationsPieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Violations Trend Chart -->
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-line"></i> 📈 تطور المخالفات بمرور الوقت</h3>
+                <div class="chart-container">
+                    <canvas id="violationsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Database Structure Section -->
         <div class="database-section">
             <div class="section-title">
@@ -634,9 +709,35 @@
     </div>
 
     <script>
+        // API URL - change to your API server URL
+        const API_URL = '/api';
+        
+        // Demo violations data for charts
+        const demoViolationsData = [
+            { violation_type: 'وقوف خاطئ', violation_date: '2024-01-15' },
+            { violation_type: 'تجاوز السرعة', violation_date: '2024-01-20' },
+            { violation_type: 'وقوف خاطئ', violation_date: '2024-02-10' },
+            { violation_type: 'انتهاء الملصق', violation_date: '2024-02-15' },
+            { violation_type: 'وقوف خاطئ', violation_date: '2024-02-25' },
+            { violation_type: 'تجاوز السرعة', violation_date: '2024-03-05' },
+            { violation_type: 'عدم حمل رخصة', violation_date: '2024-03-12' },
+            { violation_type: 'وقوف خاطئ', violation_date: '2024-03-20' },
+            { violation_type: 'مخالفة أخرى', violation_date: '2024-04-01' },
+            { violation_type: 'وقوف خاطئ', violation_date: '2024-04-10' },
+            { violation_type: 'انتهاء الملصق', violation_date: '2024-04-18' },
+            { violation_type: 'تجاوز السرعة', violation_date: '2024-05-05' },
+            { violation_type: 'وقوف خاطئ', violation_date: '2024-05-15' },
+            { violation_type: 'وقوف خاطئ', violation_date: '2024-05-22' },
+            { violation_type: 'انتهاء الملصق', violation_date: '2024-06-01' },
+            { violation_type: 'تجاوز السرعة', violation_date: '2024-06-10' },
+            { violation_type: 'وقوف خاطئ', violation_date: '2024-06-15' }
+        ];
+        
         // Load statistics on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadStatistics();
+            loadViolationsPie();
+            loadViolationsTrend();
         });
 
         async function loadStatistics() {
@@ -689,6 +790,115 @@
                 }
                 element.textContent = Math.floor(current).toLocaleString('ar-SA');
             }, 16);
+        }
+
+        // 🥧 توزيع أنواع المخالفات - Pie Chart
+        async function loadViolationsPie() {
+            let data;
+            try {
+                const res = await fetch(`${API_URL}/violations`);
+                if (res.ok) {
+                    data = await res.json();
+                } else {
+                    data = demoViolationsData;
+                }
+            } catch (error) {
+                console.log('Using demo data for pie chart');
+                data = demoViolationsData;
+            }
+
+            // تجميع المخالفات حسب النوع
+            const countsByType = {};
+            data.forEach(vl => {
+                const type = vl.violation_type || "غير محدد";
+                countsByType[type] = (countsByType[type] || 0) + 1;
+            });
+
+            const labels = Object.keys(countsByType);
+            const values = Object.values(countsByType);
+
+            const ctx = document.getElementById("violationsPieChart").getContext("2d");
+            new Chart(ctx, {
+                type: "pie",
+                data: {
+                    labels,
+                    datasets: [{
+                        label: "توزيع المخالفات",
+                        data: values,
+                        backgroundColor: [
+                            "#3498db", "#e74c3c", "#f1c40f", "#2ecc71", "#9b59b6", "#34495e"
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: "توزيع أنواع المخالفات" },
+                        legend: { 
+                            position: "right",
+                            rtl: true,
+                            labels: {
+                                font: { family: 'Tajawal, Arial, sans-serif' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 📈 تطور المخالفات بمرور الوقت - Line Chart
+        async function loadViolationsTrend() {
+            let data;
+            try {
+                const res = await fetch(`${API_URL}/violations`);
+                if (res.ok) {
+                    data = await res.json();
+                } else {
+                    data = demoViolationsData;
+                }
+            } catch (error) {
+                console.log('Using demo data for trend chart');
+                data = demoViolationsData;
+            }
+
+            // تجميع المخالفات حسب الشهر
+            const countsByMonth = {};
+            data.forEach(vl => {
+                const date = new Date(vl.violation_date);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}`;
+                countsByMonth[monthKey] = (countsByMonth[monthKey] || 0) + 1;
+            });
+
+            const labels = Object.keys(countsByMonth).sort();
+            const values = labels.map(l => countsByMonth[l]);
+
+            const ctx = document.getElementById("violationsChart").getContext("2d");
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels,
+                    datasets: [{
+                        label: "عدد المخالفات",
+                        data: values,
+                        borderColor: "#e74c3c",
+                        backgroundColor: "rgba(231,76,60,0.2)",
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: "تطور عدد المخالفات شهريًا" }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: "الشهر" } },
+                        y: { title: { display: true, text: "عدد المخالفات" }, beginAtZero: true }
+                    }
+                }
+            });
         }
     </script>
 </body>
