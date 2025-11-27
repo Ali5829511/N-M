@@ -474,6 +474,67 @@
             opacity: 0.8;
         }
 
+        /* Brand Header with Logo */
+        .brand-header {
+            background: linear-gradient(135deg, var(--imamu-primary) 0%, #0a7fb8 100%);
+            padding: var(--imamu-spacing-xl);
+            text-align: center;
+            margin-bottom: var(--imamu-spacing-xl);
+            border-radius: var(--imamu-radius-2xl);
+            box-shadow: var(--imamu-shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            background-size: 20px 20px;
+        }
+
+        .brand-logo {
+            width: 120px;
+            height: 120px;
+            background: var(--imamu-white);
+            border-radius: 50%;
+            padding: 10px;
+            margin: 0 auto var(--imamu-spacing-lg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .brand-title {
+            color: var(--imamu-white);
+            font-size: var(--imamu-font-size-2xl);
+            font-weight: var(--imamu-font-weight-bold);
+            margin-bottom: var(--imamu-spacing-sm);
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: var(--imamu-font-size-base);
+            position: relative;
+            z-index: 1;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -496,11 +557,29 @@
             .page-header {
                 padding: var(--imamu-spacing-lg);
             }
+
+            .brand-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .brand-title {
+                font-size: var(--imamu-font-size-xl);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Brand Header with Logo -->
+        <div class="brand-header">
+            <div class="brand-logo">
+                <img src="../assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية">
+            </div>
+            <h2 class="brand-title">جامعة الإمام محمد بن سعود الإسلامية</h2>
+            <p class="brand-subtitle">نظام إدارة إسكان أعضاء هيئة التدريس</p>
+        </div>
+
         <!-- Header -->
         <div class="page-header">
             <div class="header-content">
