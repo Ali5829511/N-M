@@ -4,5 +4,15 @@
   "enabled": true,
   "auto_sync": false,
   "sync_interval": 3600,
-  "region": "sa-riyadh"
+  "region": "sa-riyadh",
+  "webhook": {
+    "name": "ParkPow Cloud",
+    "enabled": true,
+    "target_url": "https://app.parkpow.com/api/v1/webhook-receiver/",
+    "send_image": true,
+    "image_format": "vehicle_only",
+    "headers": {
+      "Authorization": "Token 7c13be422713a758a42a0bc453cf3331fbf4d346"
+    }
+  }
 }

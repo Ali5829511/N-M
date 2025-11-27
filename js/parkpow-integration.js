@@ -1,9 +1,10 @@
 /**
  * وحدة دمج ParkPow API
  * ParkPow API Integration Module
- * @version 1.0.0
+ * @version 1.1.0
  * 
  * هذه الوحدة تتيح دمج نظام N-M مع ParkPow للتعرف التلقائي على لوحات السيارات
+ * تدعم الآن إرسال البيانات عبر Webhook إلى ParkPow Cloud
  */
 
 class ParkPowAPI {
@@ -13,6 +14,7 @@ class ParkPowAPI {
         this.enabled = false;
         this.region = 'sa-riyadh';
         this.config = null;
+        this.webhook = null;
     }
 
     /**
@@ -26,8 +28,12 @@ class ParkPowAPI {
                 this.apiToken = this.config.api_token;
                 this.enabled = this.config.enabled;
                 this.region = this.config.region || 'sa-riyadh';
+                this.webhook = this.config.webhook || null;
                 
                 console.log('✓ تم تهيئة ParkPow API بنجاح');
+                if (this.webhook && this.webhook.enabled) {
+                    console.log('✓ تم تفعيل ParkPow Cloud Webhook');
+                }
                 return true;
             }
             return false;
@@ -368,6 +374,137 @@ class ParkPowAPI {
                 message: `فشل الاتصال: ${error.message}`
             };
         }
+    }
+
+    /**
+     * التحقق من تفعيل الـ Webhook
+     */
+    isWebhookEnabled() {
+        return this.webhook && this.webhook.enabled && this.webhook.target_url;
+    }
+
+    /**
+     * إرسال بيانات التعرف على اللوحة إلى ParkPow Cloud Webhook
+     * @param {Object} recognitionData - بيانات التعرف على اللوحة
+     * @param {string} recognitionData.plate - رقم اللوحة
+     * @param {string} recognitionData.image - صورة بتنسيق base64 (اختياري)
+     * @param {Object} recognitionData.vehicle - بيانات المركبة (اختياري)
+     */
+    async sendToWebhook(recognitionData) {
+        if (!this.isWebhookEnabled()) {
+            console.log('⚠ Webhook غير مفعّل');
+            return { success: false, message: 'Webhook غير مفعّل' };
+        }
+
+        try {
+            const payload = {
+                plate: recognitionData.plate,
+                timestamp: new Date().toISOString(),
+                region: this.region
+            };
+
+            // إضافة بيانات المركبة إذا كانت موجودة
+            if (recognitionData.vehicle) {
+                payload.vehicle = recognitionData.vehicle;
+            }
+
+            // إضافة الصورة حسب إعدادات الـ Webhook
+            if (this.webhook.send_image && recognitionData.image) {
+                if (this.webhook.image_format === 'vehicle_only') {
+                    // إرسال صورة المركبة فقط
+                    payload.vehicle_image = recognitionData.image;
+                } else {
+                    // إرسال الصورة الكاملة
+                    payload.full_image = recognitionData.image;
+                }
+            }
+
+            const headers = {
+                'Content-Type': 'application/json',
+                ...this.webhook.headers
+            };
+
+            const response = await fetch(this.webhook.target_url, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+
+            const result = await response.json().catch(() => ({ status: 'success' }));
+            
+            console.log('✓ تم إرسال البيانات إلى ParkPow Cloud Webhook بنجاح');
+            return { success: true, data: result };
+        } catch (error) {
+            console.error('خطأ في إرسال البيانات إلى Webhook:', error);
+            return { success: false, message: error.message };
+        }
+    }
+
+    /**
+     * اختبار اتصال الـ Webhook
+     */
+    async testWebhookConnection() {
+        if (!this.isWebhookEnabled()) {
+            return {
+                success: false,
+                message: 'ParkPow Cloud Webhook غير مفعّل'
+            };
+        }
+
+        try {
+            // إرسال طلب اختبار
+            const testData = {
+                plate: 'TEST-1234',
+                timestamp: new Date().toISOString(),
+                test: true
+            };
+
+            const headers = {
+                'Content-Type': 'application/json',
+                ...this.webhook.headers
+            };
+
+            const response = await fetch(this.webhook.target_url, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(testData)
+            });
+
+            if (response.ok) {
+                return {
+                    success: true,
+                    message: 'اتصال ParkPow Cloud Webhook ناجح ✓'
+                };
+            } else {
+                return {
+                    success: false,
+                    message: `فشل الاتصال: HTTP ${response.status}`
+                };
+            }
+        } catch (error) {
+            return {
+                success: false,
+                message: `فشل الاتصال: ${error.message}`
+            };
+        }
+    }
+
+    /**
+     * الحصول على إعدادات الـ Webhook
+     */
+    getWebhookConfig() {
+        return this.webhook ? {
+            name: this.webhook.name || 'ParkPow Cloud',
+            enabled: this.webhook.enabled || false,
+            targetUrl: this.webhook.target_url || '',
+            sendImage: this.webhook.send_image || false,
+            imageFormat: this.webhook.image_format || 'full'
+        } : null;
     }
 }
 
