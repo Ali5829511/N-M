@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز قواعد البيانات - جامعة الإمام محمد بن سعود الإسلامية</title>
+    
+    <!-- الهوية البصرية -->
+    <link rel="stylesheet" href="../css/imamu-brand-identity.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Bahij TheSansArabic', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .page-header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+
+        /* Database Cards Grid */
+        .databases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .database-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .database-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, var(--imamu-primary) 0%, #023d5a 100%);
+        }
+
+        .database-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .database-card.vehicles::before {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .database-card.violations::before {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .card-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 25px;
+            color: white;
+        }
+
+        .database-card.vehicles .card-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .database-card.violations .card-icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .card-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .card-description {
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .card-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .card-features li {
+            padding: 10px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-features li i {
+            color: var(--imamu-primary);
+            font-size: 1.2rem;
+        }
+
+        .card-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .database-card.vehicles .card-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .database-card.violations .card-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .card-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            margin-top: 30px;
+        }
+
+        .stats-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .stat-item .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-item .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--imamu-primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-item .label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: var(--imamu-primary);
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .databases-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .database-card {
+                padding: 30px;
+            }
+
+            .card-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="home.html" class="back-button">
+        <i class="fas fa-arrow-right"></i>
+        العودة للرئيسية
+    </a>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-database"></i>
+                مركز قواعد البيانات
+            </h1>
+            <p>نظام متكامل لإدارة المركبات والمخالفات المرورية</p>
+        </div>
+
+        <!-- Database Cards -->
+        <div class="databases-grid">
+            <!-- Vehicles Database -->
+            <div class="database-card vehicles" onclick="window.location.href='vehicles_database.html'">
+                <div class="card-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h2 class="card-title">قاعدة بيانات المركبات</h2>
+                <p class="card-description">
+                    نظام شامل لإدارة جميع المركبات المسجلة في الجامعة مع التعرف التلقائي على اللوحات
+                </p>
+                <ul class="card-features">
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        إدارة كاملة للمركبات
+                    </li>
+                    <li>
+                        <i class="fas fa-search"></i>
+                        بحث وتصفية متقدمة
+                    </li>
+                    <li>
+                        <i class="fas fa-camera"></i>
+                        التعرف على اللوحات
+                    </li>
+                    <li>
+                        <i class="fas fa-chart-bar"></i>
+                        إحصائيات شاملة
+                    </li>
+                    <li>
+                        <i class="fas fa-file-export"></i>
+                        تصدير البيانات
+                    </li>
+                </ul>
+                <button class="card-button">
+                    <i class="fas fa-arrow-left"></i>
+                    الدخول إلى قاعدة البيانات
+                </button>
+            </div>
+
+            <!-- Violations Database -->
+            <div class="database-card violations" onclick="window.location.href='violations_database.html'">
+                <div class="card-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 class="card-title">قاعدة بيانات المخالفات</h2>
+                <p class="card-description">
+                    نظام متطور لإدارة المخالفات المرورية مع إمكانية الدفع والاعتراض
+                </p>
+                <ul class="card-features">
+                    <li>
+                        <i class="fas fa-clipboard-list"></i>
+                        12 نوع مخالفة مختلفة
+                    </li>
+                    <li>
+                        <i class="fas fa-money-bill-wave"></i>
+                        إدارة الغرامات والدفع
+                    </li>
+                    <li>
+                        <i class="fas fa-gavel"></i>
+                        نظام الاعتراضات
+                    </li>
+                    <li>
+                        <i class="fas fa-link"></i>
+                        ربط تلقائي بالمركبات
+                    </li>
+                    <li>
+                        <i class="fas fa-chart-pie"></i>
+                        تقارير مفصلة
+                    </li>
+                </ul>
+                <button class="card-button">
+                    <i class="fas fa-arrow-left"></i>
+                    الدخول إلى قاعدة البيانات
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-section">
+            <h3 class="stats-title">إحصائيات النظام</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="icon" style="color: #667eea;">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="value" id="totalVehicles">0</div>
+                    <div class="label">إجمالي المركبات</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="icon" style="color: #11998e;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="value" id="activeVehicles">0</div>
+                    <div class="label">المركبات النشطة</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="icon" style="color: #f5576c;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="value" id="totalViolations">0</div>
+                    <div class="label">إجمالي المخالفات</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="icon" style="color: #fdcb6e;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="value" id="pendingViolations">0</div>
+                    <div class="label">المخالفات المعلقة</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/vehicles-database-system.js"></script>
+    <script src="../js/violations-database-system.js"></script>
+
+    <script>
+        // تحميل الإحصائيات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatistics();
+        });
+
+        function updateStatistics() {
+            // إحصائيات المركبات
+            if (window.vehiclesDB) {
+                const vehicleStats = window.vehiclesDB.getStatistics();
+                document.getElementById('totalVehicles').textContent = vehicleStats.total;
+                document.getElementById('activeVehicles').textContent = vehicleStats.active;
+            }
+
+            // إحصائيات المخالفات
+            if (window.violationsDB) {
+                const violationStats = window.violationsDB.getStatistics();
+                document.getElementById('totalViolations').textContent = violationStats.total;
+                document.getElementById('pendingViolations').textContent = violationStats.pending;
+            }
+        }
+    </script>
+</body>
+</html>
