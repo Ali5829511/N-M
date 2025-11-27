@@ -2,568 +2,52 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>المنصة الأمنية - جامعة الإمام محمد بن سعود الإسلامية</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
   <link rel="stylesheet" href="css/unified-color-scheme.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    :root {
-      --primary-color: #8B6F47;
-      --primary-dark: #6B5537;
-      --secondary-color: #A0826D;
-      --accent-color: #C9B896;
-      --accent-light: #E5D9C6;
-      --light-bg: #f8f5f0;
-      --success-color: #51cf66;
-      --error-color: #ff6b6b;
-      --text-dark: #2c3e50;
-      --text-light: #7f8c8d;
-      --white: #ffffff;
-      --shadow-sm: 0 2px 8px rgba(139, 111, 71, 0.08);
-      --shadow-md: 0 8px 24px rgba(139, 111, 71, 0.15);
-      --shadow-lg: 0 20px 60px rgba(139, 111, 71, 0.25);
-      --shadow-xl: 0 25px 80px rgba(139, 111, 71, 0.35);
-    }
-
-    body {
-      font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #003c50 0%, #00566f 50%, #003c50 100%);
-      min-height: 100vh;
-      direction: rtl;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* خلفية متحركة */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(circle at 20% 50%, rgba(139, 111, 71, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(160, 130, 109, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 40% 20%, rgba(201, 184, 150, 0.1) 0%, transparent 50%);
-      animation: backgroundMove 20s ease-in-out infinite alternate;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    @keyframes backgroundMove {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(-10px, 10px) scale(1.05); }
-    }
-
-    /* Header */
-    .header {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(30px);
-      box-shadow: var(--shadow-xl);
-      padding: 32px 0;
-      text-align: center;
-      margin-bottom: 40px;
-      border-bottom: 4px solid var(--primary-color);
-      position: relative;
-      z-index: 10;
-    }
-
-    .header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(139, 111, 71, 0.05) 0%, rgba(160, 130, 109, 0.05) 100%);
-      pointer-events: none;
-    }
-
-    .header .logo {
-      width: 110px;
-      height: 110px;
-      margin: 0 auto 16px;
-      border-radius: 24px;
-      box-shadow: 0 8px 32px rgba(139, 111, 71, 0.2);
-      transition: all 0.4s ease;
-      object-fit: contain;
-      background: white;
-      padding: 12px;
-      animation: logoFloat 3s ease-in-out infinite;
-      position: relative;
-      z-index: 1;
-    }
-
-    @keyframes logoFloat {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-8px) scale(1.02); }
-    }
-
-    .header .logo:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 12px 40px rgba(139, 111, 71, 0.3);
-    }
-
-    .header h1 {
-      font-size: clamp(24px, 5vw, 32px);
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .header h3 {
-      font-size: clamp(16px, 3vw, 20px);
-      color: var(--text-light);
-      font-weight: 600;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Container */
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Modern Tabs */
-    .nav-tabs {
-      border: none;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 12px;
-      box-shadow: var(--shadow-lg);
-      margin-bottom: 32px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .nav-tabs .nav-item {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .nav-tabs .nav-link {
-      border: none;
-      border-radius: 14px;
-      padding: 16px 24px;
-      font-weight: 700;
-      font-size: 17px;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      color: var(--text-dark);
-      background: transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      text-align: center;
-    }
-
-    .nav-tabs .nav-link:hover {
-      background: rgba(139, 111, 71, 0.1);
-      transform: translateY(-2px);
-    }
-
-    .nav-tabs .nav-link.active {
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-      color: white;
-      box-shadow: 0 8px 24px rgba(139, 111, 71, 0.3);
-      transform: translateY(-2px);
-    }
-
-    .nav-tabs .nav-link i {
-      font-size: 20px;
-    }
-
-    /* Form Container */
-    .form-container {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(30px);
-      border-radius: 24px;
-      padding: 40px;
-      margin-bottom: 32px;
-      box-shadow: var(--shadow-xl);
-      border: 1px solid rgba(139, 111, 71, 0.1);
-      position: relative;
-      overflow: hidden;
-      animation: fadeInUp 0.6s ease-out;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .form-container::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(139, 111, 71, 0.05) 0%, transparent 70%);
-      animation: glow 8s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes glow {
-      0%, 100% { transform: translate(0, 0); opacity: 1; }
-      50% { transform: translate(10px, 10px); opacity: 0.8; }
-    }
-
-    /* Section Title */
-    .section-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--primary-color);
-      margin: 32px 0 24px;
-      padding: 16px 20px;
-      background: linear-gradient(135deg, rgba(139, 111, 71, 0.08) 0%, rgba(160, 130, 109, 0.08) 100%);
-      border-radius: 14px;
-      border-right: 5px solid var(--primary-color);
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .section-title:first-of-type {
-      margin-top: 0;
-    }
-
-    .section-title i {
-      font-size: 24px;
-      color: var(--secondary-color);
-    }
-
-    /* Form Elements */
-    .form-group {
-      margin-bottom: 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 10px;
-      color: var(--text-dark);
-      font-weight: 600;
-      font-size: 15px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 14px 18px;
-      border: 2px solid #e8ecf1;
-      border-radius: 12px;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.95);
-      font-family: 'Cairo', 'Tajawal', sans-serif;
-      color: var(--text-dark);
-      font-weight: 500;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      background: white;
-      box-shadow: 0 0 0 4px rgba(139, 111, 71, 0.1), 0 8px 24px rgba(139, 111, 71, 0.15);
-      transform: translateY(-2px);
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    /* Form Row */
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .form-col {
-      flex: 1;
-    }
-
-    /* File Upload */
-    .file-input-container {
-      position: relative;
-      z-index: 1;
-      margin: 20px 0;
-    }
-
-    .file-input-label {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      cursor: pointer;
-      padding: 16px 32px;
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-      color: white;
-      border-radius: 14px;
-      margin: 10px 0;
-      font-weight: 700;
-      font-size: 16px;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 6px 20px rgba(139, 111, 71, 0.3);
-    }
-
-    .file-input-label:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 28px rgba(139, 111, 71, 0.4);
-    }
-
-    .file-input-label i {
-      font-size: 18px;
-    }
-
-    .file-input {
-      display: none;
-    }
-
-    .file-list {
-      margin-top: 16px;
-      padding: 16px;
-      background: rgba(139, 111, 71, 0.05);
-      border-radius: 12px;
-    }
-
-    .file-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(139, 111, 71, 0.1);
-      background: white;
-      margin-bottom: 8px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .file-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-    }
-
-    .file-item:hover {
-      background: rgba(139, 111, 71, 0.05);
-      transform: translateX(-4px);
-    }
-
-    .file-item span {
-      color: var(--text-dark);
-      font-weight: 500;
-    }
-
-    .remove-file {
-      background: var(--error-color);
-      color: white;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .remove-file:hover {
-      background: #dc2626;
-      transform: scale(1.05);
-    }
-
-    /* Buttons */
-    .buttons {
-      margin-top: 32px;
-      text-align: center;
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      justify-content: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    button {
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-      color: white;
-      border: none;
-      padding: 16px 32px;
-      border-radius: 14px;
-      cursor: pointer;
-      font-size: 17px;
-      font-weight: 700;
-      font-family: 'Cairo', 'Tajawal', sans-serif;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 6px 20px rgba(139, 111, 71, 0.3);
-      position: relative;
-      overflow: hidden;
-      min-width: 140px;
-    }
-
-    button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s ease;
-    }
-
-    button:hover::before {
-      left: 100%;
-    }
-
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 28px rgba(139, 111, 71, 0.4);
-    }
-
-    button:active {
-      transform: translateY(-1px);
-    }
-
-    button[type="reset"] {
-      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.3);
-    }
-
-    button[type="reset"]:hover {
-      box-shadow: 0 10px 28px rgba(107, 114, 128, 0.4);
-    }
-
-    button[type="button"] {
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--text-dark);
-      border: 2px solid var(--primary-color);
-      box-shadow: 0 6px 20px rgba(139, 111, 71, 0.15);
-    }
-
-    button[type="button"]:hover {
-      background: rgba(139, 111, 71, 0.1);
-      box-shadow: 0 10px 28px rgba(139, 111, 71, 0.25);
-    }
-
-    /* Footer */
-    .footer {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-top: 3px solid var(--primary-color);
-      color: var(--text-dark);
-      font-size: 15px;
-      text-align: center;
-      margin-top: 48px;
-      padding: 24px;
-      border-radius: 20px 20px 0 0;
-      box-shadow: 0 -8px 24px rgba(139, 111, 71, 0.15);
-      font-weight: 600;
-      position: relative;
-      z-index: 10;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .header {
-        padding: 24px 0;
-      }
-
-      .header .logo {
-        width: 80px;
-        height: 80px;
-      }
-
-      .form-container {
-        padding: 24px 20px;
-      }
-
-      .form-row {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .nav-tabs .nav-item {
-        min-width: 100%;
-      }
-
-      .buttons {
-        flex-direction: column;
-      }
-
-      button {
-        width: 100%;
-      }
-
-      .section-title {
-        font-size: 18px;
-        padding: 12px 16px;
-      }
-    }
-
-    /* Accessibility */
-    *:focus-visible {
-      outline: 3px solid rgba(139, 111, 71, 0.5);
-      outline-offset: 3px;
-    }
-
-    /* Smooth Scrolling */
-    html {
-      scroll-behavior: smooth;
-    }
+    body { background-color: #f5f5f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    .header { background-color: #a7d1f4; color: #333; padding: 18px 0 12px 0; border-bottom: 4px solid #c9a855; text-align:center; margin-bottom:30px;}
+    .header .logo { width: 90px; margin-bottom: 8px;}
+    .header h1, .header h3 { margin: 0; }
+    .nav-tabs .nav-link.active {background: #a7d1f4; color: #154360;}
+    .section-title { border-right: 4px solid #c9a855; padding-right: 10px; margin: 20px 0 15px; font-size: 18px; color: #333; background: #f9f9f9; padding: 8px; border-radius: 5px;}
+    .footer { background: #f9f9f9; border-top: 1px solid #eee; color: #666; font-size: 14px; text-align: center; margin-top: 40px; padding: 10px;}
+    /* لتوحيد مظهر الفورمات */
+    .form-container { background: #fff; border-radius: 10px; padding: 24px 18px 10px 18px; margin-bottom: 24px; box-shadow: 0 0 10px rgba(0,0,0,0.08);}
+    label { font-weight: bold; color: #333;}
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;}
+    textarea { min-height: 80px; resize: vertical;}
+    .file-input-label { display: block; cursor: pointer; padding: 10px; background: #a7d1f4; color: #333; border-radius: 5px; margin: 10px auto; width: 200px; text-align: center;}
+    .file-input { display: none;}
+    .file-list { margin-top: 10px;}
+    .file-item { display: flex; justify-content: space-between; align-items: center; padding: 5px; border-bottom: 1px solid #eee;}
+    .buttons { margin-top: 18px; text-align: center;}
+    button { background: #a7d1f4; color: #333; border: none; padding: 10px 20px; margin: 0 4px; border-radius: 5px; cursor: pointer; font-size: 16px; border-bottom: 3px solid #c9a855;}
+    button:hover { background: #86bfe9;}
+    .form-row { display: flex; gap: 15px; margin-bottom: 15px;}
+    .form-col { flex: 1;}
+    @media (max-width: 900px) {.form-row {flex-direction: column; gap: 0;}}
   </style>
-  <link rel="stylesheet" href="css/responsive-style.css">
+    <link rel="stylesheet" href="css/responsive-style.css">
 </head>
 <body>
   <div class="header">
-    <img src="assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية" class="logo">
+    <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/9/99/Imam_Muhammad_ibn_Saud_Islamic_University_Logo.svg/1200px-Imam_Muhammad_ibn_Saud_Islamic_University_Logo.svg.png" alt="شعار الجامعة" class="logo">
     <h1>المنصة الأمنية</h1>
     <h3>جامعة الإمام محمد بن سعود الإسلامية</h3>
   </div>
   <div class="container">
-    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+    <ul class="nav nav-tabs mb-4" id="mainTab" role="tablist">
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab" aria-controls="security" aria-selected="true">
-          <i class="fas fa-shield-alt"></i>
-          <span>نظام الوقائع الأمنية</span>
+          نظام الوقائع الأمنية
         </button>
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="accident-tab" data-bs-toggle="tab" data-bs-target="#accident" type="button" role="tab" aria-controls="accident" aria-selected="false">
-          <i class="fas fa-car-crash"></i>
-          <span>نظام الحوادث المرورية</span>
+          نظام الحوادث المرورية
         </button>
       </li>
     </ul>
@@ -572,100 +56,70 @@
       <div class="tab-pane fade show active" id="security" role="tabpanel" aria-labelledby="security-tab">
         <div class="form-container">
           <form id="securityForm">
-            <h3 class="section-title">
-              <i class="fas fa-map-marker-alt"></i>
-              معلومات الموقع
-            </h3>
+            <h3 class="section-title">معلومات الموقع</h3>
             <div class="form-row">
               <div class="form-col">
-                <label for="building"><i class="fas fa-building"></i> المبنى:</label>
-                <input type="text" id="building" name="building" placeholder="أدخل رقم أو اسم المبنى" required>
+                <label for="building">المبنى:</label>
+                <input type="text" id="building" name="building" required>
               </div>
               <div class="form-col">
-                <label for="apartment"><i class="fas fa-home"></i> الشقة:</label>
-                <input type="text" id="apartment" name="apartment" placeholder="أدخل رقم الشقة" required>
+                <label for="apartment">الشقة:</label>
+                <input type="text" id="apartment" name="apartment" required>
               </div>
             </div>
-            
-            <h3 class="section-title">
-              <i class="fas fa-exclamation-triangle"></i>
-              معلومات الواقعة
-            </h3>
+            <h3 class="section-title">معلومات الواقعة</h3>
             <div class="form-row">
               <div class="form-col">
-                <label for="date"><i class="fas fa-calendar-alt"></i> تاريخ الواقعة:</label>
+                <label for="date">تاريخ الواقعة:</label>
                 <input type="date" id="date" name="date" required>
               </div>
               <div class="form-col">
-                <label for="type"><i class="fas fa-list"></i> نوع الواقعة:</label>
+                <label for="type">نوع الواقعة:</label>
                 <select id="type" name="type" required>
                   <option value="">-- اختر نوع الواقعة --</option>
-                  <option value="سرقة">🔒 سرقة</option>
-                  <option value="اعتداء">⚠️ اعتداء</option>
-                  <option value="تخريب">🔨 تخريب</option>
-                  <option value="حريق">🔥 حريق</option>
-                  <option value="تسرب مياه">💧 تسرب مياه</option>
-                  <option value="أخرى">📝 أخرى</option>
+                  <option value="سرقة">سرقة</option>
+                  <option value="اعتداء">اعتداء</option>
+                  <option value="تخريب">تخريب</option>
+                  <option value="حريق">حريق</option>
+                  <option value="تسرب مياه">تسرب مياه</option>
+                  <option value="أخرى">أخرى</option>
                 </select>
               </div>
             </div>
-            
             <div class="form-group">
-              <label for="description"><i class="fas fa-file-alt"></i> وصف الواقعة:</label>
-              <textarea id="description" name="description" placeholder="قم بوصف الواقعة بالتفصيل..." required></textarea>
+              <label for="description">وصف الواقعة:</label>
+              <textarea id="description" name="description" required></textarea>
             </div>
-            
             <div class="form-group">
-              <label for="action"><i class="fas fa-tasks"></i> الإجراء المتخذ:</label>
-              <textarea id="action" name="action" placeholder="اذكر الإجراءات التي تم اتخاذها..." required></textarea>
+              <label for="action">الإجراء المتخذ:</label>
+              <textarea id="action" name="action" required></textarea>
             </div>
-            
-            <h3 class="section-title">
-              <i class="fas fa-user-edit"></i>
-              معلومات التسجيل
-            </h3>
+            <h3 class="section-title">معلومات التسجيل</h3>
             <div class="form-row">
               <div class="form-col">
-                <label for="reporter"><i class="fas fa-user"></i> اسم المبلغ:</label>
-                <input type="text" id="reporter" name="reporter" placeholder="أدخل اسم المبلغ" required>
+                <label for="reporter">اسم المبلغ:</label>
+                <input type="text" id="reporter" name="reporter" required>
               </div>
               <div class="form-col">
-                <label for="recorder"><i class="fas fa-user-tie"></i> اسم المسجل:</label>
-                <input type="text" id="recorder" name="recorder" placeholder="أدخل اسم المسجل" required>
+                <label for="recorder">اسم المسجل:</label>
+                <input type="text" id="recorder" name="recorder" required>
               </div>
             </div>
-            
-            <h3 class="section-title">
-              <i class="fas fa-paperclip"></i>
-              المرفقات
-            </h3>
+            <h3 class="section-title">المرفقات</h3>
             <div class="file-input-container">
-              <p style="color: var(--text-light); margin-bottom: 16px; font-weight: 500;">
-                <i class="fas fa-info-circle"></i>
-                يمكنك إرفاق الصور أو المستندات المتعلقة بالواقعة
-              </p>
-              <label for="attachments" class="file-input-label">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <span>اختر الملفات</span>
-              </label>
-              <input type="file" id="attachments" name="attachments" class="file-input" multiple accept="image/*,.pdf,.doc,.docx">
+              <p>يمكنك إرفاق الصور أو المستندات المتعلقة بالواقعة</p>
+              <label for="attachments" class="file-input-label">اختر الملفات</label>
+              <input type="file" id="attachments" name="attachments" class="file-input" multiple>
               <div class="file-list">
                 <div class="file-item">
-                  <span><i class="fas fa-folder-open"></i> لا توجد ملفات مرفقة</span>
+                  <span>لا توجد ملفات مرفقة</span>
                 </div>
               </div>
             </div>
-            
             <div class="buttons">
-              <button type="submit">
-                <i class="fas fa-save"></i> حفظ
-              </button>
-              <button type="reset">
-                <i class="fas fa-redo"></i> إعادة تعيين
-              </button>
-              <button type="button" onclick="window.history.back()">
-                <i class="fas fa-times"></i> إغلاق
-              </button>
+              <button type="submit">حفظ</button>
+              <button type="reset">إعادة تعيين</button>
+              <button type="button">إغلاق</button>
             </div>
           </form>
         </div>
@@ -674,255 +128,197 @@
       <div class="tab-pane fade" id="accident" role="tabpanel" aria-labelledby="accident-tab">
         <div class="form-container">
           <form id="accidentForm">
-            <h3 class="section-title">
-              <i class="fas fa-car-crash"></i>
-              بيانات الحادث
-            </h3>
+            <h3 class="section-title">بيانات الحادث</h3>
             <div class="form-row">
               <div class="form-col">
-                <label><i class="fas fa-calendar-day"></i> تاريخ الحادث:</label>
+                <label>تاريخ الحادث:</label>
                 <input required name="accident_date" type="date">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-calendar"></i> اليوم:</label>
+                <label>اليوم:</label>
                 <input name="accident_day" type="text" placeholder="مثال: الثلاثاء">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-clock"></i> وقت الحادث:</label>
+                <label>وقت الحادث:</label>
                 <input required name="accident_time" type="time">
               </div>
-            </div>
-            <div class="form-row">
               <div class="form-col">
-                <label><i class="fas fa-map-pin"></i> موقع الحادث:</label>
-                <input required name="accident_place" type="text" placeholder="حدد موقع الحادث">
+                <label>موقع الحادث:</label>
+                <input required name="accident_place" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-tags"></i> نوع الحادث:</label>
+                <label>نوع الحادث:</label>
                 <select name="accident_type" required>
                   <option value="">-- اختر --</option>
-                  <option>🚗 تصادم</option>
-                  <option>🚶 دهس</option>
-                  <option>🔄 انقلاب</option>
-                  <option>🔧 تلفيات فقط</option>
-                  <option>📝 أخرى</option>
+                  <option>تصادم</option>
+                  <option>دهس</option>
+                  <option>انقلاب</option>
+                  <option>تلفيات فقط</option>
+                  <option>أخرى</option>
                 </select>
               </div>
             </div>
             <div class="form-row">
               <div class="form-col">
-                <label><i class="fas fa-file-alt"></i> رقم بلاغ المرور:</label>
-                <input name="police_report_num" type="text" placeholder="رقم البلاغ">
+                <label>رقم بلاغ المرور:</label>
+                <input name="police_report_num" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-file-contract"></i> رقم بلاغ نجم:</label>
-                <input name="najm_report_num" type="text" placeholder="رقم البلاغ">
+                <label>رقم بلاغ نجم:</label>
+                <input name="najm_report_num" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-user-shield"></i> اسم مباشر الحادث:</label>
-                <input name="incident_officer" type="text" placeholder="اسم الضابط">
+                <label>اسم مباشر الحادث:</label>
+                <input name="incident_officer" type="text">
+              </div>
+              <div class="form-col">
+                <label>وصف موجز للحادث:</label>
+                <input name="accident_details" type="text">
               </div>
             </div>
-            <div class="form-group">
-              <label><i class="fas fa-comment-dots"></i> وصف موجز للحادث:</label>
-              <textarea name="accident_details" rows="3" placeholder="اكتب وصفاً تفصيلياً للحادث..."></textarea>
-            </div>
-            
-            <h3 class="section-title">
-              <i class="fas fa-user"></i>
-              بيانات الطرف الأول
-            </h3>
+            <h3 class="section-title">بيانات الطرف الأول</h3>
             <div class="form-row">
               <div class="form-col">
-                <label><i class="fas fa-user"></i> الاسم:</label>
-                <input name="party1_name" type="text" placeholder="الاسم الكامل">
+                <label>الاسم:</label>
+                <input name="party1_name" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-flag"></i> الجنسية:</label>
-                <input name="party1_nationality" type="text" placeholder="الجنسية">
+                <label>الجنسية:</label>
+                <input name="party1_nationality" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-id-card"></i> رقم الهوية/الإقامة:</label>
-                <input name="party1_id" type="text" placeholder="رقم الهوية">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-col">
-                <label><i class="fas fa-mobile-alt"></i> رقم الجوال:</label>
-                <input name="party1_mobile" type="text" placeholder="05XXXXXXXX">
+                <label>رقم الهوية/الإقامة:</label>
+                <input name="party1_id" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-car"></i> نوع السيارة:</label>
-                <input name="party1_car_type" type="text" placeholder="الماركة والموديل">
+                <label>رقم الجوال:</label>
+                <input name="party1_mobile" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-hashtag"></i> رقم اللوحة:</label>
-                <input name="party1_car_plate" type="text" placeholder="رقم اللوحة">
+                <label>نوع السيارة:</label>
+                <input name="party1_car_type" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-shield-alt"></i> شركة التأمين:</label>
-                <input name="party1_insurance" type="text" placeholder="اسم الشركة">
+                <label>رقم اللوحة:</label>
+                <input name="party1_car_plate" type="text">
+              </div>
+              <div class="form-col">
+                <label>شركة التأمين:</label>
+                <input name="party1_insurance" type="text">
               </div>
             </div>
-            
-            <h3 class="section-title">
-              <i class="fas fa-users"></i>
-              بيانات الطرف الثاني
-            </h3>
+            <h3 class="section-title">بيانات الطرف الثاني</h3>
             <div class="form-row">
               <div class="form-col">
-                <label><i class="fas fa-user"></i> الاسم:</label>
-                <input name="party2_name" type="text" placeholder="الاسم الكامل">
+                <label>الاسم:</label>
+                <input name="party2_name" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-flag"></i> الجنسية:</label>
-                <input name="party2_nationality" type="text" placeholder="الجنسية">
+                <label>الجنسية:</label>
+                <input name="party2_nationality" type="text">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-id-card"></i> رقم الهوية/الإقامة:</label>
-                <input name="party2_id" type="text" placeholder="رقم الهوية">
+                <label>رقم الهوية/الإقامة:</label>
+                <input name="party2_id" type="text">
+              </div>
+              <div class="form-col">
+                <label>رقم الجوال:</label>
+                <input name="party2_mobile" type="text">
+              </div>
+              <div class="form-col">
+                <label>نوع السيارة:</label>
+                <input name="party2_car_type" type="text">
+              </div>
+              <div class="form-col">
+                <label>رقم اللوحة:</label>
+                <input name="party2_car_plate" type="text">
+              </div>
+              <div class="form-col">
+                <label>شركة التأمين:</label>
+                <input name="party2_insurance" type="text">
               </div>
             </div>
+            <h3 class="section-title">الإصابات والتلافيات</h3>
             <div class="form-row">
               <div class="form-col">
-                <label><i class="fas fa-mobile-alt"></i> رقم الجوال:</label>
-                <input name="party2_mobile" type="text" placeholder="05XXXXXXXX">
-              </div>
-              <div class="form-col">
-                <label><i class="fas fa-car"></i> نوع السيارة:</label>
-                <input name="party2_car_type" type="text" placeholder="الماركة والموديل">
-              </div>
-              <div class="form-col">
-                <label><i class="fas fa-hashtag"></i> رقم اللوحة:</label>
-                <input name="party2_car_plate" type="text" placeholder="رقم اللوحة">
-              </div>
-              <div class="form-col">
-                <label><i class="fas fa-shield-alt"></i> شركة التأمين:</label>
-                <input name="party2_insurance" type="text" placeholder="اسم الشركة">
-              </div>
-            </div>
-            
-            <h3 class="section-title">
-              <i class="fas fa-heartbeat"></i>
-              الإصابات والتلافيات
-            </h3>
-            <div class="form-row">
-              <div class="form-col">
-                <label><i class="fas fa-ambulance"></i> هل يوجد إصابات؟</label>
+                <label>هل يوجد إصابات؟</label>
                 <select name="has_injury">
                   <option>لا</option>
                   <option>نعم</option>
                 </select>
               </div>
               <div class="form-col">
-                <label><i class="fas fa-notes-medical"></i> تفاصيل الإصابات:</label>
-                <input name="injury_details" type="text" placeholder="وصف الإصابات إن وجدت">
+                <label>تفاصيل الإصابات:</label>
+                <input name="injury_details" type="text">
               </div>
-            </div>
-            <div class="form-row">
               <div class="form-col">
-                <label><i class="fas fa-car-crash"></i> هل يوجد تلافيات سيارات؟</label>
+                <label>هل يوجد تلافيات سيارات؟</label>
                 <select name="has_car_damage">
                   <option>لا</option>
                   <option>نعم</option>
                 </select>
               </div>
               <div class="form-col">
-                <label><i class="fas fa-tools"></i> تفاصيل تلافيات السيارات:</label>
-                <input name="car_damage_details" type="text" placeholder="وصف الأضرار">
+                <label>تفاصيل تلافيات السيارات:</label>
+                <input name="car_damage_details" type="text">
               </div>
-            </div>
-            <div class="form-row">
               <div class="form-col">
-                <label><i class="fas fa-university"></i> هل يوجد تلافيات ممتلكات الجامعة؟</label>
+                <label>هل يوجد تلافيات ممتلكات الجامعة؟</label>
                 <select name="has_uni_damage">
                   <option>لا</option>
                   <option>نعم</option>
                 </select>
               </div>
               <div class="form-col">
-                <label><i class="fas fa-exclamation-circle"></i> تفاصيل تلافيات ممتلكات الجامعة:</label>
-                <input name="uni_damage_details" type="text" placeholder="وصف الأضرار">
+                <label>تفاصيل تلافيات ممتلكات الجامعة:</label>
+                <input name="uni_damage_details" type="text">
               </div>
             </div>
-            
-            <h3 class="section-title">
-              <i class="fas fa-ambulance"></i>
-              الإسعاف
-            </h3>
+            <h3 class="section-title">الإسعاف</h3>
             <div class="form-row">
               <div class="form-col">
-                <label><i class="fas fa-phone-volume"></i> هل تم طلب الإسعاف؟</label>
+                <label>هل تم طلب الإسعاف؟</label>
                 <select name="ambulance_called">
                   <option>لا</option>
                   <option>نعم</option>
                 </select>
               </div>
               <div class="form-col">
-                <label><i class="fas fa-clock"></i> وقت طلب الإسعاف:</label>
+                <label>وقت طلب الإسعاف:</label>
                 <input name="ambulance_time" type="time">
               </div>
               <div class="form-col">
-                <label><i class="fas fa-calendar-check"></i> تاريخ طلب الإسعاف:</label>
+                <label>تاريخ طلب الإسعاف:</label>
                 <input name="ambulance_date" type="date">
               </div>
             </div>
-            
-            <h3 class="section-title">
-              <i class="fas fa-images"></i>
-              مرفقات وصور الحادث
-            </h3>
+            <h3 class="section-title">مرفقات وصور الحادث</h3>
             <div class="file-input-container">
-              <label for="accident_attachments" class="file-input-label">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <span>اختر الملفات</span>
-              </label>
-              <input name="accident_attachments" id="accident_attachments" type="file" class="file-input" multiple accept="image/*,.pdf">
+              <label for="accident_attachments" class="file-input-label">اختر الملفات</label>
+              <input name="accident_attachments" id="accident_attachments" type="file" class="file-input" multiple>
               <div class="file-list" id="accident-file-list">
-                <div class="file-item">
-                  <span><i class="fas fa-folder-open"></i> لا توجد ملفات مرفقة</span>
-                </div>
+                <div class="file-item"><span>لا توجد ملفات مرفقة</span></div>
               </div>
-              <small style="color: var(--text-light); display: block; margin-top: 8px;">
-                <i class="fas fa-info-circle"></i>
-                يمكنك رفع صور أو ملفات PDF أو غيرها (ستظهر أسماؤها فقط في السجل)
-              </small>
+              <small>يمكنك رفع صور أو ملفات PDF أو غيرها (ستظهر أسماؤها فقط في السجل)</small>
             </div>
-            
-            <h3 class="section-title">
-              <i class="fas fa-sticky-note"></i>
-              ملاحظات أو بيانات إضافية
-            </h3>
-            <textarea name="notes" rows="4" placeholder="أي تفاصيل أو ملاحظات إضافية تود إضافتها..."></textarea>
-            
+            <h3 class="section-title">ملاحظات أو بيانات إضافية</h3>
+            <textarea name="notes" rows="2" placeholder="أي تفاصيل أو ملاحظات إضافية"></textarea>
             <div class="buttons">
-              <button type="submit">
-                <i class="fas fa-save"></i> حفظ
-              </button>
-              <button type="reset">
-                <i class="fas fa-redo"></i> إعادة تعيين
-              </button>
-              <button type="button" onclick="window.history.back()">
-                <i class="fas fa-times"></i> إغلاق
-              </button>
+              <button type="submit">حفظ</button>
+              <button type="reset">إعادة تعيين</button>
+              <button type="button">إغلاق</button>
             </div>
           </form>
         </div>
       </div>
     </div>
     <div class="footer">
-      <p>
-        <i class="fas fa-copyright"></i>
-        جميع الحقوق محفوظة © جامعة الإمام محمد بن سعود الإسلامية 2025 - إدارة الأمن والسلامة
-      </p>
+      جميع الحقوق محفوظة © جامعة الإمام محمد بن سعود الإسلامية 2025 - إدارة الأمن والسلامة
     </div>
   </div>
-  
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    'use strict';
-    
     // ملفات نظام الوقائع الأمنية
     document.getElementById('attachments').addEventListener('change', function(e) {
       const fileList = document.querySelector('.file-list');
@@ -931,23 +327,14 @@
         for (let i = 0; i < this.files.length; i++) {
           const fileItem = document.createElement('div');
           fileItem.className = 'file-item';
-          const fileSize = (this.files[i].size / 1024).toFixed(2);
-          fileItem.innerHTML = `
-            <span>
-              <i class="fas fa-file"></i> 
-              ${this.files[i].name} 
-              <small style="color: var(--text-light);">(${fileSize} KB)</small>
-            </span>
-            <button type="button" class="remove-file" onclick="this.parentElement.remove()">
-              <i class="fas fa-trash"></i> حذف
-            </button>`;
+          fileItem.innerHTML = `<span>${this.files[i].name}</span>
+            <button type="button" class="remove-file">حذف</button>`;
           fileList.appendChild(fileItem);
         }
       } else {
-        fileList.innerHTML = '<div class="file-item"><span><i class="fas fa-folder-open"></i> لا توجد ملفات مرفقة</span></div>';
+        fileList.innerHTML = '<div class="file-item"><span>لا توجد ملفات مرفقة</span></div>';
       }
     });
-    
     // ملفات الحادث المروري
     document.getElementById('accident_attachments').addEventListener('change', function(e) {
       const fileList = document.getElementById('accident-file-list');
@@ -956,54 +343,13 @@
         for (let i = 0; i < this.files.length; i++) {
           const fileItem = document.createElement('div');
           fileItem.className = 'file-item';
-          const fileSize = (this.files[i].size / 1024).toFixed(2);
-          fileItem.innerHTML = `
-            <span>
-              <i class="fas fa-file"></i> 
-              ${this.files[i].name} 
-              <small style="color: var(--text-light);">(${fileSize} KB)</small>
-            </span>
-            <button type="button" class="remove-file" onclick="this.parentElement.remove()">
-              <i class="fas fa-trash"></i> حذف
-            </button>`;
+          fileItem.innerHTML = `<span>${this.files[i].name}</span>
+            <button type="button" class="remove-file">حذف</button>`;
           fileList.appendChild(fileItem);
         }
       } else {
-        fileList.innerHTML = '<div class="file-item"><span><i class="fas fa-folder-open"></i> لا توجد ملفات مرفقة</span></div>';
+        fileList.innerHTML = '<div class="file-item"><span>لا توجد ملفات مرفقة</span></div>';
       }
-    });
-    
-    // Form validation and submission
-    document.getElementById('securityForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      // Show success message
-      alert('✅ تم حفظ بيانات الواقعة الأمنية بنجاح!');
-      // Here you would normally send the data to a server
-    });
-    
-    document.getElementById('accidentForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      // Show success message
-      alert('✅ تم حفظ بيانات الحادث المروري بنجاح!');
-      // Here you would normally send the data to a server
-    });
-    
-    // Smooth scrolling for form navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', function() {
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 100);
-      });
-    });
-    
-    // Auto-capitalize first letter in text inputs
-    document.querySelectorAll('input[type="text"]').forEach(input => {
-      input.addEventListener('blur', function() {
-        if (this.value) {
-          this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
-        }
-      });
     });
   </script>
 </body>
