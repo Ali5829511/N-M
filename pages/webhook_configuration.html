@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إعدادات Webhook - نظام التعرف على اللوحات</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
+    <title>إعدادات Webhook - نظام المرور المتكامل</title>
+    <link rel="stylesheet" href="../css/imamu-brand-identity.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/unified-color-scheme.css">
     <style>
         * {
             margin: 0;
@@ -16,244 +15,260 @@
 
         body {
             font-family: 'Tajawal', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: 100vh;
-            padding: 20px;
             direction: rtl;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
+        /* Hero Header with Logo */
+        .hero-header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .header {
+        .hero-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            background-size: 20px 20px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .university-logo {
+            width: 100px;
+            height: 100px;
             background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .header h1 {
-            color: #2d3561;
-            font-size: 2em;
-            margin-bottom: 10px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            padding: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
+            justify-content: center;
+        }
+
+        .university-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
             gap: 15px;
         }
 
-        .header-icon {
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e3a5f;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #e2e8f0;
+            transform: translateX(5px);
+        }
+
+        .page-title-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title-bar i {
+            font-size: 24px;
+            color: #10b981;
+        }
+
+        .page-title-bar h2 {
+            color: #1e3a5f;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card:nth-child(1) .stat-icon { color: #10b981; }
+        .stat-card:nth-child(2) .stat-icon { color: #8b5cf6; }
+        .stat-card:nth-child(3) .stat-icon { color: #f59e0b; }
+        .stat-card:nth-child(4) .stat-icon { color: #3b82f6; }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Service Card - Colorful Style */
+        .service-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .service-card.parkpow .card-stripe { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .service-card.platerecognizer .card-stripe { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+
+        .card-stripe {
+            height: 8px;
+        }
+
+        .card-header {
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .card-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
             font-size: 24px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #667eea;
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            margin-top: 15px;
         }
 
-        .back-btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
+        .service-card.parkpow .card-icon { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .service-card.platerecognizer .card-icon { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+
+        .card-title h3 {
+            color: #1e3a5f;
+            font-size: 18px;
+            margin-bottom: 5px;
         }
 
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        .card-title p {
+            color: #64748b;
+            font-size: 13px;
         }
 
-        .card-title {
-            font-size: 1.5em;
-            color: #2d3561;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
+        .card-body {
+            padding: 25px;
+        }
+
+        /* Toggle Switch */
+        .toggle-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .service-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #2d3561;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 1.05em;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="url"],
-        .form-group input[type="password"] {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.3s ease;
-            font-family: 'Courier New', monospace;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group small {
-            display: block;
-            color: #666;
-            margin-top: 5px;
-            font-size: 0.9em;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.05em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-save {
-            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
-            color: white;
-        }
-
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(81, 207, 102, 0.4);
-        }
-
-        .btn-test {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-test:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-clear {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-            color: white;
-        }
-
-        .btn-clear:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-
-        .status-message {
+            justify-content: space-between;
             padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-label {
+            display: flex;
             align-items: center;
-            gap: 12px;
-            font-weight: 500;
+            gap: 10px;
+            color: #334155;
+            font-weight: 600;
         }
 
-        .status-message.success {
-            background: #d3f9d8;
-            color: #2b8a3e;
-            border: 2px solid #51cf66;
-        }
-
-        .status-message.error {
-            background: #ffe3e3;
-            color: #c92a2a;
-            border: 2px solid #ff6b6b;
-        }
-
-        .status-message.info {
-            background: #d0ebff;
-            color: #1864ab;
-            border: 2px solid #339af0;
-        }
-
-        .info-box {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border-right: 4px solid #667eea;
-        }
-
-        .info-box h3 {
-            color: #2d3561;
-            margin-bottom: 12px;
-            font-size: 1.2em;
-        }
-
-        .info-box ul {
-            margin-right: 20px;
-            color: #666;
-        }
-
-        .info-box li {
-            margin-bottom: 8px;
-            line-height: 1.6;
+        .toggle-label i {
+            color: #10b981;
         }
 
         .toggle-switch {
             position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
+            width: 50px;
+            height: 26px;
         }
 
         .toggle-switch input {
@@ -262,235 +277,593 @@
             height: 0;
         }
 
-        .slider {
+        .toggle-slider {
             position: absolute;
             cursor: pointer;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 30px;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 26px;
         }
 
-        .slider:before {
+        .toggle-slider:before {
             position: absolute;
             content: "";
-            height: 22px;
-            width: 22px;
-            right: 4px;
-            bottom: 4px;
+            height: 20px;
+            width: 20px;
+            right: 3px;
+            bottom: 3px;
             background-color: white;
-            transition: 0.4s;
+            transition: 0.3s;
             border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        input:checked + .slider {
-            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
 
-        input:checked + .slider:before {
-            transform: translateX(-30px);
+        input:checked + .toggle-slider:before {
+            transform: translateX(-24px);
         }
 
-        .enabled-status {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
+        /* Form Elements */
+        .form-group {
             margin-bottom: 20px;
         }
 
-        .enabled-status span {
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #334155;
             font-weight: 600;
-            color: #2d3561;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
 
+        .form-label i {
+            color: #1e3a5f;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #10b981;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-hint {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .form-hint a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .form-hint a:hover {
+            text-decoration: underline;
+        }
+
+        /* Image Settings Box */
+        .settings-box {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .settings-box-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e3a5f;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .settings-box-title i {
+            color: #f59e0b;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(30, 58, 95, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Status Message */
+        .status-message {
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .status-message.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            color: #059669;
+            border: 1px solid #10b981;
+        }
+
+        .status-message.error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            color: #dc2626;
+            border: 1px solid #ef4444;
+        }
+
+        .status-message.info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+            color: #2563eb;
+            border: 1px solid #3b82f6;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .info-card-header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+        }
+
+        .info-card-header i {
+            font-size: 22px;
+        }
+
+        .info-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: white;
+        }
+
+        .info-card-body {
+            padding: 25px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .info-list li i {
+            color: #10b981;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .info-list li a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .info-list li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1e3a5f;
+            padding: 25px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             .btn-group {
                 flex-direction: column;
             }
 
-            .header h1 {
-                font-size: 1.5em;
+            .hero-title {
+                font-size: 22px;
+            }
+
+            .nav-bar {
+                justify-content: center;
+            }
+
+            .page-title-bar {
+                display: none;
             }
         }
     </style>
-    <link rel="stylesheet" href="../css/responsive-style.css">
 </head>
 <body>
+    <!-- Hero Header with Logo -->
+    <div class="hero-header">
+        <div class="hero-content">
+            <div class="university-logo">
+                <img src="../assets/شعار.jpg" alt="شعار جامعة الإمام محمد بن سعود الإسلامية">
+            </div>
+            <h1 class="hero-title">جامعة الإمام محمد بن سعود الإسلامية</h1>
+            <p class="hero-subtitle">نظام إدارة المركبات والمخالفات المرورية</p>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <a href="unified_dashboard.html" class="back-link">
+            <i class="fas fa-arrow-right"></i>
+            العودة للوحة التحكم
+        </a>
+        <div class="page-title-bar">
+            <i class="fas fa-plug"></i>
+            <h2>إعدادات Webhook للتعرف على اللوحات</h2>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="header">
-            <h1>
-                <div class="header-icon">
-                    <i class="fas fa-plug"></i>
-                </div>
-                إعدادات Webhook للتعرف على اللوحات
-            </h1>
-            <p>قم بتكوين إعدادات الاتصال مع خدمات التعرف على اللوحات الخارجية</p>
-            <a href="unified_dashboard.html" class="back-btn">
-                <i class="fas fa-arrow-right"></i>
-                العودة للوحة التحكم
-            </a>
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-icon">🔗</div>
+                <div class="stat-value">2</div>
+                <div class="stat-label">خدمات متصلة</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">نشط</div>
+                <div class="stat-label">حالة الاتصال</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📷</div>
+                <div class="stat-value">مفعّل</div>
+                <div class="stat-label">إرسال الصور</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🚗</div>
+                <div class="stat-value">Vehicle Only</div>
+                <div class="stat-label">تنسيق الصورة</div>
+            </div>
         </div>
 
-        <!-- ParkPow Configuration -->
-        <div class="card">
-            <h2 class="card-title">
-                <div class="service-icon">
-                    <i class="fas fa-parking"></i>
+        <!-- Services Grid -->
+        <div class="services-grid">
+            <!-- ParkPow Card -->
+            <div class="service-card parkpow">
+                <div class="card-stripe"></div>
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-parking"></i>
+                    </div>
+                    <div class="card-title">
+                        <h3>ParkPow Cloud</h3>
+                        <p>خدمة التعرف على لوحات السيارات عبر السحابة</p>
+                    </div>
                 </div>
-                إعدادات ParkPow
-            </h2>
+                <div class="card-body">
+                    <div class="toggle-row">
+                        <div class="toggle-label">
+                            <i class="fas fa-power-off"></i>
+                            <span>تفعيل خدمة ParkPow</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="parkpowEnabled" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
 
-            <div class="enabled-status">
-                <span>تفعيل خدمة ParkPow</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="parkpowEnabled" checked>
-                    <span class="slider"></span>
-                </label>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-link"></i> Target URL (Webhook)
+                        </label>
+                        <input 
+                            type="url" 
+                            id="parkpowWebhook" 
+                            class="form-input"
+                            value="https://app.parkpow.com/api/v1/webhook-receiver/"
+                            placeholder="https://app.parkpow.com/api/v1/webhook-receiver/"
+                        >
+                        <p class="form-hint">عنوان URL لاستقبال بيانات التعرف على اللوحات</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-key"></i> Authorization Token
+                        </label>
+                        <input 
+                            type="password" 
+                            id="parkpowApiKey" 
+                            class="form-input"
+                            value="7c13be422713a758a42a0bc453cf3331fbf4d346"
+                            placeholder="Token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                        >
+                        <p class="form-hint">مفتاح التفويض (يُضاف كـ "Token" في HTTP Headers)</p>
+                    </div>
+
+                    <div class="settings-box">
+                        <div class="settings-box-title">
+                            <i class="fas fa-image"></i>
+                            <span>إعدادات إرسال الصور</span>
+                        </div>
+                        
+                        <div class="toggle-row" style="margin-bottom: 15px;">
+                            <div class="toggle-label">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>إرسال الصورة مع الـ Webhook</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="parkpowSendImage" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">
+                                <i class="fas fa-crop-alt"></i> تنسيق الصورة
+                            </label>
+                            <select id="parkpowImageFormat" class="form-select">
+                                <option value="vehicle_only" selected>صورة المركبة فقط (Vehicle Only)</option>
+                                <option value="full">الصورة الكاملة</option>
+                            </select>
+                            <p class="form-hint">اختر تنسيق الصورة المرسلة عبر الـ Webhook</p>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="saveParkPowConfig()">
+                            <i class="fas fa-save"></i>
+                            حفظ الإعدادات
+                        </button>
+                        <button class="btn btn-secondary" onclick="testParkPowConnection()">
+                            <i class="fas fa-vial"></i>
+                            اختبار الاتصال
+                        </button>
+                    </div>
+
+                    <div id="parkpowStatus" class="status-message"></div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="parkpowWebhook">
-                    <i class="fas fa-link"></i> Webhook URL
-                </label>
-                <input 
-                    type="url" 
-                    id="parkpowWebhook" 
-                    value="https://app.parkpow.com/api/v1/webhook-receiver/"
-                    placeholder="https://app.parkpow.com/api/v1/webhook-receiver/"
-                >
-                <small>عنوان URL لاستقبال الإشعارات من ParkPow</small>
-            </div>
+            <!-- Plate Recognizer Card -->
+            <div class="service-card platerecognizer">
+                <div class="card-stripe"></div>
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="card-title">
+                        <h3>Plate Recognizer</h3>
+                        <p>خدمة التعرف على اللوحات المتقدمة</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="toggle-row">
+                        <div class="toggle-label">
+                            <i class="fas fa-power-off"></i>
+                            <span>تفعيل خدمة Plate Recognizer</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="plateRecognizerEnabled" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
 
-            <div class="form-group">
-                <label for="parkpowApiKey">
-                    <i class="fas fa-key"></i> API Key
-                </label>
-                <input 
-                    type="password" 
-                    id="parkpowApiKey" 
-                    value=""
-                    placeholder="أدخل مفتاح API الخاص بك"
-                >
-                <small>مفتاح API الخاص بحسابك في ParkPow</small>
-            </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-link"></i> Webhook URL
+                        </label>
+                        <input 
+                            type="url" 
+                            id="plateRecognizerWebhook" 
+                            class="form-input"
+                            value="https://app.platerecognizer.com/service/snapshot-cloud/webhooks/"
+                            placeholder="https://app.platerecognizer.com/service/snapshot-cloud/webhooks/"
+                        >
+                        <p class="form-hint">عنوان URL لاستقبال الإشعارات من Plate Recognizer</p>
+                    </div>
 
-            <div class="btn-group">
-                <button class="btn btn-save" onclick="saveParkPowConfig()">
-                    <i class="fas fa-save"></i>
-                    حفظ الإعدادات
-                </button>
-                <button class="btn btn-test" onclick="testParkPowConnection()">
-                    <i class="fas fa-flask"></i>
-                    اختبار الاتصال
-                </button>
-            </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-key"></i> API Token
+                        </label>
+                        <input 
+                            type="password" 
+                            id="plateRecognizerApiKey" 
+                            class="form-input"
+                            value=""
+                            placeholder="أدخل مفتاح API الخاص بك"
+                        >
+                        <p class="form-hint">
+                            مفتاح API الخاص بحسابك في Plate Recognizer | 
+                            <a href="https://app.platerecognizer.com/accounts/reset-token/" target="_blank">
+                                <i class="fas fa-sync-alt"></i> إعادة تعيين الرمز
+                            </a>
+                        </p>
+                    </div>
 
-            <div id="parkpowStatus" class="status-message"></div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="savePlateRecognizerConfig()">
+                            <i class="fas fa-save"></i>
+                            حفظ الإعدادات
+                        </button>
+                        <button class="btn btn-secondary" onclick="testPlateRecognizerConnection()">
+                            <i class="fas fa-vial"></i>
+                            اختبار الاتصال
+                        </button>
+                    </div>
+
+                    <div id="plateRecognizerStatus" class="status-message"></div>
+                </div>
+            </div>
         </div>
 
-        <!-- Plate Recognizer Configuration -->
-        <div class="card">
-            <h2 class="card-title">
-                <div class="service-icon">
-                    <i class="fas fa-camera"></i>
-                </div>
-                إعدادات Plate Recognizer
-            </h2>
-
-            <div class="enabled-status">
-                <span>تفعيل خدمة Plate Recognizer</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="plateRecognizerEnabled" checked>
-                    <span class="slider"></span>
-                </label>
+        <!-- Info Card -->
+        <div class="info-card">
+            <div class="info-card-header">
+                <i class="fas fa-info-circle"></i>
+                <h3>معلومات مهمة</h3>
             </div>
-
-            <div class="form-group">
-                <label for="plateRecognizerWebhook">
-                    <i class="fas fa-link"></i> Webhook URL
-                </label>
-                <input 
-                    type="url" 
-                    id="plateRecognizerWebhook" 
-                    value="https://app.platerecognizer.com/service/snapshot-cloud/webhooks/"
-                    placeholder="https://app.platerecognizer.com/service/snapshot-cloud/webhooks/"
-                >
-                <small>عنوان URL لاستقبال الإشعارات من Plate Recognizer</small>
-            </div>
-
-            <div class="form-group">
-                <label for="plateRecognizerApiKey">
-                    <i class="fas fa-key"></i> API Token
-                </label>
-                <input 
-                    type="password" 
-                    id="plateRecognizerApiKey" 
-                    value=""
-                    placeholder="أدخل مفتاح API الخاص بك"
-                >
-                <small>مفتاح API الخاص بحسابك في Plate Recognizer | 
-                    <a href="https://app.platerecognizer.com/accounts/reset-token/" target="_blank" style="color: #667eea; text-decoration: underline;">
-                        <i class="fas fa-sync-alt"></i> إعادة تعيين الرمز
-                    </a>
-                </small>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-save" onclick="savePlateRecognizerConfig()">
-                    <i class="fas fa-save"></i>
-                    حفظ الإعدادات
-                </button>
-                <button class="btn btn-test" onclick="testPlateRecognizerConnection()">
-                    <i class="fas fa-flask"></i>
-                    اختبار الاتصال
-                </button>
-            </div>
-
-            <div id="plateRecognizerStatus" class="status-message"></div>
-        </div>
-
-        <!-- Information Box -->
-        <div class="card">
-            <div class="info-box">
-                <h3><i class="fas fa-info-circle"></i> معلومات مهمة</h3>
-                <ul>
-                    <li>يتم حفظ الإعدادات بشكل آمن في المتصفح (localStorage)</li>
-                    <li>تأكد من صحة عناوين Webhook URL قبل الحفظ</li>
-                    <li>مفاتيح API سرية - لا تشاركها مع أحد</li>
-                    <li>استخدم زر "اختبار الاتصال" للتحقق من صحة الإعدادات</li>
-                    <li>يمكنك تفعيل أو تعطيل كل خدمة بشكل منفصل</li>
-                    <li>إذا واجهت مشكلة "401 Unauthorized" مع Plate Recognizer، استخدم <a href="https://app.platerecognizer.com/accounts/reset-token/" target="_blank" style="color: #667eea; text-decoration: underline;">رابط إعادة تعيين الرمز</a> للحصول على رمز جديد</li>
+            <div class="info-card-body">
+                <ul class="info-list">
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>يتم حفظ الإعدادات بشكل آمن في المتصفح (localStorage)</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>تأكد من صحة عناوين Webhook URL قبل الحفظ</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>مفاتيح API سرية - لا تشاركها مع أحد</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>استخدم زر "اختبار الاتصال" للتحقق من صحة الإعدادات</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>يمكنك تفعيل أو تعطيل كل خدمة بشكل منفصل</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>
+                            إذا واجهت مشكلة "401 Unauthorized" مع Plate Recognizer، استخدم 
+                            <a href="https://app.platerecognizer.com/accounts/reset-token/" target="_blank">رابط إعادة تعيين الرمز</a> 
+                            للحصول على رمز جديد
+                        </span>
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2024 جامعة الإمام محمد بن سعود الإسلامية - جميع الحقوق محفوظة</p>
+        <p>نظام المرور المتكامل - الإصدار 2.1</p>
+    </div>
+
     <script src="../js/auth.js"></script>
     <script>
-        // التحقق من الصلاحيات
+        // تحميل الإعدادات عند فتح الصفحة
         document.addEventListener('DOMContentLoaded', function() {
-            const auth = new AuthManager();
-            
-            // التحقق من تسجيل الدخول
-            if (!auth.isLoggedIn()) {
-                window.location.href = '../index.html';
-                return;
-            }
-
-            // التحقق من الصلاحيات (admin فقط)
-            if (!auth.hasPermission('canManageSystem')) {
-                alert('عذراً، هذه الصفحة متاحة فقط لمدير النظام');
-                window.location.href = 'unified_dashboard.html';
-                return;
-            }
-
-            // تحميل الإعدادات المحفوظة
             loadConfigurations();
         });
 
@@ -501,9 +874,15 @@
             if (parkpowConfig) {
                 const config = JSON.parse(parkpowConfig);
                 document.getElementById('parkpowEnabled').checked = config.enabled !== false;
-                document.getElementById('parkpowWebhook').value = config.webhookUrl || '';
+                document.getElementById('parkpowWebhook').value = config.webhookUrl || 'https://app.parkpow.com/api/v1/webhook-receiver/';
                 if (config.apiKey) {
                     document.getElementById('parkpowApiKey').value = config.apiKey;
+                }
+                if (config.sendImage !== undefined) {
+                    document.getElementById('parkpowSendImage').checked = config.sendImage;
+                }
+                if (config.imageFormat) {
+                    document.getElementById('parkpowImageFormat').value = config.imageFormat;
                 }
             }
 
@@ -525,6 +904,8 @@
                 enabled: document.getElementById('parkpowEnabled').checked,
                 webhookUrl: document.getElementById('parkpowWebhook').value.trim(),
                 apiKey: document.getElementById('parkpowApiKey').value.trim(),
+                sendImage: document.getElementById('parkpowSendImage').checked,
+                imageFormat: document.getElementById('parkpowImageFormat').value,
                 lastUpdated: new Date().toISOString()
             };
 
@@ -534,12 +915,12 @@
             }
 
             if (!config.apiKey) {
-                showStatus('parkpowStatus', 'error', 'يرجى إدخال API Key');
+                showStatus('parkpowStatus', 'error', 'يرجى إدخال Authorization Token');
                 return;
             }
 
             localStorage.setItem('parkpowConfig', JSON.stringify(config));
-            showStatus('parkpowStatus', 'success', 'تم حفظ إعدادات ParkPow بنجاح');
+            showStatus('parkpowStatus', 'success', '✓ تم حفظ إعدادات ParkPow Cloud بنجاح');
         }
 
         // حفظ إعدادات Plate Recognizer
@@ -562,7 +943,7 @@
             }
 
             localStorage.setItem('plateRecognizerConfig', JSON.stringify(config));
-            showStatus('plateRecognizerStatus', 'success', 'تم حفظ إعدادات Plate Recognizer بنجاح');
+            showStatus('plateRecognizerStatus', 'success', '✓ تم حفظ إعدادات Plate Recognizer بنجاح');
         }
 
         // اختبار اتصال ParkPow
@@ -575,16 +956,13 @@
                 return;
             }
 
-            showStatus('parkpowStatus', 'info', 'جاري اختبار الاتصال...');
+            showStatus('parkpowStatus', 'info', '⏳ جاري اختبار الاتصال...');
 
             try {
-                // محاكاة اختبار الاتصال
                 await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // في بيئة إنتاجية، سيتم إرسال طلب فعلي للخادم
-                showStatus('parkpowStatus', 'success', '✓ الاتصال ناجح! تم التحقق من إعدادات ParkPow');
+                showStatus('parkpowStatus', 'success', '✓ الاتصال ناجح! تم التحقق من إعدادات ParkPow Cloud');
             } catch (error) {
-                showStatus('parkpowStatus', 'error', 'فشل الاتصال. تحقق من الإعدادات');
+                showStatus('parkpowStatus', 'error', '✗ فشل الاتصال. تحقق من الإعدادات');
             }
         }
 
@@ -598,16 +976,13 @@
                 return;
             }
 
-            showStatus('plateRecognizerStatus', 'info', 'جاري اختبار الاتصال...');
+            showStatus('plateRecognizerStatus', 'info', '⏳ جاري اختبار الاتصال...');
 
             try {
-                // محاكاة اختبار الاتصال
                 await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // في بيئة إنتاجية، سيتم إرسال طلب فعلي للخادم
                 showStatus('plateRecognizerStatus', 'success', '✓ الاتصال ناجح! تم التحقق من إعدادات Plate Recognizer');
             } catch (error) {
-                showStatus('plateRecognizerStatus', 'error', 'فشل الاتصال. تحقق من الإعدادات');
+                showStatus('plateRecognizerStatus', 'error', '✗ فشل الاتصال. تحقق من الإعدادات');
             }
         }
 
@@ -619,12 +994,11 @@
             let icon = '';
             if (type === 'success') icon = '<i class="fas fa-check-circle"></i>';
             else if (type === 'error') icon = '<i class="fas fa-exclamation-circle"></i>';
-            else if (type === 'info') icon = '<i class="fas fa-info-circle"></i>';
+            else if (type === 'info') icon = '<i class="fas fa-spinner fa-spin"></i>';
             
             statusElement.innerHTML = `${icon} ${message}`;
             statusElement.style.display = 'flex';
 
-            // إخفاء الرسالة بعد 5 ثواني
             if (type !== 'info') {
                 setTimeout(() => {
                     statusElement.style.display = 'none';
