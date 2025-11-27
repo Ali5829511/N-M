@@ -1,7 +1,10 @@
 # Netlify Redirects
 
 # Redirect root to index
-/ /index.html 200
+/               /index.html   200
 
-# SPA fallback
-/* /index.html 200
+# Allow pages directory
+/pages/*        /pages/:splat 200
+
+# SPA fallback for other routes
+/*              /index.html   404
