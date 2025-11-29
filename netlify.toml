@@ -1,72 +1,26 @@
 [build]
   publish = "."
-  command = "echo 'No build needed - static site'"
-
-[[redirects]]
-  from = "/"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/pages/*"
-  to = "/pages/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 404
-
-[build.environment]
-  NODE_VERSION = "18"
-
-# Neon Database Integration
-# قاعدة البيانات Neon
-# 
-# To connect Neon database to Netlify:
-# لربط قاعدة بيانات Neon مع Netlify:
-#
-# 1. Install Neon extension from your Netlify project extensions page:
-#    https://app.netlify.com/sites/[your-site-name]/extensions/neon
-#    قم بتثبيت إضافة Neon من صفحة الإضافات في مشروعك
-#    (Replace [your-site-name] with your actual Netlify site name)
-#    (استبدل [your-site-name] باسم موقعك الفعلي في Netlify)
-#
-# 2. The extension will automatically add DATABASE_URL to your environment variables
-#    ستقوم الإضافة بإضافة DATABASE_URL تلقائياً إلى المتغيرات البيئية
-#
-# 3. Alternatively, manually add in Netlify Dashboard:
-#    أو قم بالإضافة يدوياً من لوحة تحكم Netlify:
-#    Site settings > Environment variables > Add a variable
-#    - Key: DATABASE_URL
-#    - Value: Your Neon PostgreSQL connection string from https://console.neon.tech
-#    - القيمة: رابط الاتصال من حساب Neon الخاص بك
-#
-# Connection string format:
-# postgresql://[user]:[password]@[host]/[database]?sslmode=require
-#
-# For more information, see: database/INSTALLATION_GUIDE.md
-# للمزيد من المعلومات، راجع: database/INSTALLATION_GUIDE.md
+  command = "echo 'Static site - no build required'"
 
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
+    X-Frame-Options = "SAMEORIGIN"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     
 [[headers]]
-  for = "/data/*"
-  [headers.values]
-    Cache-Control = "public, max-age=3600"
-    
-[[headers]]
   for = "/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000"
+    Cache-Control = "public, max-age=31536000, immutable"
     
 [[headers]]
   for = "/css/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000"
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

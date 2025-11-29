@@ -1,10 +1,4 @@
-# Netlify Redirects
+# Netlify Redirects - Static Site
 
-# Redirect root to index
-/               /index.html   200
-
-# Allow pages directory
-/pages/*        /pages/:splat 200
-
-# SPA fallback for other routes
-/*              /index.html   404
+# No redirects needed for static site
+# All files served as-is
