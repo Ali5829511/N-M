@@ -3,85 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=pages/home.html">
-    <title>وحدة إسكان أعضاء هيئة التدريس - جامعة الإمام محمد بن سعود الإسلامية</title>
-    <link rel="stylesheet" href="css/imamu-brand-identity.css">
+    <title>نظام إدارة المرور والإسكان - جامعة الإمام محمد بن سعود الإسلامية</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Bahij TheSansArabic', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #045D84 0%, #023d5a 100%);
             min-height: 100vh;
-            background: var(--imamu-light-gray);
-            font-family: var(--imamu-font-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-        
-        .loading-container {
-            text-align: center;
-            padding: var(--imamu-spacing-2xl);
-        }
-        
-        .logo {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto var(--imamu-spacing-xl);
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        .logo img {
+
+        .container {
+            max-width: 1200px;
             width: 100%;
-            height: 100%;
-            object-fit: contain;
         }
-        
-        h1 {
-            color: var(--imamu-primary);
-            font-size: var(--imamu-font-size-3xl);
-            margin-bottom: var(--imamu-spacing-md);
+
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
         }
-        
-        p {
-            color: var(--imamu-gray-600);
-            font-size: var(--imamu-font-size-lg);
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            margin: var(--imamu-spacing-xl) auto;
-            border: 4px solid var(--imamu-light-blue);
-            border-top: 4px solid var(--imamu-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
         }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .card-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 25px;
+            color: white;
+        }
+
+        .card.vehicles .card-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card.violations .card-icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .card.housing .card-icon {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .card-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .card-description {
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 30px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="loading-container">
-        <div class="logo">
-            <img src="assets/logo.png" alt="شعار جامعة الإمام محمد بن سعود الإسلامية">
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-university"></i>
+                نظام إدارة المرور والإسكان
+            </h1>
+            <p>جامعة الإمام محمد بن سعود الإسلامية</p>
         </div>
-        <h1>وحدة إسكان أعضاء هيئة التدريس</h1>
-        <p>جامعة الإمام محمد بن سعود الإسلامية</p>
-        <div class="spinner"></div>
-        <p>جاري التحميل...</p>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Vehicles Database -->
+            <a href="pages/vehicles_database.html" class="card vehicles">
+                <div class="card-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h2 class="card-title">قاعدة بيانات المركبات</h2>
+                <p class="card-description">
+                    نظام شامل لإدارة جميع المركبات المسجلة في الجامعة مع التعرف التلقائي على اللوحات
+                </p>
+            </a>
+
+            <!-- Violations Database -->
+            <a href="pages/violations_database.html" class="card violations">
+                <div class="card-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 class="card-title">قاعدة بيانات المخالفات</h2>
+                <p class="card-description">
+                    نظام متطور لإدارة المخالفات المرورية مع إمكانية الدفع والاعتراض
+                </p>
+            </a>
+
+            <!-- Housing System -->
+            <a href="pages/home.html" class="card housing">
+                <div class="card-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h2 class="card-title">نظام الإسكان</h2>
+                <p class="card-description">
+                    نظام إدارة إسكان أعضاء هيئة التدريس والموظفين
+                </p>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2025 جامعة الإمام محمد بن سعود الإسلامية - جميع الحقوق محفوظة</p>
+        </div>
     </div>
-    
-    <script>
-        // توجيه تلقائي إلى الصفحة الرئيسية
-        setTimeout(function() {
-            window.location.href = 'pages/home.html';
-        }, 1000);
-    </script>
 </body>
 </html>
