@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for n-m-ugohhq on 2025-11-11T15:47:16Z
+# fly.toml app configuration file generated for n-m-35x4-w on 2025-12-05T02:58:41Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'n-m-ugohhq'
-primary_region = 'iad'
+app = 'n-m-35x4-w'
+primary_region = 'cdg'
 
 [build]
 
