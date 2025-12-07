@@ -1,6 +1,6 @@
 # حالة النشر - Deployment Status
 
-**التاريخ / Date:** 2025-12-07  
+**التاريخ / Date:** December 7, 2025  
 **الحالة / Status:** ✅ جاهز للنشر - Ready for Deployment
 
 ---
@@ -178,5 +178,5 @@ https://ali5829511.github.io/N-M/
 ---
 
 **تم الإعداد بواسطة:** GitHub Copilot  
-**التاريخ:** 2025-12-07  
+**التاريخ:** December 7, 2025  
 **الحالة:** ✅ جاهز للنشر الفوري
